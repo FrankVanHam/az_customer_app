@@ -4,6 +4,18 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  - name: DOWNLOAD_DIR
+    value: $(Build.SourcesDirectory)/download
+  - name: CUSTOMER_APP_DIR
+    value: $(DOWNLOAD_DIR)
+  - name: SMALLWORLD_REGISTRY
+    value: $(DOWNLOAD_DIR)/smallworld_registry
+  - name: SW_MSF_STARTUP_MAGIK
+    value: $(DOWNLOAD_DIR)/scripts/compile_and_build.magik
+  - name: AZ_SW_PRODUCT_TO_BUILD
+    value: blaak
+
 steps:
   - task: JavaToolInstaller@1
     inputs:
@@ -11,6 +23,7 @@ steps:
       jdkArchitectureOption: 'x64' #| 'x86' | 'arm64'. Required. JDK architecture. 
       jdkSourceOption: 'PreInstalled' # 'AzureStorage' | 'LocalDirectory' | 'PreInstalled'
 
+  # download into 
   - task: UniversalPackages@0
     displayName: Download
     inputs:
@@ -18,10 +31,16 @@ steps:
       vstsFeed: 'SW/froggie'                        ## The Artifacts feed hosting the package to be downloaded
       vstsFeedPackage: 'cst.jar'                             ## Name of the package to be downloaded
       vstsPackageVersion: '5.3.0'                       ## Version of the package to be downloaded
-      downloadDirectory: '$(Build.SourcesDirectory)/download'     ## The download folder. Default value: $(System.DefaultWorkingDirectory).
+      downloadDirectory: '$(DOWNLOAD_DIR)'     ## The download folder. Default value: $(System.DefaultWorkingDirectory).
 
   - script: |
-      ls -R $(Build.SourcesDirectory)
-      printenv
-      whoami
+      JAVA -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(DOWNLOAD_DIR)/core_installer.jar $(DOWNLOAD_DIR)/SW vsts vsts
+      ls $(Build.SourcesDirectory)
     displayName: 'List all content'
+
+  - script: |
+      $(DOWNLOAD_DIR)/SW/core/bin/x86/runalias base
+    displayName: 'start compile and build'
+  
+
+
