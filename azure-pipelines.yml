@@ -34,7 +34,7 @@ steps:
       downloadDirectory: '$(DOWNLOAD_DIR)'     ## The download folder. Default value: $(System.DefaultWorkingDirectory).
 
   - script: |
-      JAVA -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(DOWNLOAD_DIR)/core_installer.jar $(DOWNLOAD_DIR)/SW vsts vsts
+      java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(DOWNLOAD_DIR)/core_installer.jar $(DOWNLOAD_DIR)/SW vsts vsts
       ls $(Build.SourcesDirectory)
     displayName: 'List all content'
 
