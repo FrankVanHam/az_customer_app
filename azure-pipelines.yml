@@ -42,7 +42,7 @@ steps:
     displayName: 'List all content'
 
   - script: |
-      $(DOWNLOAD_DIR)/SW/core/bin/share/runalias base
+      $(DOWNLOAD_DIR)/SW/core/bin/share/runalias -j -Djava.awt.headless=true base
     displayName: 'start compile and build'
   
 
