@@ -1,0 +1,14 @@
+#% text_encoding = iso8859_1
+_package sw
+
+smallworld_product.register_application( :blaak_swaf_professional,
+					 :application,
+					 :resource_module_name, :blaak_swaf_professional_application,
+					 :html_help_file_name, "Default.htm",
+					 :html_help_resource_module_name, :swaf_professional_application,
+					 :ace_name, :|Electricity|,
+					 :default_application_coordinate_system_name, :uk_british_national_grid,
+					 :application_coordinate_system_unit, :mm,
+					 :copyright_start_date, 1998,
+					 :copyright_end_date, smallworld_product.copyright_end_date )
+$

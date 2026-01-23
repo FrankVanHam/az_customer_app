@@ -1,0 +1,16 @@
+<config>	    
+
+  <file location="construction_pack.layout_series_plugin_config"/>
+
+  <type name="construction_plot_layout_details">
+    <property name="page_template"         value="swift_layout_series.a4_with_detail_area"/>
+    <property name="use_map_visibilities?" value="false"/>
+    <property name="use_layout_details?"   value="true"/>
+
+    <source class_name="swaf_map_view_bounds_geometry_source"/>
+    <source class_name="swaf_map_selection_geometry_source"/>
+    <source class_name="swaf_map_trail_geometry_source"/>
+    <source class_name="swaf_map_trail_masked_geometry_source"/>
+  </type>
+
+</config>

@@ -1,0 +1,34 @@
+#% text_encoding = iso8859_1
+_package sw
+
+!global_auto_declare?! << _true
+$
+
+_block
+
+	_local open_database_proc <<
+		_proc@open_database_proc( a_session )
+			ace_dir << a_session.open_database()
+			write( "Database Opened: ", ace_dir )
+		_endproc
+	
+	magik_session.register_new(
+		"blaak_closed",
+
+		:parent_session, "sw_core:swaf",
+		
+		:optional_products, { :sw_core_lp, :blaak_lp },
+		
+		:load_modules, { :blaak_swaf_professional_application } )
+	
+	magik_session.register_new(
+		"blaak_open",
+
+		:parent_session, "blaak_closed",
+
+		:startup_proc, :startup,
+		
+		:open_database_proc, open_database_proc )
+	
+_endblock
+$

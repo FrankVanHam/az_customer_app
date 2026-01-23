@@ -1,0 +1,4 @@
+#% text_encoding = iso8859_1
+_package user
+message_handler.new(:blaak_swaf_professional_application).set_uses_list({:swaf_professional_application})
+$

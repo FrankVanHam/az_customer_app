@@ -1,0 +1,10 @@
+blaak_config config_product
+
+title
+	Blaak Database configuration product
+end
+
+description
+	Blaak Database configuration product
+end
+

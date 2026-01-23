@@ -1,0 +1,48 @@
+<config>
+
+  <framework_data>
+    <trace_type name="trace_out"       method="trace_out()"/>
+    <trace_type name="shortest_path"   method="shortest_path()"/>
+    <trace_type name="proximity_trace" method="proximity_trace()"/>
+    <trace_type name="route_finder"    method="shortest_path()" manifold="road">
+
+      <!-- a parameter with more than one value gives the user a choice of values -->
+      <parameter name="cost_message">
+	<choice name="distance" value="length"/>
+	<choice name="time" value="transit_time()"/>
+      </parameter>
+
+      <option name="no_motorways" default_value="on">
+	<stop_predicate object="motorway"/>
+      </option>
+
+      <option name="no_roundabouts">
+	<stop_predicate object="roundabout"/>
+      </option>
+
+      <option name="no_road_works" default_value="on">
+	<stop_predicate object="road_works"/>
+      </option>
+
+      <option name="no_a_roads">
+	<stop_predicate field="min_road.road_type" operator="eq" value="A-Road"/>
+      </option>
+
+      <option name="no_dual_carriageway">
+	<stop_predicate field="*.carriage_type" operator="eq" value="Dual Carriage"/>
+      </option>
+
+      <stop_predicate field="min_road.road_type" operator="eq" enum="gis.road_type"/>
+
+    </trace_type>
+
+  </framework_data>
+
+  <plugins>
+    <plugin name="result_tables"         class_name="trace_results_tables_plugin"/>
+    <plugin name="loops"                 class_name="network_loop_detection_plugin"/>
+    <plugin name="shortest_path_results" class_name="shortest_path_results_plugin"/>
+    <plugin name="ordered_results"       class_name="ordered_results_plugin"/>
+  </plugins>
+
+</config>

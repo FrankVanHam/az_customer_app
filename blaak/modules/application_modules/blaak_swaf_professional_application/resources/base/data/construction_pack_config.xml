@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config base="construction_pack.construction_pack_config">
+
+  <plugin name="layout_series" class_name="sw_layout_series_plugin">
+    <property name="layout_type_config_file_name"          value="blaak_swaf_professional_application.layout_series_plugin_config"/>
+    <property name="previewer_config_definition_file_name" value="blaak_swaf_professional_application.cp_previewer_config"/>
+    <property name="previewer_gui_definition_file_name"    value="construction_pack.previewer_gui"/>
+    <property name="save_as_lsdx_and_pdf?" value="true"/>
+    <property name="show_layout_doc_actions" value="save_actions"/>
+  </plugin>
+
+</config>

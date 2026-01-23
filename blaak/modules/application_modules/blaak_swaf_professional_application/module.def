@@ -1,0 +1,19 @@
+blaak_swaf_professional_application	1
+
+description
+	Professional application based on Application Framework architecture
+end
+
+requires
+	cam_db_engines
+	cam_db_elec_gui_plugins
+	cam_db_qm_routines
+	swaf_professional_application
+	swaf_address_search_gui
+
+	blaak_module
+end 
+
+optional
+	swaf_address_search_gui
+end

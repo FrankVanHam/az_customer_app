@@ -1,0 +1,27 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: JavaToolInstaller@1
+    inputs:
+      versionSpec: '17' # string. Required. JDK version. Default: 8.
+      jdkArchitectureOption: 'x64' #| 'x86' | 'arm64'. Required. JDK architecture. 
+      jdkSourceOption: 'PreInstalled' # 'AzureStorage' | 'LocalDirectory' | 'PreInstalled'
+
+  - task: UniversalPackages@0
+    displayName: Download
+    inputs:
+      command: download
+      vstsFeed: 'SW/froggie'                        ## The Artifacts feed hosting the package to be downloaded
+      vstsFeedPackage: 'cst.jar'                             ## Name of the package to be downloaded
+      vstsPackageVersion: '5.3.0'                       ## Version of the package to be downloaded
+      downloadDirectory: '$(Build.SourcesDirectory)/download'     ## The download folder. Default value: $(System.DefaultWorkingDirectory).
+
+  - script: |
+      ls -R $(Build.SourcesDirectory)
+      printenv
+      whoami
+    displayName: 'List all content'

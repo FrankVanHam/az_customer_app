@@ -1,0 +1,8 @@
+<!-- this file configures the plugins that are available to the object_editor -->
+
+<config base="editor_plugin.config">
+  <plugins>
+    <plugin name="field_lister" class_name="object_editor_field_lister" />
+    <plugin name="rwo_specials" class_name="rwo_specials_plugin" />
+  </plugins>
+</config>

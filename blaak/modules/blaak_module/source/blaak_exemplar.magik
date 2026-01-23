@@ -1,0 +1,11 @@
+_package user
+$
+
+def_slotted_exemplar(:blaak_exemplar, {})
+$
+
+_method blaak_exemplar.new()
+	##
+	>> _clone.init()
+_endmethod
+$

@@ -1,0 +1,70 @@
+<!---
+Configures quality check routines for this application.
+
+Routine groups can be defined directly in this file using <group> elements.
+Routine groups defined elsewhere can be included in this configuration using <group_file> elements.
+-->
+
+<config>
+
+    <group name="gis">
+	<routine name="customer_quality_check"/>
+	<routine name="hotel_annotation_check"/>
+	<routine name="park_annotation_check"/>
+<!--	<routine name="company_quality_check"/> -->
+    </group>
+
+    <group name="basic">
+	<routine name="mandatory_fields_routine"/>
+	<routine name="orphan_geometry_routine"/>
+	<routine name="coincident_geom_routine"/>
+	<routine name="default_geometry_routine"/>
+	<routine name="empty_text_routine"/>
+	<routine name="geometry_mapping_routine"/>
+	<routine name="infinite_arcs_routine"/>
+	<routine name="rwo_no_geom_routine"/>
+	<routine name="self_intersect_chain_routine"/>
+	<routine name="zero_len_chain_routine"/>
+    </group>
+
+    <group name="electricity">
+	<routine name="joint_proximity_quality_check"/>
+	<routine name="known_as_quality_check"/>
+	<routine name="status_quality_check"/>
+	<routine name="supply_point_quality_check"/>
+	<routine name="voltage_quality_check"/>
+    </group>
+
+    <!-- examples of how to include groups from other configuration files 
+    <group_file name="quality_control.quality_checks_config"/>
+    <group_file name="land_qm_routines.quality_checks_config"/>
+    -->
+
+    <activity name="data_integrity_check" groups="basic" >
+	<source class_name="qm_alternative_diffs_source"/>
+	<source class_name="qm_current_window_source"/>
+	<source class_name="qm_current_window_visible_only_source"/>	
+	<source class_name="qm_current_selection_source"/>
+	<source class_name="qm_scrapbook_source"/>
+	<source class_name="qm_within_trail_source"/>
+	<source class_name="qm_trace_results_source"/>
+    </activity>
+
+    <activity name="blaak_check" groups="gis, electricity">
+	<source class_name="qm_current_window_source"/>
+	<source class_name="qm_current_window_visible_only_source"/>
+	<source class_name="qm_alternative_diffs_source"/>
+	<source class_name="qm_current_selection_source"/>
+    </activity>
+
+    <activity name="elec_network_check" groups="electricity">
+	<source class_name="qm_current_window_source"/>
+	<source class_name="qm_current_window_visible_only_source"/>
+	<source class_name="qm_alternative_diffs_source"/>
+	<source class_name="qm_current_selection_source"/>
+	<source class_name="qm_trace_results_source"/>	
+      <source class_name="qm_scrapbook_source"/>
+
+    </activity>
+
+</config>

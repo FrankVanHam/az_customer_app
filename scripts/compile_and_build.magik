@@ -1,0 +1,232 @@
+#_package user
+#$
+
+
+def_slotted_exemplar(:bob, {})
+$
+
+_pragma(classify_level=restricted, topic={azure})
+_method bob.compile(p_prod)
+	## 
+	write("Compiling ... ", p_prod.name)
+	_local initial_modules << _unset 
+	_local to_be_ignored << _unset 
+	_local include_tests? << _false
+	_local skip_conflict_methods_check? << _false 
+	p_prod.compile_all_modules(initial_modules, to_be_ignored, include_tests?, skip_conflict_methods_check?)
+	p_prod.compile_messages()
+	p_prod.compile_module_messages()
+	p_prod.save_serialised_module_definitions()
+_endmethod
+$
+
+_pragma(classify_level=restricted, topic={azure})
+_method bob.int!build(p_product, p_session_name)
+	_local prod << sw:smallworld_product.add_product(p_product.as_symbol())
+	_self.compile(prod)
+_endmethod
+$
+
+_pragma(classify_level=restricted, topic={azure})
+_method bob.build() 
+	_local prod << system.getenv("AZ_SW_PRODUCT_TO_BUILD")
+	_local session_name << system.getenv("AZ_SW_SESSION_TO_BUILD")
+	_self.int!build(prod, session_name)
+_endmethod
+$
+
+_block 
+	bob.build()
+	quit()
+_endblock
+$
+
+#
+#_pragma(classify_level=restricted, topic={azure})
+#_method magik_session.az_load_and_get(p_product_dir, p_session_name)
+#	##
+#	_self.load_config_product(p_product_dir)
+#	rturn _self.register[p_session_name.as_symbol()]
+#_endmethod
+#$
+#
+#_pragma(classify_level=restricted, topic={azure})
+#_method magik_session.az_load_parent_session()
+#	_if (_self.property(:name).as_symbol() = :base)
+#	_then
+#		_return _unset
+#	_else
+#		_local parent_prop << session.property(:parent_session)
+#		_local parent_token << _if (parent_prop _is _unset)
+#				       _then
+#					       >> "sw_core:base"
+#				       _else
+#					       >> parent_prop
+#				       _endif
+#		_local sn << parent_token.split_by(%:)
+#		_if (sn.size > 1)
+#		_then
+#			_local parent_product_name << sn[1].as_symbol()
+#			magik_session.sys!perform(:|load_config_product()|, parent_product_name)
+#			parent_session << sn[2]
+#			
+#_endmethod
+#$
+#
+#
+#_pragma(classify_level=restricted, topic={azure})
+#_method bob.build(p_product_dir, p_session_name)
+#	_local session << magik_session.az_load_and_get(p_product_dir, p_session_name)
+#	
+#	# collect an ordered list of sessions to compile
+#	_local sessions_to_run << rope.new()
+#	_loop
+#		sessions_to_run.add(session)
+#		
+#		_local parent_token << _if (session.property(:name).as_symbol() = :base)
+#				       _then
+#					       >> _unset
+#				       _else
+#					       _local parent_prop << session.property(:parent_session)
+#					       >> _if (parent_prop _is _unset)
+#						  _then
+#							  >> "sw_core:base"
+#						  _else
+#							  >> parent_prop
+#						  _endif
+#				       _endif
+#		_if parent_token _isnt _unset
+#		_then
+#			_local parent_session << _unset 
+#			_local sn << parent_token.split_by(%:)
+#			_if (sn.size > 1)
+#			_then
+#				_local parent_product_name << sn[1].as_symbol()
+#				magik_session.sys!perform(:|load_config_product()|, parent_product_name)
+#				parent_session << sn[2]
+#			_else
+#				parent_session << sn[1]
+#			_endif
+#			session << magik_session.register[parent_session.as_symbol()]
+#		_else
+#			_leave 
+#		_endif
+#	_endloop
+#
+#	_local compile << _proc(prod)
+#				  write("Compiling ... ", prod.name)
+#				  _local initial_modules << _unset 
+#				  _local to_be_ignored << _unset 
+#				  _local include_tests? << _false
+#				  _local skip_conflict_methods_check? << _false 
+#				  prod.compile_all_modules(initial_modules, to_be_ignored, include_tests?, skip_conflict_methods_check?)
+#				  prod.compile_messages()
+#				  prod.compile_module_messages()
+#				  prod.save_serialised_module_definitions()
+#			  _endproc 
+#	
+#	_for session _over sessions_to_run.fast_elements()
+#	_loop
+#		_local prod_names << session.sys!perform(:|products()|, :add_products)
+#		_for i_name _over prod_names.fast_elements()
+#		_loop
+#			_local prod << sw:smallworld_product.add_product(i_name)
+#			compile(prod)
+#		_endloop
+#		 prod_names << session.sys!perform(:|products()|, :optional_products)
+#		_for i_name _over prod_names.fast_elements()
+#		_loop
+#			_try 
+#				_local prod << sw:smallworld_product.add_product(i_name)
+#				
+#				compile(prod)
+#			_when sw_product_not_found
+#
+#			_endtry 
+#		_endloop
+#		_local prod << session.properties[:module_definition].product.parent
+#		compile(prod)
+#	_endloop
+#
+#_endmethod
+#$
+#
+#
+#
+#_block
+#	_local a_product_dir << "C:\Users\frnkv\Documents\GitHub\python-sample-vscode-flask-tutorial\blaak"
+#	_local a_session_name << "blaak_open".as_symbol()
+#
+#	_local loaded? << magik_session.sys!perform(:|load_config_product()|, a_product_dir)
+#	_local session << magik_session.register[a_session_name.as_symbol()]
+#
+#	_local sessions_to_run << rope.new()
+#	_loop
+#		sessions_to_run.add(session)
+#		_local parent_token << _if (session.property(:name).as_symbol() = :base)
+#				       _then
+#					       >> _unset
+#				       _else
+#					       _local parent_prop << session.property(:parent_session)
+#					       >> _if (parent_prop _is _unset)
+#						  _then
+#							  >> "sw_core:base"
+#						  _else
+#							  >> parent_prop
+#						  _endif
+#				       _endif
+#		_if parent_token _isnt _unset
+#		_then
+#			_local parent_session << _unset 
+#			_local sn << parent_token.split_by(%:)
+#			_if (sn.size > 1)
+#			_then
+#				_local parent_product_name << sn[1].as_symbol()
+#				magik_session.sys!perform(:|load_config_product()|, parent_product_name)
+#				parent_session << sn[2]
+#			_else
+#				parent_session << sn[1]
+#			_endif
+#			session << magik_session.register[parent_session.as_symbol()]
+#		_else
+#			_leave 
+#		_endif
+#	_endloop
+#
+#	_local compile << _proc(prod)
+#				  write("Compiling ... ", prod.name)
+#				  _local initial_modules << _unset 
+#				  _local to_be_ignored << _unset 
+#				  _local include_tests? << _false
+#				  _local skip_conflict_methods_check? << _false 
+#				  prod.compile_all_modules(initial_modules, to_be_ignored, include_tests?, skip_conflict_methods_check?)
+#				  prod.compile_messages()
+#				  prod.compile_module_messages()
+#				  prod.save_serialised_module_definitions()
+#			  _endproc 
+#	
+#	_for session _over sessions_to_run.fast_elements()
+#	_loop
+#		_local prod_names << session.sys!perform(:|products()|, :add_products)
+#		_for i_name _over prod_names.fast_elements()
+#		_loop
+#			_local prod << sw:smallworld_product.add_product(i_name)
+#			compile(prod)
+#		_endloop
+#		 prod_names << session.sys!perform(:|products()|, :optional_products)
+#		_for i_name _over prod_names.fast_elements()
+#		_loop
+#			_try 
+#				_local prod << sw:smallworld_product.add_product(i_name)
+#				
+#				compile(prod)
+#			_when sw_product_not_found
+#
+#			_endtry 
+#		_endloop
+#		_local prod << session.properties[:module_definition].product.parent
+#		compile(prod)
+#	_endloop
+#_endblock
+#$
+#

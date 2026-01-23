@@ -1,0 +1,21 @@
+<config>
+    <!--<plugin name="extras" class_name="example_qm_action_provider_plugin"/>-->
+
+    <framework_data>
+	<filter type="origin" default="quality_check">
+	    <item value="quality_check"/>
+	    <item value="relational_check"/>
+	    <!--<item value="merge"/>-->
+	    <!--<item value="user"/>-->
+	    <!--<item value="other"/>-->
+	</filter>
+	<filter type="severity">
+	    <item value="error"/>
+	    <item value="warning"/>
+	    <item value="information"/>
+	    <!--<item value="unknown"/>-->
+	</filter>
+	<filter type="status" default="pending" all_items="true"/>
+    </framework_data>
+
+</config>

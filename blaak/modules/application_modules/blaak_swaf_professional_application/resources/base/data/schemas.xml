@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
+    <uri resource="collection_config.xml" uri="../../../../../../../product/data/xml_schemas/editor_config_schema.rnc"/>
+</locatingRules>

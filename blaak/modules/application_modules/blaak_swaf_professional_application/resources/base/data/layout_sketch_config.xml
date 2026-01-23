@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sketch_config>
+  
+  <file location="construction_pack.layout_sketch_generic_drafting"/>
+
+  <tool name="plot_point_10" class="plot_point_tool" objects="symbol_layout">
+    <style class="point_style" symbol_name="arrow"       size="10"/>
+    <style class="point_style" symbol_name="black_blob"  size="10"/>
+    <style class="point_style" symbol_name="pr_blank"    size="10"/>
+  </tool>				    	   
+
+  <tool name="plot_point_6" class="plot_point_tool" objects="symbol_layout">
+    <style class="point_style" symbol_name="arrow"       size="6"/>
+    <style class="point_style" symbol_name="black_blob"  size="6"/>
+    <style class="point_style" symbol_name="pr_blank"    size="6"/>
+  </tool>
+
+  <separator name="additional_views" />
+  
+  <tool name="detail_viewport"   class="plot_viewport_tool" type="detail_viewport"/>
+  <tool name="internal_viewport" class="plot_viewport_tool" type="internal_viewport">
+    <world_owner_class name="substation"/>
+  </tool>
+
+</sketch_config>

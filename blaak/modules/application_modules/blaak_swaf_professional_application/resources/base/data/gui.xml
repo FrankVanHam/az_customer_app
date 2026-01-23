@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  gui.xml for the SWAF Professional application  -->
+<gui base="swaf_professional_application.gui">
+  <menu path="menubar.tools">
+    <super/>
+    <separator/>
+    <action name="analysis_plugin.activate_framework"/>
+  </menu>
+</gui>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  config.xml for the Cam DB SWAF Professional Application  -->
+<config base="swaf_professional_application.config">
+
+  <framework_data>
+    <spatial_context  name="gis"        ace_name="Electricity"           universe_name="gis" />
+    <spatial_context  name="internals"  ace_name="Substation Internals"  universe_name="internals"/>
+    <spatial_context  name="drawing"    ace_name="drawing"               universe_name="drawing"/>
+  </framework_data>
+  
+  <plugin name="maps" class_name="map_manager" >
+    <interaction_modes>
+      <mode name="select"/>
+      <mode name="geometry"/>
+      <mode name="zoom_in"/>
+      <mode name="zoom_out"/>
+      <mode name="pan"/>
+      <cycle_sequence modes="select,geometry"/>
+    </interaction_modes>
+    <special_actions ace_name="Electricity">
+      <action source="application" name="scrapbook.activate_scrapbook_dialog"/>
+      <action name="map_clear_selection"/>
+    </special_actions>
+    <special_actions ace_name="Substation Internals">
+      <action source="application" name="document_manager.activate_document_list"/>
+      <action name="detail_view"/>
+    </special_actions>
+    <keyboard_interaction>
+      <key id="delete_key" modifier="0" mode="select"     action="delete_selection_with_confirmation"/>
+      <key id="delete_key" modifier="0" mode="select_pan" action="delete_selection_with_confirmation"/>
+      <key id="delete_key" modifier="0" mode="zoom_in"    action="delete_selection_with_confirmation"/>
+      <key id="delete_key" modifier="0" mode="zoom_out"   action="delete_selection_with_confirmation"/>
+      <key id="delete_key" modifier="0" mode="pan"        action="delete_selection_with_confirmation"/>
+    </keyboard_interaction>
+  </plugin>
+  <plugin name="explorer" class_name="explorer_plugin">
+    <properties>
+      <property name="expose_embedded_selection"           value="true"/>
+      <property name="expose_floating_selection"           value="true"/>
+      <property name="model_config_definition_file_name"   value="explorer_model_config.xml"/>
+      <property name="model_config_definition_module_name" value="blaak_swaf_professional_application"/>
+      <property name="floating_gui_definition_module_name" value="swaf_professional_application"/>
+      <property name="floating_gui_definition_file_name"   value="floating_explorer_view_gui.xml"/>
+      <property name="embedded_gui_definition_module_name" value="swaf_professional_application"/>
+      <property name="embedded_gui_definition_file_name"   value="embedded_explorer_view_gui.xml"/>
+    </properties>
+    <export>
+      <toolbar source_name="find"/>
+      <toolbar source_name="advanced_find"/>
+    </export>
+    <find_engine>
+      <categories>
+	<category name="addresses" default="yes"/>
+	<category name="cadastral" />
+      </categories>
+      <engine plugin_name="search_engine"/>
+      <default_text id ="find_text"/>
+    </find_engine>
+  </plugin>
+
+  <plugin name="document_manager" class_name="document_manager">
+    <properties>
+      <!-- display_mode can be "single" or "multiple_tabbed" -->
+      <property name="display_mode" value="single"/>
+    </properties>
+
+    <!-- default document to be displayed at startup -->
+    <document source_plugin_name="maps">
+      <gui_properties>
+	<property name="class_name"                        value="map_gui_framework"/>
+	<property name="resource_module_name"              value="swaf_professional_application"/>
+	<property name="floating_gui_definition_file_name" value="floating_map_gui.xml"/>
+	<property name="embedded_gui_definition_file_name" value="embedded_map_gui.xml"/>
+	<property name="config_definition_file_name"       value="map_config.xml"/>
+	<property name="title_message_id"                  value="main_map_title"/>
+      </gui_properties>
+      
+      <document_properties>
+	<property name="ace_name"    value="Electricity"/>
+	<property name="world_id"    value="0"/>
+	<property name="universe_id" value="0"/>
+	<property name="centre_x"    value="548000000"/>
+	<property name="centre_y"    value="260000000"/>
+	<property name="scale"       value="10000"/>
+      </document_properties>
+    </document>
+  </plugin>
+
+  <plugin name="editor_manager" class_name="editor_manager" >
+    <properties>
+      <property name="configuration_file_name"           value="blaak_swaf_professional_application.collection_config" />
+      <property name="editor_gui_definition_module_name" value="swaf_professional_application"/>
+      <property name="editor_gui_definition_file_name"   value="editor_gui.xml"/>
+      <property name="show_collection_chooser?"          value="true"/>
+    </properties>
+  </plugin>
+  <plugin name="pub_context_provider" class_name="pub_context_provider"/>
+
+  <plugin name="quality_management" class_name="qm_plugin">
+    <property name="routines_config_file"    value="blaak_swaf_professional_application.qm_routine_config"/>
+    <property name="dialog_config_file"      value="blaak_swaf_professional_application.qm_tool_config.xml"/>
+    <property name="display_related_object?" value="false"/>
+    <property name="dialog_as_sub_window?"   value="true"/>
+    <property name="include_flag_details?"   value="true" />
+  </plugin>
+
+  <plugin name="construction_pack" class_name="construction_pack_plugin">
+    <property name="plot_tool_resource_module_name" value="blaak_swaf_professional_application"/>
+  </plugin>
+  
+  <plugin name="analysis" class_name="network_analysis_plugin">
+    <property name="tool_config_definition_file" value="blaak_swaf_professional_application.network_analysis_tool_config.xml"/>
+    <property name="tool_gui_definition_file"    value="network_analysis_plugin.tool_gui.xml"/>
+    <property name="render_priority" value="0"/>
+  </plugin>
+  <plugin name="analysis_plugin" class_name="rwan:framework_plugin"/>
+</config>

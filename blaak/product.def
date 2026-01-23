@@ -1,0 +1,8 @@
+blaak layered_product
+
+title
+	Blaak Database
+end
+requires
+	cambridge_db
+end

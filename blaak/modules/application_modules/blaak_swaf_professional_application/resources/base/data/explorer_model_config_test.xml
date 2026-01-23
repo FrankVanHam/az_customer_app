@@ -1,0 +1,98 @@
+<config base="explorer_plugin.explorer_model_config">
+  <plugins>
+
+    <plugin name="datasets_plugin"  class_name="explorer_model_datasets_plugin">
+       <plugin_data>
+          <elements>
+	     <element name="Gis">
+                <datasets display_all="yes">
+		   <dataset name="gis" alias="North"/>
+	        </datasets>
+                <aces>
+		   <ace name="Electricity"/>
+	        </aces>
+             </element>
+	     <element name="Electricity">
+                <datasets>
+		   <dataset name="electricity"/>
+	        </datasets>
+                <aces>
+		   <ace name="Electricity"/>
+		   <ace name="Substation Internals"/>
+	        </aces>
+             </element>
+          </elements>
+       </plugin_data>
+    </plugin>
+
+    <plugin name="themes_plugin"  class_name="explorer_model_themes_plugin">
+       <plugin_data>
+          <aces>
+	     <ace name="Default"/>
+	     <ace name="Electricity"/>
+	     <ace name="Demographics"/>
+          </aces>
+       </plugin_data>
+    </plugin>
+
+    <plugin name="search_engine"  class_name="explorer_model_search_plugin">
+       <plugin_data>
+          <elements>
+	     <element name="addresses">
+		<plugin plugin_name="datasets_plugin">
+		   <collection>
+   		      <parameters>
+		         <parameter name="dataset" value="gis"/>		   
+		         <parameter name="collection" value="min_road"/>
+		      </parameters>
+		      <fields>
+		         <field name="name"/>
+		      </fields>
+		   </collection>
+		   <collection>
+   		      <parameters>
+		         <parameter name="dataset" value="gis"/>		   
+		         <parameter name="collection" value="footpath"/>
+		      </parameters>
+		      <fields>
+		         <field name="name"/>
+		      </fields>
+		   </collection>
+		   <collection>
+   		      <parameters>
+		         <parameter name="dataset" value="electricity"/>		   
+		         <parameter name="collection" value="customer"/>
+		      </parameters>
+		      <fields>
+		         <field name="address1"/>
+		         <field name="address2"/>
+		      </fields>
+		   </collection>
+		</plugin>
+             </element>
+	     <element name="cadastral">
+	        <dataset name="gis" ace_name="Default">
+		   <collection name="park">
+		      <field name="name"/>
+		   </collection>
+		   <collection name="pl_of_interest">
+		      <field name="name"/>
+		   </collection>
+		</dataset>
+	        <dataset name="us_states" ace_name="Electricity">
+		   <collection name="proj_states">
+		      <field name="state"/>
+		   </collection>
+		   <collection name="proj_cities">
+		      <field name="state_abrv"/>
+		   </collection>
+	        </dataset>
+             </element>
+          </elements>
+       </plugin_data>
+    </plugin>
+  </plugins>
+
+</config>
+
+
