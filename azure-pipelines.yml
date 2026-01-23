@@ -38,11 +38,11 @@ steps:
       ls $(Build.SourcesDirectory)
       ls $(DOWNLOAD_DIR)/SW
       ls $(DOWNLOAD_DIR)/SW/core/bin
-      ls $(DOWNLOAD_DIR)/SW/core/bin/Linux.x86
+      ls $(DOWNLOAD_DIR)/SW/core/bin/share
     displayName: 'List all content'
 
   - script: |
-      $(DOWNLOAD_DIR)/SW/core/bin/Linux.x86/runalias base
+      $(DOWNLOAD_DIR)/SW/core/bin/share/runalias base
     displayName: 'start compile and build'
   
 
