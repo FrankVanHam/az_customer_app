@@ -36,6 +36,9 @@ steps:
   - script: |
       sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(DOWNLOAD_DIR)/core_installer.jar $(DOWNLOAD_DIR)/SW vsts vsts
       ls $(Build.SourcesDirectory)
+      ls $(DOWNLOAD_DIR)/SW
+      ls $(DOWNLOAD_DIR)/SW/core/bin
+      ls $(DOWNLOAD_DIR)/SW/core/bin/x86
     displayName: 'List all content'
 
   - script: |
