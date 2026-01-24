@@ -70,7 +70,7 @@ _block
 	write(":layered_product_data")
 	print(sw:smallworld_product.sys!perform(:layered_product_data).last)
 	
-	#bob.build_safe()
+	bob.build_safe()
 	quit()
 _endblock
 $
