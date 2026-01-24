@@ -1,0 +1,16 @@
+customer_app_swaf_professional_application	1
+
+description
+	Customer application based on Application Framework architecture
+end
+
+requires
+	swaf_professional_application
+	swaf_address_search_gui
+
+	customer_app_module
+end 
+
+optional
+	swaf_address_search_gui
+end

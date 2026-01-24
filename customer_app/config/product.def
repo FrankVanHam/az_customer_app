@@ -1,0 +1,10 @@
+customer_app_config config_product
+
+title
+	customer_app Database configuration product
+end
+
+description
+	customer_app Database configuration product
+end
+

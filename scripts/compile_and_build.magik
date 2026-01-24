@@ -1,7 +1,10 @@
 #_package user
 #$
 
-
+##
+## Bob is the builder of the jars and compiles messages. Bob
+## also serializes the project for quick loading.
+##
 def_slotted_exemplar(:bob, {})
 $
 
@@ -35,8 +38,31 @@ _method bob.build()
 _endmethod
 $
 
+_pragma(classify_level=restricted, topic={azure})
+_method bob.error_proc
+	## 
+	_return _proc(p_condition)
+			p_condition.report_contents_on(!output!)
+			!traceback!(!output!)
+		_endproc 
+_endmethod
+$
+
+_pragma(classify_level=restricted, topic={azure})
+_method bob.build_safe()
+	##
+	_try
+		_handling error _with _self.error_proc
+		_self.build()
+	_when error 
+		
+	_endtry 
+_endmethod
+$
+
+
 _block 
-	bob.build()
+	bob.build_safe()
 	quit()
 _endblock
 $
@@ -154,8 +180,8 @@ $
 #
 #
 #_block
-#	_local a_product_dir << "C:\Users\frnkv\Documents\GitHub\python-sample-vscode-flask-tutorial\blaak"
-#	_local a_session_name << "blaak_open".as_symbol()
+#	_local a_product_dir << "C:\Users\frnkv\Documents\GitHub\python-sample-vscode-flask-tutorial\customer_app"
+#	_local a_session_name << "customer_app_open".as_symbol()
 #
 #	_local loaded? << magik_session.sys!perform(:|load_config_product()|, a_product_dir)
 #	_local session << magik_session.register[a_session_name.as_symbol()]

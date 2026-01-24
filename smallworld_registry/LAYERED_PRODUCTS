@@ -19,6 +19,6 @@ fme:
 soms:
 	path	=	%SMALLWORLD_GIS%\..\soms\
 	version	=	5.3.0.100
-blaak:
-	path	=	%CUSTOMER_APP_DIR%\blaak\
+customer_app:
+	path	=	%CUSTOMER_APP_DIR%\customer_app\
 	version	=	5.3.0.100

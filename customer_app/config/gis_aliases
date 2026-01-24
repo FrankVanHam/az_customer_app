@@ -1,0 +1,23 @@
+#
+# Smallworld Core Windows Platforms Standard Core Product Aliases
+#
+# The Smallworld Product's standard aliases file should not be edited
+# by hand.  A user can have personal aliases by placing them in a file
+# named `gis_aliases' in his/her home directory, but the alias names
+# must be chosen not to clash with those in the standard aliases file.
+#
+
+customer_app:
+	title              = Start Smallworld customer_app Closed
+	session            = customer_app:customer_app_closed
+	product            = customer_app
+	args               = -cli
+
+customer_app_open:
+	title              = Start Smallworld customer_app Application
+	session            = customer_app:customer_app_open
+	SW_CONSTRUCTION_PACK_DIR = C:/Temp
+	SW_ACE_DB_DIR      = %SMALLWORLD_GIS%/../cambridge_db/ds/ds_admin
+	splash_screen      = %SMALLWORLD_GIS%\sw_core\resources\base\bitmaps\smallworld_gis_splash.png
+	product            = customer_app
+	args               = -cli

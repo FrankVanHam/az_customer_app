@@ -1,5 +1,5 @@
 trigger:
-- main
+- no_main
 
 pool:
   vmImage: ubuntu-latest
@@ -14,7 +14,7 @@ variables:
   - name: SW_MSF_STARTUP_MAGIK
     value: $(Build.SourcesDirectory)/scripts/compile_and_build.magik
   - name: AZ_SW_PRODUCT_TO_BUILD
-    value: blaak
+    value: customer_app
 
 steps:
   - task: JavaToolInstaller@1
