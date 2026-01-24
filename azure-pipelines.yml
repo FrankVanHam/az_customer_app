@@ -17,6 +17,7 @@ variables:
     value: customer_app
 
 steps:
+#  - checkout: 
   - task: JavaToolInstaller@1
     inputs:
       versionSpec: '17' # string. Required. JDK version. Default: 8.
@@ -39,7 +40,7 @@ steps:
 
   - script: |
       sed -i 's:/:\\:g' $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
-    displayName: 'replace the backslash with a forward slash so not to confuse ubuntu'
+    displayName: 'replace the backslash with a forward slash to avoid confusion in ubuntu'
 
   - script: |
       echo $(Build.SourcesDirectory)
@@ -56,5 +57,47 @@ steps:
       $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base
     displayName: 'start compile and build'
   
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$CUSTOMER_APP_BASE_DIR/$AZ_SW_PRODUCT_TO_BUILD'
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$AZ_SW_PRODUCT_TO_BUILD.zip'
+  
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: 'SMALLWORLD_REGISTRY'
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/smallworld_registry.zip'
 
+  - script: |
+      echo $(Build.SourcesDirectory)
+      ls $(Build.SourcesDirectory)
+      echo 'list environment'
+      env
+      echo 'cat layered products'
+      cat $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
+      echo 'list customer app'
+      ls $CUSTOMER_APP_BASE_DIR/customer_app
+    displayName: 'List all content 2'
 
+    # upload customer app
+  - task: UniversalPackages@0
+    displayName: Upload customer app
+    inputs:
+      command: publish
+      vstsFeedPublish: 'SW/froggie'                        ## The Artifacts feed hosting the package to be downloaded
+      vstsFeedPackagePublish: '$AZ_SW_PRODUCT_TO_BUILD.zip'                             ## Name of the package to be downloaded
+      versionOption: custom
+      vstsPackageVersion: '5.3.0'                       ## Version of the package to be downloaded
+      publishDirectory: '$(Build.ArtifactStagingDirectory)/$AZ_SW_PRODUCT_TO_BUILD.zip'
+
+      # upload smallworld registry 
+  - task: UniversalPackages@0
+    displayName: Upload layered products
+    inputs:
+      command: publish
+      vstsFeedPublish: 'SW/froggie'                        ## The Artifacts feed hosting the package to be downloaded
+      vstsFeedPackagePublish: 'smallworld_registry.zip'                             ## Name of the package to be downloaded
+      versionOption: custom
+      vstsPackageVersion: '5.3.0'                       ## Version of the package to be downloaded
+      publishDirectory: '$(Build.ArtifactStagingDirectory)/smallworld_registry.zip'
