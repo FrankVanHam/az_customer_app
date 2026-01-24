@@ -7,7 +7,7 @@ pool:
 variables:
   - name: DOWNLOAD_DIR
     value: $(Build.SourcesDirectory)/download
-  - name: CUSTOMER_APP_DIR
+  - name: CUSTOMER_APP_BASE_DIR
     value: $(DOWNLOAD_DIR)
   - name: SMALLWORLD_REGISTRY
     value: $(Build.SourcesDirectory)/smallworld_registry
