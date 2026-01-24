@@ -10,9 +10,9 @@ variables:
   - name: CUSTOMER_APP_DIR
     value: $(DOWNLOAD_DIR)
   - name: SMALLWORLD_REGISTRY
-    value: $(DOWNLOAD_DIR)/smallworld_registry
+    value: $(Build.SourcesDirectory)/smallworld_registry
   - name: SW_MSF_STARTUP_MAGIK
-    value: $(DOWNLOAD_DIR)/scripts/compile_and_build.magik
+    value: $(Build.SourcesDirectory)/scripts/compile_and_build.magik
   - name: AZ_SW_PRODUCT_TO_BUILD
     value: blaak
 
