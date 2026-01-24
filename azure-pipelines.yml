@@ -35,6 +35,13 @@ steps:
 
   - script: |
       sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
+    displayName: 'Install the core products'
+
+  - script: |
+      sed -i 's:/:\\:g' $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
+    displayName: 'replace the backslash with a forward slash so not to confuse ubuntu'
+
+  - script: |
       echo $(Build.SourcesDirectory)
       ls $(Build.SourcesDirectory)
       echo 'list environment'
@@ -43,7 +50,6 @@ steps:
       cat $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
       echo 'list customer app'
       ls $CUSTOMER_APP_BASE_DIR/customer_app
-
     displayName: 'List all content'
 
   - script: |
