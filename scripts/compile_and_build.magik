@@ -62,6 +62,7 @@ $
 
 
 _block 
+	method_finder.auto_start? << _false
 	bob.build_safe()
 	quit()
 _endblock
