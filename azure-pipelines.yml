@@ -39,7 +39,7 @@ steps:
       ls $(Build.SourcesDirectory)
       echo 'list environment'
       env
-      echo 'cat layerd products'
+      echo 'cat layered products'
       cat $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
       echo 'list customer app'
       ls $CUSTOMER_APP_BASE_DIR/customer_app

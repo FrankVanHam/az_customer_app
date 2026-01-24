@@ -63,7 +63,14 @@ $
 
 _block 
 	method_finder.auto_start? << _false
-	bob.build_safe()
+	write("get_path_from_environment")
+	show(smallworld_product.get_path_from_environment(:customer_app))
+	write("product_is_defined_in_layered_product_data?")
+	show(smallworld_product.product_is_defined_in_layered_product_data?(:customer_app,_unset))
+	write(":layered_product_data")
+	print(sw:smallworld_product.sys!perform(:layered_product_data).last)
+	
+	#bob.build_safe()
 	quit()
 _endblock
 $
