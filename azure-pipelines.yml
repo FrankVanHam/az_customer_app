@@ -42,7 +42,7 @@ steps:
       echo 'cat layerd products'
       cat $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
       echo 'list customer app'
-      ls %CUSTOMER_APP_BASE_DIR%/customer_app
+      ls $CUSTOMER_APP_BASE_DIR/customer_app
 
     displayName: 'List all content'
 
