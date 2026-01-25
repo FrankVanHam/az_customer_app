@@ -39,7 +39,7 @@ steps:
     displayName: 'Install the core products'
 
   - script: |
-      sed -i 's:/:\\:g' $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
+      sed -i 's:\\:/:g' $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
     displayName: 'replace the backslash with a forward slash to avoid confusion in ubuntu'
 
   - script: |
