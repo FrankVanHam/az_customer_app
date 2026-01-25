@@ -1,0 +1,13 @@
+jobs:
+- deployment: Deploy VM with Customer App
+  displayName: Customer App on VMFrank
+  pool:
+    vmImage: 'Ubuntu-latest'
+  # creates an environment if it doesn't exist
+  environment: 
+    name: 'Customer App Dev.VMFrank'
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - script: echo Hello world
