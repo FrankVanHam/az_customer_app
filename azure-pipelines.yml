@@ -1,9 +1,11 @@
+# trigger the pipeline on a push on the main branch
 trigger:
 - no_main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
 
+# set variables to point to versions and directories
 variables:
   - name: CORE_DIR
     value: $(Build.SourcesDirectory)/../download_core
@@ -118,7 +120,7 @@ steps:
 
       # upload smallworld registry 
   - task: UniversalPackages@0
-    displayName: Upload layered products
+    displayName: Upload registry
     inputs:
       command: publish
       vstsFeedPublish: 'SW/froggie'
@@ -128,10 +130,10 @@ steps:
 
       # upload smallworld registry 
   - task: UniversalPackages@0
-    displayName: Upload layered products
+    displayName: Upload run folder
     inputs:
       command: publish
       vstsFeedPublish: 'SW/froggie'
-      vstsFeedPackagePublish: $(RUN_DIR)
+      vstsFeedPackagePublish: $(RUN_ARTIFACT)
       packagePublishDescription: Run directory
       publishDirectory: '$(Build.ArtifactStagingDirectory)/run.zip'
