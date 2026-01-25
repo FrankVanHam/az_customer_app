@@ -1,3 +1,4 @@
+# set variables. Get the volatile one from the library group. The rest is set to point to directories for easy reading
 variables:
   - group: customer-app-vars
   - name: AZ_SW_PRODUCT_TO_BUILD
@@ -6,13 +7,13 @@ variables:
     value: $(AZ_SW_PRODUCT_TO_BUILD)-$(CUSTOMER_APP_VERSION).zip
   - name: REGISTRY_ARTIFACT
     value: smallworld_registry-$(CUSTOMER_APP_VERSION).zip
-
   - name: RUN_ARTIFACT
     value: run-$(CUSTOMER_APP_VERSION).zip
 
+# Deployment job
 jobs:
 - deployment: Deploy_VM_with_Customer_App
-  displayName: Customer App on VMFrank
+  displayName: 'Deploy Customer App on VMFrank'
   pool:
     vmImage: 'Ubuntu-latest'
   environment: 
@@ -21,12 +22,9 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - script: |
-            echo | whoami
-            dir
         # upload customer app
         - task: UniversalPackages@0
-          displayName: Download customer app artifact
+          displayName: 'Download customer app artifact'
           inputs:
             command: download
             vstsFeed: 'SW/froggie'
@@ -34,7 +32,7 @@ jobs:
             vstsPackageVersion: '*'
             downloadDirectory: '$(System.DefaultWorkingDirectory)'
         - task: UniversalPackages@0
-          displayName: Download smallworld_registry
+          displayName: 'Download smallworld_registry'
           inputs:
             command: download
             vstsFeed: 'SW/froggie'
@@ -42,7 +40,7 @@ jobs:
             vstsPackageVersion: '*'
             downloadDirectory: '$(System.DefaultWorkingDirectory)'
         - task: UniversalPackages@0
-          displayName: Download run folder
+          displayName: 'Download run folder'
           inputs:
             command: download
             vstsFeed: 'SW/froggie'
@@ -51,7 +49,7 @@ jobs:
             downloadDirectory: '$(System.DefaultWorkingDirectory)'
 
         - task: ExtractFiles@1
-          displayName: Extract custom app artifact
+          displayName: 'Extract custom app artifact to the designated directory on the target server'
           inputs:
             archiveFilePatterns: '*.zip'
             destinationFolder: $(DEPLOY_DIR)

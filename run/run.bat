@@ -1,3 +1,6 @@
+ECHO OFF
+REM This batch is used to start the application on the target server.
+
 SET PATH="C:\jdk-17\bin";%PATH%
 SET JAVA_HOME=C:\jdk-17
 
