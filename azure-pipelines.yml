@@ -58,22 +58,22 @@ steps:
   #   displayName: 'start compile and build'
   
   - script: |
-      echo $CUSTOMER_APP_BASE_DIR/$AZ_SW_PRODUCT_TO_BUILD
+      echo $(Build.SourcesDirectory)/$CUSTOMER_APP_BASE_DIR/$AZ_SW_PRODUCT_TO_BUILD
       echo $(Build.ArtifactStagingDirectory)/$AZ_SW_PRODUCT_TO_BUILD.zip
 
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: $CUSTOMER_APP_BASE_DIR/$AZ_SW_PRODUCT_TO_BUILD
+      rootFolderOrFile: $(Build.SourcesDirectory)/$(CUSTOMER_APP_BASE_DIR)/$(AZ_SW_PRODUCT_TO_BUILD)
       archiveType: 'zip'
-      archiveFile: $(Build.ArtifactStagingDirectory)/$AZ_SW_PRODUCT_TO_BUILD.zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(AZ_SW_PRODUCT_TO_BUILD).zip
 
   - script: |
-      echo $SMALLWORLD_REGISTRY
-      echo $(Build.ArtifactStagingDirectory)/$AZ_SW_PRODUCT_TO_BUILD.zip
+      echo $(Build.SourcesDirectory)/$SMALLWORLD_REGISTRY
+      echo $(Build.ArtifactStagingDirectory)/smallworld_registry.zip
 
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: $SMALLWORLD_REGISTRY
+      rootFolderOrFile: $(Build.SourcesDirectory)/$(SMALLWORLD_REGISTRY)
       archiveType: 'zip'
       archiveFile: $(Build.ArtifactStagingDirectory)/smallworld_registry.zip
 
