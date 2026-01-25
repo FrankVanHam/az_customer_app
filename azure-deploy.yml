@@ -1,5 +1,5 @@
 jobs:
-- deployment: Deploy VM with Customer App
+- deployment: Deploy_VM_with_Customer_App
   displayName: Customer App on VMFrank
   pool:
     vmImage: 'Ubuntu-latest'
