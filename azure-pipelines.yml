@@ -24,19 +24,19 @@ steps:
       jdkArchitectureOption: 'x64' #| 'x86' | 'arm64'. Required. JDK architecture. 
       jdkSourceOption: 'PreInstalled' # 'AzureStorage' | 'LocalDirectory' | 'PreInstalled'
 
-  # download into 
-  - task: UniversalPackages@0
-    displayName: Download
-    inputs:
-      command: download
-      vstsFeed: 'SW/froggie'                        ## The Artifacts feed hosting the package to be downloaded
-      vstsFeedPackage: 'cst.jar'                             ## Name of the package to be downloaded
-      vstsPackageVersion: '5.3.0'                       ## Version of the package to be downloaded
-      downloadDirectory: '$(CORE_DIR)'     ## The download folder. Default value: $(System.DefaultWorkingDirectory).
+  # # download into 
+  # - task: UniversalPackages@0
+  #   displayName: Download
+  #   inputs:
+  #     command: download
+  #     vstsFeed: 'SW/froggie'                        ## The Artifacts feed hosting the package to be downloaded
+  #     vstsFeedPackage: 'cst.jar'                             ## Name of the package to be downloaded
+  #     vstsPackageVersion: '5.3.0'                       ## Version of the package to be downloaded
+  #     downloadDirectory: '$(CORE_DIR)'     ## The download folder. Default value: $(System.DefaultWorkingDirectory).
 
-  - script: |
-      sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
-    displayName: 'Install the core products'
+  # - script: |
+  #     sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
+  #   displayName: 'Install the core products'
 
   - script: |
       sed -i 's:\\:/:g' $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
@@ -53,19 +53,27 @@ steps:
       ls $CUSTOMER_APP_BASE_DIR/customer_app
     displayName: 'List all content'
 
-  - script: |
-      $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base
-    displayName: 'start compile and build'
+  # - script: |
+  #     $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base
+  #   displayName: 'start compile and build'
   
+  - script: |
+      echo '$CUSTOMER_APP_BASE_DIR/$AZ_SW_PRODUCT_TO_BUILD'
+      echo '$(Build.ArtifactStagingDirectory)/$AZ_SW_PRODUCT_TO_BUILD.zip'
+
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$CUSTOMER_APP_BASE_DIR/$AZ_SW_PRODUCT_TO_BUILD'
       archiveType: 'zip'
-      archiveFile: '$(Build.ArtifactStagingDirectory)/$AZ_SW_PRODUCT_TO_BUILD.zip'
-  
+      archiveFile: '$(Build.ArtifactStagingDirectory)/smallworld_registry.zip'
+
+  - script: |
+      echo '$SMALLWORLD_REGISTRY'
+      echo '$(Build.ArtifactStagingDirectory)/$AZ_SW_PRODUCT_TO_BUILD.zip'
+
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: 'SMALLWORLD_REGISTRY'
+      rootFolderOrFile: '$SMALLWORLD_REGISTRY'
       archiveType: 'zip'
       archiveFile: '$(Build.ArtifactStagingDirectory)/smallworld_registry.zip'
 
