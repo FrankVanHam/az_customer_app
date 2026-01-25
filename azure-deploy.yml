@@ -5,7 +5,7 @@ jobs:
     vmImage: 'Ubuntu-latest'
   # creates an environment if it doesn't exist
   environment: 
-    name: 'Customer App Dev.VMFrank'
+    name: 'Customer_App_Dev.VMFrank'
   strategy:
     runOnce:
       deploy:
