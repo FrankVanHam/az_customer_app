@@ -1,118 +1,13 @@
-trigger:
-- no_main
-
-pool:
-  vmImage: ubuntu-latest
-
-variables:
-  - name: CORE_DIR
-    value: $(Build.SourcesDirectory)/../download_core
-  - name: CUSTOMER_APP_BASE_DIR
-    value: $(Build.SourcesDirectory)
-  - name: SMALLWORLD_REGISTRY
-    value: $(Build.SourcesDirectory)/smallworld_registry
-  - name: SW_MSF_STARTUP_MAGIK
-    value: $(Build.SourcesDirectory)/scripts/compile_and_build.magik
-  - name: AZ_SW_PRODUCT_TO_BUILD
-    value: customer_app
-  - name: SW_VERSION
-    value: '5.3.0'
-  - name: CUSTOMER_APP_VERSION
-    value: '17'
-  - name: CUSTOMER_ARTIFACT
-    value: $(AZ_SW_PRODUCT_TO_BUILD)-$(CUSTOMER_APP_VERSION).zip
-  - name: REGISTRY_ARTIFACT
-    value: smallworld_registry-$(CUSTOMER_APP_VERSION).zip
-  
-
-steps:
-#  - checkout: 
-  - task: JavaToolInstaller@1
-    inputs:
-      versionSpec: '17' # string. Required. JDK version. Default: 8.
-      jdkArchitectureOption: 'x64' #| 'x86' | 'arm64'. Required. JDK architecture. 
-      jdkSourceOption: 'PreInstalled' # 'AzureStorage' | 'LocalDirectory' | 'PreInstalled'
-
-  # # download into 
-  # - task: UniversalPackages@0
-  #   displayName: Download
-  #   inputs:
-  #     command: download
-  #     vstsFeed: 'SW/froggie'                        ## The Artifacts feed hosting the package to be downloaded
-  #     vstsFeedPackage: 'cst.jar'                             ## Name of the package to be downloaded
-  #     vstsPackageVersion: $(SW_VERSION)                       ## Version of the package to be downloaded
-  #     downloadDirectory: '$(CORE_DIR)'     ## The download folder. Default value: $(System.DefaultWorkingDirectory).
-
-  # - script: |
-  #     sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
-  #   displayName: 'Install the core products'
-
-  - script: |
-      sed -i 's:\\:/:g' $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
-    displayName: 'replace the backslash with a forward slash to avoid confusion in ubuntu'
-
-  - script: |
-      echo $(Build.SourcesDirectory)
-      ls $(Build.SourcesDirectory)
-      echo 'list environment'
-      env
-      echo 'cat layered products'
-      cat $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
-      echo 'list customer app'
-      ls $CUSTOMER_APP_BASE_DIR/customer_app
-    displayName: 'List all content'
-
-  # - script: |
-  #     $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base
-  #   displayName: 'start compile and build'
-  
-  - script: |
-      echo $CUSTOMER_APP_BASE_DIR/$AZ_SW_PRODUCT_TO_BUILD
-      echo $(Build.ArtifactStagingDirectory)/$AZ_SW_PRODUCT_TO_BUILD.zip
-
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: $(CUSTOMER_APP_BASE_DIR)/$(AZ_SW_PRODUCT_TO_BUILD)
-      archiveType: 'zip'
-      archiveFile: $(Build.ArtifactStagingDirectory)/$(AZ_SW_PRODUCT_TO_BUILD).zip
-
-  - script: |
-      echo SMALLWORLD_REGISTRY
-      echo $(Build.ArtifactStagingDirectory)/smallworld_registry.zip
-
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: $(SMALLWORLD_REGISTRY)
-      archiveType: 'zip'
-      archiveFile: $(Build.ArtifactStagingDirectory)/smallworld_registry.zip
-
-  - script: |
-      echo $(Build.SourcesDirectory)
-      ls $(Build.SourcesDirectory)
-      echo 'list environment'
-      env
-      echo 'cat layered products'
-      cat $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
-      echo 'list customer app'
-      ls $CUSTOMER_APP_BASE_DIR/customer_app
-    displayName: 'List all content 2'
-
-    # upload customer app
-  - task: UniversalPackages@0
-    displayName: Upload customer app
-    inputs:
-      command: publish
-      vstsFeedPublish: 'SW/froggie'
-      vstsFeedPackagePublish: $(CUSTOMER_ARTIFACT)
-      packagePublishDescription: My customer app smallworld product zip
-      publishDirectory: '$(Build.ArtifactStagingDirectory)/$(AZ_SW_PRODUCT_TO_BUILD).zip'
-
-      # upload smallworld registry 
-  - task: UniversalPackages@0
-    displayName: Upload layered products
-    inputs:
-      command: publish
-      vstsFeedPublish: 'SW/froggie'
-      vstsFeedPackagePublish: $(REGISTRY_ARTIFACT)
-      packagePublishDescription: My registry
-      publishDirectory: '$(Build.ArtifactStagingDirectory)/smallworld_registry.zip'
+jobs:
+- deployment: Deploy VM with Customer App
+  displayName: Customer App on VMFrank
+  pool:
+    vmImage: 'Ubuntu-latest'
+  # creates an environment if it doesn't exist
+  environment: 
+    name: 'Customer App Dev.VMFrank'
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - script: echo Hello world
