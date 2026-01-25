@@ -1,3 +1,11 @@
+variables:
+  - name: CUSTOMER_APP_VERSION
+    value: '17'
+  - name: CUSTOMER_ARTIFACT
+    value: $(AZ_SW_PRODUCT_TO_BUILD)-$(CUSTOMER_APP_VERSION).zip
+  - name: REGISTRY_ARTIFACT
+    value: smallworld_registry-$(CUSTOMER_APP_VERSION).zip
+
 jobs:
 - deployment: Deploy_VM_with_Customer_App
   displayName: Customer App on VMFrank
@@ -13,3 +21,21 @@ jobs:
         - script: |
             echo | whoami
             dir
+            # upload customer app
+        - task: UniversalPackages@0
+          displayName: Download customer app artifact
+          inputs:
+            command: download
+            vstsFeed: 'SW/froggie'
+            vstsFeedPackage: $(CUSTOMER_ARTIFACT)
+            vstsPackageVersion: '*'
+            downloadDirectory: '$(System.DefaultWorkingDirectory)'
+        - task: UniversalPackages@0
+          displayName: Download smallworld_registry
+          inputs:
+            command: download
+            vstsFeed: 'SW/froggie'
+            vstsFeedPackage: $(REGISTRY_ARTIFACT)
+            vstsPackageVersion: '*'
+            downloadDirectory: '$(System.DefaultWorkingDirectory)'
+            

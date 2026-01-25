@@ -38,10 +38,10 @@ steps:
     displayName: Download
     inputs:
       command: download
-      vstsFeed: 'SW/froggie'                        ## The Artifacts feed hosting the package to be downloaded
-      vstsFeedPackage: 'cst.jar'                             ## Name of the package to be downloaded
-      vstsPackageVersion: $(SW_VERSION)                       ## Version of the package to be downloaded
-      downloadDirectory: '$(CORE_DIR)'     ## The download folder. Default value: $(System.DefaultWorkingDirectory).
+      vstsFeed: 'SW/froggie'
+      vstsFeedPackage: 'cst.jar'
+      vstsPackageVersion: $(SW_VERSION)
+      downloadDirectory: '$(CORE_DIR)'
 
   - script: |
       sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
