@@ -17,6 +17,13 @@ variables:
     value: customer_app
   - name: SW_VERSION
     value: '5.3.0'
+  - name: CUSTOMER_APP_VERSION
+    value: '17'
+  - name: CUSTOMER_ARTIFACT
+    value: $(AZ_SW_PRODUCT_TO_BUILD)-$(CUSTOMER_APP_VERSION).zip
+  - name: REGISTRY_ARTIFACT
+    value: smallworld_registry-$(CUSTOMER_APP_VERSION).zip
+  
 
 steps:
 #  - checkout: 
@@ -96,10 +103,8 @@ steps:
     inputs:
       command: publish
       vstsFeedPublish: 'SW/froggie'
-      vstsFeedPackagePublish: $(AZ_SW_PRODUCT_TO_BUILD).zip
+      vstsFeedPackagePublish: $(CUSTOMER_ARTIFACT)
       packagePublishDescription: My customer app smallworld product zip
-      versionOption: custom
-      versionPublish: $(SW_VERSION).$(Rev:r)
       publishDirectory: '$(Build.ArtifactStagingDirectory)/$(AZ_SW_PRODUCT_TO_BUILD).zip'
 
       # upload smallworld registry 
@@ -108,8 +113,6 @@ steps:
     inputs:
       command: publish
       vstsFeedPublish: 'SW/froggie'
-      vstsFeedPackagePublish: 'smallworld_registry.zip'
+      vstsFeedPackagePublish: $(REGISTRY_ARTIFACT)
       packagePublishDescription: My registry
-      versionOption: custom
-      versionPublish: $(SW_VERSION).$(Rev:r)
       publishDirectory: '$(Build.ArtifactStagingDirectory)/smallworld_registry.zip'
