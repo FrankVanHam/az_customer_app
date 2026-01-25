@@ -95,8 +95,9 @@ steps:
       command: publish
       vstsFeedPublish: 'SW/froggie'                        ## The Artifacts feed hosting the package to be downloaded
       vstsFeedPackagePublish: $(AZ_SW_PRODUCT_TO_BUILD).zip                             ## Name of the package to be downloaded
+      packagePublishDescription: My customer app smallworld product zip
       versionOption: custom
-      vstsPackageVersion: '5.3.0'                       ## Version of the package to be downloaded
+      versionPublish: '5.3.0'                       ## Version of the package to be downloaded
       publishDirectory: '$(Build.ArtifactStagingDirectory)/$(AZ_SW_PRODUCT_TO_BUILD).zip'
 
       # upload smallworld registry 
@@ -106,6 +107,7 @@ steps:
       command: publish
       vstsFeedPublish: 'SW/froggie'                        ## The Artifacts feed hosting the package to be downloaded
       vstsFeedPackagePublish: 'smallworld_registry.zip'                             ## Name of the package to be downloaded
+      packagePublishDescription: My registry
       versionOption: custom
-      vstsPackageVersion: '5.3.0'                       ## Version of the package to be downloaded
+      versionPublish: '5.3.0'                       ## Version of the package to be downloaded
       publishDirectory: '$(Build.ArtifactStagingDirectory)/smallworld_registry.zip'
