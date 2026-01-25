@@ -1,4 +1,4 @@
-customer_app_swaf_professional_application	1
+customer_professional_application	1
 
 description
 	Customer application based on Application Framework architecture
@@ -8,7 +8,7 @@ requires
 	swaf_professional_application
 	swaf_address_search_gui
 
-	customer_app_module
+	blaak_module
 end 
 
 optional

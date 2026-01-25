@@ -4,5 +4,5 @@ title
 	customer Application
 end
 requires
-	
+	customer_engine_app
 end

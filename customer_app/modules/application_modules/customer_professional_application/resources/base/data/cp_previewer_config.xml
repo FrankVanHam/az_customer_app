@@ -4,7 +4,7 @@
   <!-- overriden for configuration_file_name -->
   <plugin name="layout_sketch_plugin" class_name="sketch_plugin">
     <property name="sketching_container_role" value="layout_workspace"/>
-    <property name="configuration_file_name"  value="customer_app_swaf_professional_application.layout_sketch_config"/>
+    <property name="configuration_file_name"  value="customer_professional_application.layout_sketch_config"/>
     <property name="show_delete_all_action?"  value="false"/>
     <property name="title_id"                 value="annotate"/>
   </plugin>

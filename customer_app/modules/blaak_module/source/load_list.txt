@@ -1,2 +1,1 @@
-customer_app_exemplar
-rwan
+blaak_plugin

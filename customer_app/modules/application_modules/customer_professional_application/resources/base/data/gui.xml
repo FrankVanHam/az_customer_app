@@ -4,6 +4,6 @@
   <menu path="menubar.tools">
     <super/>
     <separator/>
-    <action name="analysis_plugin.activate_framework"/>
+    <action name="blaak_plugin.activate"/>
   </menu>
 </gui>

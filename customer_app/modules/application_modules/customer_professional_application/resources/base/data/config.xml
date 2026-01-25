@@ -38,7 +38,7 @@
       <property name="expose_embedded_selection"           value="true"/>
       <property name="expose_floating_selection"           value="true"/>
       <property name="model_config_definition_file_name"   value="explorer_model_config.xml"/>
-      <property name="model_config_definition_module_name" value="customer_app_swaf_professional_application"/>
+      <property name="model_config_definition_module_name" value="customer_professional_application"/>
       <property name="floating_gui_definition_module_name" value="swaf_professional_application"/>
       <property name="floating_gui_definition_file_name"   value="floating_explorer_view_gui.xml"/>
       <property name="embedded_gui_definition_module_name" value="swaf_professional_application"/>
@@ -88,7 +88,7 @@
 
   <plugin name="editor_manager" class_name="editor_manager" >
     <properties>
-      <property name="configuration_file_name"           value="customer_app_swaf_professional_application.collection_config" />
+      <property name="configuration_file_name"           value="customer_professional_application.collection_config" />
       <property name="editor_gui_definition_module_name" value="swaf_professional_application"/>
       <property name="editor_gui_definition_file_name"   value="editor_gui.xml"/>
       <property name="show_collection_chooser?"          value="true"/>
@@ -97,21 +97,21 @@
   <plugin name="pub_context_provider" class_name="pub_context_provider"/>
 
   <plugin name="quality_management" class_name="qm_plugin">
-    <property name="routines_config_file"    value="customer_app_swaf_professional_application.qm_routine_config"/>
-    <property name="dialog_config_file"      value="customer_app_swaf_professional_application.qm_tool_config.xml"/>
+    <property name="routines_config_file"    value="customer_professional_application.qm_routine_config"/>
+    <property name="dialog_config_file"      value="customer_professional_application.qm_tool_config.xml"/>
     <property name="display_related_object?" value="false"/>
     <property name="dialog_as_sub_window?"   value="true"/>
     <property name="include_flag_details?"   value="true" />
   </plugin>
 
   <plugin name="construction_pack" class_name="construction_pack_plugin">
-    <property name="plot_tool_resource_module_name" value="customer_app_swaf_professional_application"/>
+    <property name="plot_tool_resource_module_name" value="customer_professional_application"/>
   </plugin>
   
   <plugin name="analysis" class_name="network_analysis_plugin">
-    <property name="tool_config_definition_file" value="customer_app_swaf_professional_application.network_analysis_tool_config.xml"/>
+    <property name="tool_config_definition_file" value="customer_professional_application.network_analysis_tool_config.xml"/>
     <property name="tool_gui_definition_file"    value="network_analysis_plugin.tool_gui.xml"/>
     <property name="render_priority" value="0"/>
   </plugin>
-  <plugin name="analysis_plugin" class_name="rwan:framework_plugin"/>
+  <plugin name="blaak_plugin" class_name="blaak_plugin"/>
 </config>

@@ -10,7 +10,7 @@
     <!-- Define the xml files for specific collections -->
     <collection dataset_name = "gis" 
                 collection_name = "pl_of_interest"
-                gui_file_name = "customer_app_swaf_professional_application.poi_editor_gui" >
+                gui_file_name = "customer_professional_application.poi_editor_gui" >
 <!-- The followeing two properties have been commented out put would allow
      the specification of a non standard editor class and an xml config file
      for the editor. -->

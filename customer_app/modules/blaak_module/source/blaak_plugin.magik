@@ -1,0 +1,22 @@
+_package user
+$
+
+def_slotted_exemplar(:blaak_plugin,
+	{},
+	:plugin)
+$
+
+_pragma(classify_level=restricted)
+_method blaak_plugin.init_actions()
+	_self.add_action(sw_action.new(:activate,
+				       :engine, _self,
+				       :action_message, :|activate()|))
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method blaak_plugin.activate()
+	##
+	blaak_engine.activate()
+_endmethod
+$

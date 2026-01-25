@@ -17,13 +17,16 @@ _block
 
 		:parent_session, "sw_core:swaf",
 		
+		:add_products, {:customer_app},
+		
 		:optional_products, { :sw_core_lp, :customer_app_lp },
 		
-		:load_modules, { :customer_app_swaf_professional_application } )
+		:load_modules, { :customer_professional_application } )
 	
 	magik_session.register_new(
 		"customer_app_open",
 
+		
 		:parent_session, "customer_app_closed",
 
 		:startup_proc, :startup,
