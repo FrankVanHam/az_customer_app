@@ -10,4 +10,6 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - script: echo | whoami
+        - script: |
+            echo | whoami
+            dir
