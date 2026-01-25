@@ -15,6 +15,8 @@ variables:
     value: $(Build.SourcesDirectory)/scripts/compile_and_build.magik
   - name: AZ_SW_PRODUCT_TO_BUILD
     value: customer_app
+  - name: SW_VERSION
+    value: '5.3.0'
 
 steps:
 #  - checkout: 
@@ -31,7 +33,7 @@ steps:
   #     command: download
   #     vstsFeed: 'SW/froggie'                        ## The Artifacts feed hosting the package to be downloaded
   #     vstsFeedPackage: 'cst.jar'                             ## Name of the package to be downloaded
-  #     vstsPackageVersion: '5.3.0'                       ## Version of the package to be downloaded
+  #     vstsPackageVersion: $(SW_VERSION)                       ## Version of the package to be downloaded
   #     downloadDirectory: '$(CORE_DIR)'     ## The download folder. Default value: $(System.DefaultWorkingDirectory).
 
   # - script: |
@@ -93,11 +95,11 @@ steps:
     displayName: Upload customer app
     inputs:
       command: publish
-      vstsFeedPublish: 'SW/froggie'                        ## The Artifacts feed hosting the package to be downloaded
-      vstsFeedPackagePublish: $(AZ_SW_PRODUCT_TO_BUILD).zip                             ## Name of the package to be downloaded
+      vstsFeedPublish: 'SW/froggie'
+      vstsFeedPackagePublish: $(AZ_SW_PRODUCT_TO_BUILD).zip
       packagePublishDescription: My customer app smallworld product zip
       versionOption: custom
-      versionPublish: '5.3.0'                       ## Version of the package to be downloaded
+      versionPublish: $(SW_VERSION).$(Rev:r)
       publishDirectory: '$(Build.ArtifactStagingDirectory)/$(AZ_SW_PRODUCT_TO_BUILD).zip'
 
       # upload smallworld registry 
@@ -105,9 +107,9 @@ steps:
     displayName: Upload layered products
     inputs:
       command: publish
-      vstsFeedPublish: 'SW/froggie'                        ## The Artifacts feed hosting the package to be downloaded
-      vstsFeedPackagePublish: 'smallworld_registry.zip'                             ## Name of the package to be downloaded
+      vstsFeedPublish: 'SW/froggie'
+      vstsFeedPackagePublish: 'smallworld_registry.zip'
       packagePublishDescription: My registry
       versionOption: custom
-      versionPublish: '5.3.0'                       ## Version of the package to be downloaded
+      versionPublish: $(SW_VERSION).$(Rev:r)
       publishDirectory: '$(Build.ArtifactStagingDirectory)/smallworld_registry.zip'
