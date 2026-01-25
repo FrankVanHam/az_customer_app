@@ -9,6 +9,8 @@ variables:
     value: smallworld_registry-$(CUSTOMER_APP_VERSION).zip
   - name: DEPLOY_DIR
     value: 'C:\SW-App'
+  - name: RUN_ARTIFACT
+    value: run-$(CUSTOMER_APP_VERSION).zip
 
 jobs:
 - deployment: Deploy_VM_with_Customer_App
@@ -41,7 +43,15 @@ jobs:
             vstsFeedPackage: $(REGISTRY_ARTIFACT)
             vstsPackageVersion: '*'
             downloadDirectory: '$(System.DefaultWorkingDirectory)'
-
+        - task: UniversalPackages@0
+          displayName: Download run folder
+          inputs:
+            command: download
+            vstsFeed: 'SW/froggie'
+            vstsFeedPackage: $(RUN_ARTIFACT)
+            vstsPackageVersion: '*'
+            downloadDirectory: '$(System.DefaultWorkingDirectory)'
+            
         - task: ExtractFiles@1
           displayName: Extract custom app artifact
           inputs:

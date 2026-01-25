@@ -32,13 +32,14 @@ variables:
 
 steps:
 #  - checkout: 
+  # activate java 17 sdk
   - task: JavaToolInstaller@1
     inputs:
       versionSpec: '17' # string. Required. JDK version. Default: 8.
       jdkArchitectureOption: 'x64' #| 'x86' | 'arm64'. Required. JDK architecture. 
       jdkSourceOption: 'PreInstalled' # 'AzureStorage' | 'LocalDirectory' | 'PreInstalled'
 
-  # download into 
+  # download the core application 
   - task: UniversalPackages@0
     displayName: Download
     inputs:
@@ -48,6 +49,7 @@ steps:
       vstsPackageVersion: $(SW_VERSION)
       downloadDirectory: '$(CORE_DIR)'
 
+  # install the smallworld core
   - script: |
       sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
     displayName: 'Install the core products'
