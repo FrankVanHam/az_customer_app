@@ -40,4 +40,10 @@ jobs:
             vstsFeedPackage: $(REGISTRY_ARTIFACT)
             vstsPackageVersion: '*'
             downloadDirectory: '$(System.DefaultWorkingDirectory)'
-            
+
+        - task: ExtractFiles@1
+          displayName: Extract custom app artifact
+          inputs:
+            archiveFilePatterns: '*.zip'
+            destinationFolder: 'c:\sw-apps'
+
