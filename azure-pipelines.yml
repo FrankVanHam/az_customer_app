@@ -65,7 +65,7 @@ steps:
     inputs:
       rootFolderOrFile: $CUSTOMER_APP_BASE_DIR/$AZ_SW_PRODUCT_TO_BUILD
       archiveType: 'zip'
-      archiveFile: '$(Build.ArtifactStagingDirectory)/smallworld_registry.zip'
+      archiveFile: $(Build.ArtifactStagingDirectory)/$AZ_SW_PRODUCT_TO_BUILD.zip
 
   - script: |
       echo $SMALLWORLD_REGISTRY
