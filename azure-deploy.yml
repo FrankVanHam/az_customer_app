@@ -1,4 +1,6 @@
 variables:
+  - name: AZ_SW_PRODUCT_TO_BUILD
+    value: customer_app
   - name: CUSTOMER_APP_VERSION
     value: '17'
   - name: CUSTOMER_ARTIFACT
