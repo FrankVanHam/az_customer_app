@@ -11,6 +11,8 @@ variables:
     value: $(Build.SourcesDirectory)
   - name: SMALLWORLD_REGISTRY
     value: $(Build.SourcesDirectory)/smallworld_registry
+  - name: RUN_DIR
+    value: $(Build.SourcesDirectory)/run
   - name: SW_MSF_STARTUP_MAGIK
     value: $(Build.SourcesDirectory)/scripts/compile_and_build.magik
   - name: AZ_SW_PRODUCT_TO_BUILD
@@ -23,7 +25,8 @@ variables:
     value: $(AZ_SW_PRODUCT_TO_BUILD)-$(CUSTOMER_APP_VERSION).zip
   - name: REGISTRY_ARTIFACT
     value: smallworld_registry-$(CUSTOMER_APP_VERSION).zip
-  
+  - name: RUN_ARTIFACT
+    value: run-$(CUSTOMER_APP_VERSION).zip
 
 steps:
 #  - checkout: 
@@ -86,6 +89,12 @@ steps:
       archiveType: 'zip'
       archiveFile: $(Build.ArtifactStagingDirectory)/smallworld_registry.zip
 
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: $(RUN_DIR)
+      archiveType: 'zip'
+      archiveFile: $(Build.ArtifactStagingDirectory)/run.zip
+
   - script: |
       echo $(Build.SourcesDirectory)
       ls $(Build.SourcesDirectory)
@@ -116,3 +125,13 @@ steps:
       vstsFeedPackagePublish: $(REGISTRY_ARTIFACT)
       packagePublishDescription: My registry
       publishDirectory: '$(Build.ArtifactStagingDirectory)/smallworld_registry.zip'
+
+      # upload smallworld registry 
+  - task: UniversalPackages@0
+    displayName: Upload layered products
+    inputs:
+      command: publish
+      vstsFeedPublish: 'SW/froggie'
+      vstsFeedPackagePublish: $(RUN_DIR)
+      packagePublishDescription: Run directory
+      publishDirectory: '$(Build.ArtifactStagingDirectory)/run.zip'

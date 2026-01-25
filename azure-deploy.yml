@@ -7,13 +7,14 @@ variables:
     value: $(AZ_SW_PRODUCT_TO_BUILD)-$(CUSTOMER_APP_VERSION).zip
   - name: REGISTRY_ARTIFACT
     value: smallworld_registry-$(CUSTOMER_APP_VERSION).zip
+  - name: DEPLOY_DIR
+    value: 'C:\SW-App'
 
 jobs:
 - deployment: Deploy_VM_with_Customer_App
   displayName: Customer App on VMFrank
   pool:
     vmImage: 'Ubuntu-latest'
-  # creates an environment if it doesn't exist
   environment: 
     name: 'Customer_App_Dev.VMFrank'
   strategy:
@@ -45,5 +46,5 @@ jobs:
           displayName: Extract custom app artifact
           inputs:
             archiveFilePatterns: '*.zip'
-            destinationFolder: 'c:\sw-apps'
+            destinationFolder: $(DEPLOY_DIR)
 
