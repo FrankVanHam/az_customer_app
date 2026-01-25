@@ -1,14 +1,12 @@
 variables:
+  - group: customer-app-vars
   - name: AZ_SW_PRODUCT_TO_BUILD
     value: customer_app
-  - name: CUSTOMER_APP_VERSION
-    value: '17'
   - name: CUSTOMER_ARTIFACT
     value: $(AZ_SW_PRODUCT_TO_BUILD)-$(CUSTOMER_APP_VERSION).zip
   - name: REGISTRY_ARTIFACT
     value: smallworld_registry-$(CUSTOMER_APP_VERSION).zip
-  - name: DEPLOY_DIR
-    value: 'C:\SW-App'
+
   - name: RUN_ARTIFACT
     value: run-$(CUSTOMER_APP_VERSION).zip
 
@@ -51,7 +49,7 @@ jobs:
             vstsFeedPackage: $(RUN_ARTIFACT)
             vstsPackageVersion: '*'
             downloadDirectory: '$(System.DefaultWorkingDirectory)'
-            
+
         - task: ExtractFiles@1
           displayName: Extract custom app artifact
           inputs:
