@@ -10,4 +10,4 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - script: echo Hello world
+        - script: echo | whoami
