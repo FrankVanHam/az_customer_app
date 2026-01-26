@@ -6,7 +6,9 @@ pool:
   vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
 
 steps:
-  - checkout: repo
+  - checkout: self
+    persistCredentials: true
+    path: $(Pipeline.Workspace)/repo
   - script: |
       git diff --name-only HEAD HEAD~1 > changed_files.txt
       ls
