@@ -14,7 +14,6 @@ steps:
   - script: |
       pwd
       ls
-      cd repo
       git diff --name-only HEAD HEAD~1 > .\..\changed_files.txt
       cd ..
       ls
