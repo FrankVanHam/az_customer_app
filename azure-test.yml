@@ -12,5 +12,6 @@ steps:
   - script: |
       cd repo
       git diff --name-only HEAD HEAD~1 > ..\changed_files.txt
+      cd ..
       ls
     displayName: 'Test Script'
