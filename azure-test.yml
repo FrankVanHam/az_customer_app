@@ -9,11 +9,14 @@ steps:
   - checkout: self
     persistCredentials: true
     fetchDepth: 2 
+    workspaceRepo: true
     path: repo
   - script: |
       pwd
       ls
-      git diff --name-only HEAD HEAD~1 > ..\changed_files.txt
+      cd repo
+      git diff --name-only HEAD HEAD~1 > .\..\changed_files.txt
       cd ..
+      ls
       cat changed_files.txt
     displayName: 'Test Script'
