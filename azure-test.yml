@@ -10,8 +10,6 @@ steps:
     persistCredentials: true
     path: repo
   - script: |
-      ls
-      cd repo
       git diff --name-only HEAD HEAD~1 > ..\changed_files.txt
       cd ..
       ls
