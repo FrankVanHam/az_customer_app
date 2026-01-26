@@ -10,6 +10,7 @@ steps:
     persistCredentials: true
     path: repo
   - script: |
-      git diff --name-only HEAD HEAD~1 > changed_files.txt
+      cd repo
+      git diff --name-only HEAD HEAD~1 > ..\changed_files.txt
       ls
     displayName: 'Test Script'
