@@ -8,7 +8,7 @@ pool:
 steps:
   - checkout: self
     persistCredentials: true
-    path: $(Pipeline.Workspace)/repo
+    path: repo
   - script: |
       git diff --name-only HEAD HEAD~1 > changed_files.txt
       ls
