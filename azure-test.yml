@@ -14,4 +14,6 @@ steps:
       pwd
       ls
       git diff --name-only HEAD HEAD~1 > ..\changed_files.txt
+      cd ..
+      cat changed_files.txt
     displayName: 'Test Script'
