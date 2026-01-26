@@ -6,9 +6,10 @@ pool:
   vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
 
 steps:
-  # - checkout: self
-  #   persistCredentials: true
-  #   path: repo
+  - checkout: self
+    persistCredentials: true
+    fetchDepth: 2 
+    path: repo
   - script: |
       pwd
       ls
