@@ -1,0 +1,13 @@
+# trigger the pipeline on a push on the main branch
+trigger:
+- no_main
+
+pool:
+  vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
+
+steps:
+  - checkout: repo
+  - script: |
+      git diff --name-only HEAD HEAD~1 > changed_files.txt
+      ls
+    displayName: 'Test Script'

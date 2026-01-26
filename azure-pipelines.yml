@@ -1,6 +1,6 @@
 # trigger the pipeline on a push on the main branch
 trigger:
-- main
+- no_main
 
 pool:
   vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
