@@ -5,12 +5,11 @@ trigger:
 pool:
   vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
 
-  steps:
-#   - checkout: self
-#     persistCredentials: true
-#     path: repo
+steps:
+  - checkout: self
+    persistCredentials: true
+    path: repo
   - script: |
-      git diff --name-only HEAD HEAD~1 > ..\changed_files.txt
-      cd ..
       ls
+      git diff --name-only HEAD HEAD~1 > ..\changed_files.txt
     displayName: 'Test Script'
