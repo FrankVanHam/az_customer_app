@@ -31,4 +31,4 @@ steps:
     displayName: 'Test Script'
   - ${{ each product_name in split(variables.var1, ',')}}:
     - script: |
-        echo $(product_name)
+        echo ${{product_name}}
