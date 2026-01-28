@@ -33,6 +33,6 @@ steps:
   - script: |
       echo "Detected products: $(var1)"
       echo "Detected products: $[split(var1,',')]"
-  - template: single-deploy.yml
-    parameters:
-      products:  $[split(var1,',')]
+  # - template: single-deploy.yml
+  #   parameters:
+  #     products:  $[split(var1,',')]
