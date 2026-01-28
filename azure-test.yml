@@ -36,11 +36,12 @@ jobs:
     - script: |
         echo "Detected products: $(var1)"
         echo "##vso[task.setvariable variable=var1;isOutput=true]{core: {config: "1"}, data: {config: "2"}}}"
+      name: print_products
 
 - job: Deploy
   dependsOn: Setup
   strategy: 
-    matrix: $[dependencies.Setup.outputs['detect_products.var1']]
+    matrix: $[dependencies.Setup.outputs['print_products.var1']]
   steps:
     - template: single-deploy.yml
       parameters:
