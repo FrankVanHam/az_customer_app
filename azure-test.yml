@@ -32,9 +32,9 @@ steps:
     displayName: 'Test Script'
   - script: |
       echo "Detected products: $(var1)"
-  - script: |
-      echo "Detected products: $(detect_products.var1)"
-    displayName: 'Show detected products'
+  - variables:
+  -   name: product_names
+      value: 'x,y'
   # - ${{ each product_name in split(variables.product_names, ',')}}:
   #   - script: |
   #       echo ${{product_name}}
