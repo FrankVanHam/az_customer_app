@@ -2,6 +2,6 @@ parameters:
   products: ''
 
 steps:
-  - ${{ each product_name in split($[parameters.products], ',')}}:
+  - ${{ each product_name in split(parameters.products, ',')}}:
     - script: |
         echo ${{product_name}}
