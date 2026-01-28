@@ -32,6 +32,7 @@ steps:
     displayName: 'Test Script'
   - script: |
       echo "Detected products: $(var1)"
+      echo "Detected products: $[split(var1,',')]"
   - template: single-deploy.yml
     parameters:
-      products:  $(var1)
+      products:  $[split(var1,',')]

@@ -1,7 +1,7 @@
 parameters:
-  products: ''
+  products: []
 
 steps:
-  - ${{ each product_name in split(parameters.products, ',')}}:
+  - ${{ each product_name in parameters.products}}:
     - script: |
         echo "${{product_name}} + ${{parameters.products}}"
