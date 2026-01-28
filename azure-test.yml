@@ -32,6 +32,6 @@ steps:
     displayName: 'Test Script'
   - script: |
       echo "Detected products: $(var1)"
-  - template: single-deploy.yml
+  - template: ./single-deploy.yml
     parameters:
       products:  $(var1)
