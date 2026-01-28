@@ -23,12 +23,12 @@ steps:
       scriptSource: 'filePath' # 'filePath' | 'inline'. Required. Script source. Default: filePath.
       scriptPath: scripts/detect_products.py # string. Required when scriptSource = filePath. Script path. 
       #script: # string. Required when scriptSource = inline. Script. 
-      arguments: ". 2 name var1"
+      arguments: ". 2 name variables.var1"
       # Advanced
       #pythonInterpreter: # string. Python interpreter. 
       #workingDirectory: # string. Working directory. 
       failOnStderr: true
     displayName: 'Test Script'
-  - ${{ each product_name in split($(var1), ',')}}:
+  - ${{ each product_name in split(var1, ',')}}:
     - script: |
         echo ${{product_name}}
