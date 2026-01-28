@@ -5,9 +5,6 @@ trigger:
 pool:
   vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
 
-variables:
-  - name: var1
-    value: 'bla,bla1'
 steps:
   - checkout: self
     persistCredentials: true
@@ -24,12 +21,15 @@ steps:
       scriptSource: 'filePath' # 'filePath' | 'inline'. Required. Script source. Default: filePath.
       scriptPath: scripts/detect_products.py # string. Required when scriptSource = filePath. Script path. 
       #script: # string. Required when scriptSource = inline. Script. 
-      arguments: ". 2 name variables.var1"
+      arguments: ". 2 name var1"
       # Advanced
       #pythonInterpreter: # string. Python interpreter. 
       #workingDirectory: # string. Working directory. 
       failOnStderr: true
     displayName: 'Test Script'
-  - ${{ each product_name in split(detect_products.var1, ',')}}:
+  - script: |
+      echo "Detected products: $(var1)"
+    displayName: 'Show detected products'
+  - ${{ each product_name in split(var1, ',')}}:
     - script: |
         echo ${{product_name}}
