@@ -15,10 +15,16 @@ steps:
       pwd
       ls
       git diff --name-only HEAD HEAD~1 > changed_files.txt
-      scripts/detect_products.py . 2 name var1
-      ls
-      cd ..
-      ls
+  - task: PythonScript@0
+    inputs:
+      scriptSource: 'filePath' # 'filePath' | 'inline'. Required. Script source. Default: filePath.
+      scriptPath: scripts/detect_products.py # string. Required when scriptSource = filePath. Script path. 
+      #script: # string. Required when scriptSource = inline. Script. 
+      arguments: ". 2 name var1"
+      # Advanced
+      #pythonInterpreter: # string. Python interpreter. 
+      #workingDirectory: # string. Working directory. 
+      failOnStderr: true
     displayName: 'Test Script'
   - script: |
       echo $(var1)
