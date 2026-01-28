@@ -5,6 +5,9 @@ trigger:
 pool:
   vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
 
+variables:
+  - name: product_names
+    value: ''
 steps:
   - checkout: self
     persistCredentials: true
@@ -32,6 +35,6 @@ steps:
   - script: |
       echo "Detected products: $(detect_products.var1)"
     displayName: 'Show detected products'
-  - ${{ each product_name in split(detect_products.var1, ',')}}:
-    - script: |
-        echo ${{product_name}}
+  # - ${{ each product_name in split(variables.product_names, ',')}}:
+  #   - script: |
+  #       echo ${{product_name}}
