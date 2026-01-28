@@ -29,6 +29,6 @@ steps:
       #workingDirectory: # string. Working directory. 
       failOnStderr: true
     displayName: 'Test Script'
-  - ${{ each product_name in split(var1, ',')}}:
+  - ${{ each product_name in split(variables.var1, ',')}}:
     - script: |
         echo ${{product_name}}
