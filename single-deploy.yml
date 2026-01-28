@@ -4,4 +4,4 @@ parameters:
 steps:
   - ${{ each product_name in split(parameters.products, ',')}}:
     - script: |
-        echo "${{product_name}} + $(parameters.products)"
+        echo "${{product_name}} + ${{parameters.products}}"
