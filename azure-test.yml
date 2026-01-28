@@ -19,6 +19,7 @@ steps:
       ls
       git diff --name-only HEAD HEAD~1 > changed_files.txt
   - task: PythonScript@0
+    name: detect_products
     inputs:
       scriptSource: 'filePath' # 'filePath' | 'inline'. Required. Script source. Default: filePath.
       scriptPath: scripts/detect_products.py # string. Required when scriptSource = filePath. Script path. 
@@ -29,6 +30,6 @@ steps:
       #workingDirectory: # string. Working directory. 
       failOnStderr: true
     displayName: 'Test Script'
-  - ${{ each product_name in split(variables.var1, ',')}}:
+  - ${{ each product_name in split(detect_products.var1, ',')}}:
     - script: |
         echo ${{product_name}}
