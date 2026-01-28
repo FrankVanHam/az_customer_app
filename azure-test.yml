@@ -29,7 +29,9 @@ steps:
     displayName: 'Test Script'
   - script: |
       echo "Detected products: $(var1)"
+  - script: |
+      echo "Detected products: $(detect_products.var1)"
     displayName: 'Show detected products'
-  - ${{ each product_name in split(var1, ',')}}:
+  - ${{ each product_name in split(detect_products.var1, ',')}}:
     - script: |
         echo ${{product_name}}
