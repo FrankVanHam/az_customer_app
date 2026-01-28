@@ -6,6 +6,9 @@ pool:
   vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
 
 steps:
+  - variables:
+    - name: var1
+      value: 'bla,bla1'
   - checkout: self
     persistCredentials: true
     fetchDepth: 2 
@@ -26,6 +29,6 @@ steps:
       #workingDirectory: # string. Working directory. 
       failOnStderr: true
     displayName: 'Test Script'
-  - ${{ each product_name in variables.var1 }}:
+  - ${{ each product_name in split(variables.var1, ',')}}:
     - script: |
         echo $(product_name)
