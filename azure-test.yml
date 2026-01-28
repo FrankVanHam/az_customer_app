@@ -15,7 +15,10 @@ steps:
       pwd
       ls
       git diff --name-only HEAD HEAD~1 > changed_files.txt
+      scripts/detect_products.py. 2 name var1
       ls
       cd ..
       ls
     displayName: 'Test Script'
+  - scripts: |
+      echo $(var1)
