@@ -15,37 +15,35 @@ jobs:
       path: repo
     - script: |
         pwd
-        echo "$(Build.SourcesDirectory)"
-        echo "$(Pipeline.Workspace)"
         echo "$(Pipeline.DefaultWorkingDirectory)"
+        git diff --name-only HEAD HEAD~1 > ../changed_files.txt
+        ls -al
+        ls -la ../
+    - task: PythonScript@0
+      name: detect_products
+      inputs:
+        scriptSource: 'filePath' # 'filePath' | 'inline'. Required. Script source. Default: filePath.
+        scriptPath: scripts/detect_products.py # string. Required when scriptSource = filePath. Script path. 
+        #script: # string. Required when scriptSource = inline. Script. 
+        arguments: ". 2 products_config"
+        # Advanced
+        #pythonInterpreter: # string. Python interpreter. 
+        #workingDirectory: # string. Working directory. 
+        failOnStderr: true
+      displayName: 'Test Script'
+    - script: |
+        echo "Detected products: $(detect_products.products_config)"
+        echo $(detect_products.products_config) > products_config_output.json
+        ls -la
+      name: print_products
 
-#         ls
-#         git diff --name-only HEAD HEAD~1 > changed_files.txt
-#     - task: PythonScript@0
-#       name: detect_products
-#       inputs:
-#         scriptSource: 'filePath' # 'filePath' | 'inline'. Required. Script source. Default: filePath.
-#         scriptPath: scripts/detect_products.py # string. Required when scriptSource = filePath. Script path. 
-#         #script: # string. Required when scriptSource = inline. Script. 
-#         arguments: ". 2 products_config"
-#         # Advanced
-#         #pythonInterpreter: # string. Python interpreter. 
-#         #workingDirectory: # string. Working directory. 
-#         failOnStderr: true
-#       displayName: 'Test Script'
-#     - script: |
-#         echo "Detected products: $(detect_products.products_config)"
-#         echo $(detect_products.products_config) > products_config_output.json
-#         ls -la
-#       name: print_products
-
-# - job: Deploy
-#   dependsOn: Setup
-#   strategy: 
-#     matrix: $[dependencies.Setup.outputs['detect_products.products_config']]
-#   steps:
-#     - checkout: none
-#     - template: single-deploy.yml
-#       parameters:
-#         product_name:  $(product_name)
-#         product_path:  $(product_path)
+- job: Deploy
+  dependsOn: Setup
+  strategy: 
+    matrix: $[dependencies.Setup.outputs['detect_products.products_config']]
+  steps:
+    - checkout: none
+    - template: single-deploy.yml
+      parameters:
+        product_name:  $(product_name)
+        product_path:  $(product_path)
