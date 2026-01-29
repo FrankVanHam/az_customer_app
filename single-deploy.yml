@@ -1,6 +1,7 @@
 parameters:
-  products: ""
+product_name: ""
+product_path: ""
 
 steps:
     - script: |
-        echo "$(parameter.products)  + ${{ parameters.products }}"
+        echo " ${{ parameters.product_name }} - ${{ parameters.product_path }}"

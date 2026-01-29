@@ -7,10 +7,6 @@ pool:
 
 jobs:
 - job: Setup
-
-  variables:
-    - name: product_names
-      value: ''
   steps:
     - checkout: self
       persistCredentials: true
@@ -27,22 +23,24 @@ jobs:
         scriptSource: 'filePath' # 'filePath' | 'inline'. Required. Script source. Default: filePath.
         scriptPath: scripts/detect_products.py # string. Required when scriptSource = filePath. Script path. 
         #script: # string. Required when scriptSource = inline. Script. 
-        arguments: ". 2 name var1"
+        arguments: ". 2 products_config"
         # Advanced
         #pythonInterpreter: # string. Python interpreter. 
         #workingDirectory: # string. Working directory. 
         failOnStderr: true
       displayName: 'Test Script'
     - script: |
-        echo "Detected products: $(var1)"
-        echo "##vso[task.setvariable variable=var1;isOutput=true]{core: {config: "1"}, data: {config: "2"}}}"
+        echo "Detected products: $(detect_products.products_config)"
+        echo $(detect_products.products_config) > products_config_output.json
+        ls -la
       name: print_products
 
 - job: Deploy
   dependsOn: Setup
   strategy: 
-    matrix: $[dependencies.Setup.outputs['print_products.var1']]
+    matrix: $[dependencies.Setup.outputs['detect_products.product_config']]
   steps:
     - template: single-deploy.yml
       parameters:
-        products:  $(config)
+        product_name:  $(name)
+        product_path:  $(path)
