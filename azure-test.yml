@@ -15,13 +15,10 @@ jobs:
       path: repo
     - script: |
         pwd
-    - checkout: self
-      persistCredentials: true
-      fetchDepth: 2 
-      workspaceRepo: true
-      path: repo2
-    - script: |
-        pwd
+        echo "$(Build.SourcesDirectory)"
+        echo "$(Pipeline.Workspace)"
+        echo "$(Pipeline.DefaultWorkingDirectory)"
+
 #         ls
 #         git diff --name-only HEAD HEAD~1 > changed_files.txt
 #     - task: PythonScript@0
