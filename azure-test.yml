@@ -40,6 +40,7 @@ jobs:
   strategy: 
     matrix: $[dependencies.Setup.outputs['detect_products.products_config']]
   steps:
+    - checkout: none
     - template: single-deploy.yml
       parameters:
         product_name:  $(name)
