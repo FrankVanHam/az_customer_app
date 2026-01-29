@@ -38,7 +38,7 @@ jobs:
 - job: Deploy
   dependsOn: Setup
   strategy: 
-    matrix: $[dependencies.Setup.outputs['detect_products.product_config']]
+    matrix: $[dependencies.Setup.outputs['detect_products.products_config']]
   steps:
     - template: single-deploy.yml
       parameters:
