@@ -15,8 +15,8 @@ class ProductDetector:
         return self.result
     
     def do_detect(self, path, max_depth):
-        print(f"Scanning path: {path} with depth: {max_depth}")
         if max_depth >= 0:
+            #print(f"Scanning path: {path} with depth: {max_depth}")
             found_it = self.detect_file(path)
             if not found_it:
                 contents = os.listdir(path)
