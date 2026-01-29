@@ -35,9 +35,9 @@ class ProductDetector:
                     product_name = parts[0]
                     product_type = parts[-1].lower()
                     if product_name and (product_type == "layered_product"):
-                        self.result[product_name] = {"path": path, 
-                                                     "name": product_name,
-                                                     "type": product_type}
+                        self.result[product_name] = {"product_path": path, 
+                                                     "product_name": product_name,
+                                                     "product_type": product_type}
 
 def main():
     parser = argparse.ArgumentParser("detect_products will scan through a given 'path' to find Smallworld layered products and set the results as a comma-separated string in the azure variable 'var_name'.")

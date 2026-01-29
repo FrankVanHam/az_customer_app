@@ -43,5 +43,5 @@ jobs:
     - checkout: none
     - template: single-deploy.yml
       parameters:
-        product_name:  $(name)
-        product_path:  $(path)
+        product_name:  $(product_name)
+        product_path:  $(product_path)
