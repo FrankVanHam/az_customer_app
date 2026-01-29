@@ -1,6 +1,6 @@
 parameters:
-product_name: ""
-product_path: ""
+  product_name: ""
+  product_path: ""
 
 steps:
     - script: |
