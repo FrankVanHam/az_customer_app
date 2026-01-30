@@ -54,8 +54,8 @@ jobs:
       name: detect_products
       inputs:
         scriptSource: 'filePath'
-        scriptPath: scripts/detect_products.py
-        arguments: ". 2 products_config"
+        scriptPath: 'scripts/detect_products.py'
+        arguments: '. 2 products_config'
         failOnStderr: true
 
     - script: |
@@ -68,37 +68,37 @@ jobs:
     - task: PublishPipelineArtifact@1
       displayName: 'Publish products_config.json'
       inputs:
-        targetPath: $(Pipeline.Workspace)/products_config.json
-        artifact: $(System.JobAttempt)-products_config
+        targetPath: '$(Pipeline.Workspace)/products_config.json'
+        artifact: '$(System.JobAttempt)-products_config'
         publishLocation: 'pipeline'
     
     - script: |
         $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json > compile.log
       displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to compile and build'
-      workingDirectory: $(Pipeline.Workspace)
+      workingDirectory: '$(Pipeline.Workspace)'
       env:
-        SW_MSF_STARTUP_MAGIK: $(Build.SourcesDirectory)/scripts/compile_and_build.magik
-        CUSTOMER_APP_BASE_DIR: $(Build.SourcesDirectory)
+        SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/compile_and_build.magik'
+        CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish compile log'
       inputs:
-        targetPath: $(Pipeline.Workspace)/compile.log
-        artifact: $(System.JobAttempt)-compile_log
+        targetPath: '$(Pipeline.Workspace)/compile.log'
+        artifact: '$(System.JobAttempt)-compile_log'
         publishLocation: 'pipeline'
 
     - task: ArchiveFiles@2
       displayName: 'Archive the compiled product'
       inputs:
-        rootFolderOrFile: $(Pipeline.Workspace)/repo
+        rootFolderOrFile: '$(Pipeline.Workspace)/repo'
         archiveType: 'zip'
-        archiveFile: $(Pipeline.Workspace)/repo.zip
+        archiveFile: '$(Pipeline.Workspace)/repo.zip'
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish compiled result (repo.zip) to be reused in the Archive job'
       inputs:
-        targetPath: $(Pipeline.Workspace)/repo.zip
-        artifact: $(System.JobAttempt)-repo_zip
+        targetPath: '$(Pipeline.Workspace)/repo.zip'
+        artifact: '$(System.JobAttempt)-repo_zip'
         publishLocation: 'pipeline'
 
 - job: Archive
@@ -111,9 +111,9 @@ jobs:
 
     - task: DownloadPipelineArtifact@2
       inputs:
-        artifact: $(System.JobAttempt)-repo_zip
-        targetPath: $(Pipeline.Workspace)
-      displayName: Download the repo.zip
+        artifact: '$(System.JobAttempt)-repo_zip'
+        targetPath: '$(Pipeline.Workspace)'
+      displayName: 'Download the repo.zip'
     
     - script: |
         pwd
@@ -123,8 +123,8 @@ jobs:
     - task: ExtractFiles@1
       displayName: 'Extract repo.zip'
       inputs:
-        archiveFilePatterns: 'repo.zip'
-        destinationFolder: $(Pipeline.Workspace)
+        archiveFilePatterns: '$(Pipeline.Workspace)/repo.zip'
+        destinationFolder: '$(Pipeline.Workspace)'
 
     - script: |
         pwd
@@ -134,15 +134,15 @@ jobs:
     - task: ArchiveFiles@2
       displayName: 'Archive $(product_path)'
       inputs:
-        rootFolderOrFile: $(product_path)
+        rootFolderOrFile: '$(product_path)'
         archiveType: 'zip'
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(product_name).zip
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(product_name).zip'
 
     - task: UniversalPackages@0
       displayName: 'Upload $(product_path)'
       inputs:
         command: publish
         vstsFeedPublish: 'SW/froggie'
-        vstsFeedPackagePublish: $(product_name)-$(CUSTOMER_APP_VERSION).zip
-        packagePublishDescription: Archive upload of product $(product_name) built for version $(CUSTOMER_APP_VERSION)
-        publishDirectory: $(Build.ArtifactStagingDirectory)/$(product_name).zip
+        vstsFeedPackagePublish: '$(product_name)-$(CUSTOMER_APP_VERSION).zip'
+        packagePublishDescription: 'Archive upload of product $(product_name) built for version $(CUSTOMER_APP_VERSION)'
+        publishDirectory: '$(Build.ArtifactStagingDirectory)/$(product_name).zip'
