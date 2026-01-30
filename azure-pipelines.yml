@@ -69,6 +69,7 @@ jobs:
       workingDirectory: $(Pipeline.Workspace)
 
     - task: PublishPipelineArtifact@1
+      condition: if $(detect_products.products_config) != '{}'
       displayName: 'Publish products_config.json'
       inputs:
         targetPath: '$(Pipeline.Workspace)/products_config.json'
@@ -77,6 +78,7 @@ jobs:
     
     - script: |
         $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json > compile.log
+      condition: if $(detect_products.products_config) != '{}'
       displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to compile and build'
       workingDirectory: '$(Pipeline.Workspace)'
       env:
@@ -84,6 +86,7 @@ jobs:
         CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
 
     - task: PublishPipelineArtifact@1
+      condition: if $(detect_products.products_config) != '{}'
       displayName: 'Publish compile log'
       inputs:
         targetPath: '$(Pipeline.Workspace)/compile.log'
@@ -91,6 +94,7 @@ jobs:
         publishLocation: 'pipeline'
 
     - task: ArchiveFiles@2
+      condition: if $(detect_products.products_config) != '{}'
       displayName: 'Archive the compiled product'
       inputs:
         rootFolderOrFile: '$(Pipeline.Workspace)/repo'
@@ -98,6 +102,7 @@ jobs:
         archiveFile: '$(Pipeline.Workspace)/repo.zip'
 
     - task: PublishPipelineArtifact@1
+      condition: if $(detect_products.products_config) != '{}'
       displayName: 'Publish compiled result (repo.zip) to be reused in the Archive job'
       inputs:
         targetPath: '$(Pipeline.Workspace)/repo.zip'
@@ -105,11 +110,16 @@ jobs:
         publishLocation: 'pipeline'
 
 - job: Archive
+  condition: if $(detect_products.products_config) != '{}'
   dependsOn: Compile
   strategy: 
     matrix: $[dependencies.Compile.outputs['detect_products.products_config']]
   # strategy provided variables $(product_name) and $(product_path)
   steps:
+    - script: |
+        echo $[dependencies.Compile.outputs['detect_products.products_config']]
+      displayName: 'Show matrix variables'
+
     - checkout: none
 
     - task: DownloadPipelineArtifact@2
@@ -143,6 +153,7 @@ jobs:
 
 
 - job: AdditionalArchive
+  condition: if $(detect_products.products_config) != '{}'
   dependsOn: Compile
   strategy: 
     matrix: $[variables['ADDITIONAL_ARTIFACT_DIRS']]   # variable comes from the library group
