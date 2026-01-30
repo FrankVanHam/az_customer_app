@@ -9,7 +9,7 @@ pool:
 variables:
   - group: customer-app-vars
   - name: CORE_DIR
-    value: $(System.DefaultWorkingDirectory)/core
+    value: $(Pipeline.Workspace)/core
   - name: CUSTOMER_APP_BASE_DIR
     value: $(Build.SourcesDirectory)
   - name: SMALLWORLD_REGISTRY
