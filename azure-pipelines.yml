@@ -112,22 +112,23 @@ jobs:
     - task: DownloadPipelineArtifact@2
       inputs:
         artifact: $(System.JobAttempt)-repo_zip
+        targetPath: $(Pipeline.Workspace)
       displayName: Download the repo.zip
     
     - script: |
         pwd
-        ls -la
+        ls -la $(Pipeline.Workspace)
       displayName: 'List files in $(Pipeline.Workspace)'
 
     - task: ExtractFiles@1
       displayName: 'Extract repo.zip'
       inputs:
         archiveFilePatterns: 'repo.zip'
-        destinationFolder: '$(Pipeline.Workspace)'
-        
+        destinationFolder: $(Pipeline.Workspace)
+
     - script: |
         pwd
-        ls -la
+        ls -la $(Pipeline.Workspace)
       displayName: 'List files in $(Pipeline.Workspace)'
 
     - task: ArchiveFiles@2
