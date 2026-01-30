@@ -12,8 +12,9 @@ variables:
     value: $(Pipeline.Workspace)/core
 
 # ### Directory structure
-# $(Pipeline.Workspace)/repo    contains the repository and become the working directory
-# $(Pipeline.Workspace)/core    contains the core installation of Smallworld
+# $(Pipeline.Workspace)/repo     contains the repository and become the working directory
+# $(Pipeline.Workspace)/core     contains the core installation of Smallworld
+# Build.ArtifactStagingDirectory contains the zipfiles to be uploaded as artifacts
 # 
 jobs:
 - job: Compile
@@ -114,10 +115,6 @@ jobs:
         artifact: '$(System.JobAttempt)-repo_zip'
         targetPath: '$(Pipeline.Workspace)'
       displayName: 'Download the repo.zip'
-    
-    - script: |
-        ls -la $(Pipeline.Workspace)
-      displayName: 'List files in $(Pipeline.Workspace)'
 
     - task: ExtractFiles@1
       displayName: 'Extract repo.zip'
@@ -125,10 +122,6 @@ jobs:
         archiveFilePatterns: '$(Pipeline.Workspace)/repo.zip'
         destinationFolder: '$(Pipeline.Workspace)'
         cleanDestinationFolder: false
-
-    - script: |
-        ls -la $(Pipeline.Workspace)
-      displayName: 'List files in $(Pipeline.Workspace)'
 
     - task: ArchiveFiles@2
       displayName: 'Archive $(product_path)'
@@ -145,3 +138,41 @@ jobs:
         vstsFeedPackagePublish: '$(product_name)-$(CUSTOMER_APP_VERSION).zip'
         packagePublishDescription: 'Archive upload of product $(product_name) built for version $(CUSTOMER_APP_VERSION)'
         publishDirectory: '$(Build.ArtifactStagingDirectory)/$(product_name).zip'
+
+
+- job: AdditionalArchive
+  dependsOn: Compile
+  strategy: 
+    matrix: ${{ADDITIONAL_ARTIFACT_DIRS}}
+  # strategy provided variables $(directory) and $(artifact)
+  steps:
+    - checkout: none
+
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifact: '$(System.JobAttempt)-repo_zip'
+        targetPath: '$(Pipeline.Workspace)'
+      displayName: 'Download the repo.zip'
+
+    - task: ExtractFiles@1
+      displayName: 'Extract repo.zip'
+      inputs:
+        archiveFilePatterns: '$(Pipeline.Workspace)/repo.zip'
+        destinationFolder: '$(Pipeline.Workspace)'
+        cleanDestinationFolder: false
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive $(artifact)'
+      inputs:
+        rootFolderOrFile: '$(Pipeline.Workspace)/$(directory)'
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(artifact).zip'
+
+    - task: UniversalPackages@0
+      displayName: 'Upload $(artifact)'
+      inputs:
+        command: publish
+        vstsFeedPublish: 'SW/froggie'
+        vstsFeedPackagePublish: '$(artifact)-$(CUSTOMER_APP_VERSION).zip'
+        packagePublishDescription: 'Archive upload of $(artifact) built for version $(CUSTOMER_APP_VERSION)'
+        publishDirectory: '$(Build.ArtifactStagingDirectory)/$(artifact).zip'
