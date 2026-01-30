@@ -69,7 +69,7 @@ steps:
 
   - script: |
       echo $(detect_products.products_config)
-      echo $(detect_products.products_config) > products_config.json
+      echo '$(detect_products.products_config)' > products_config.json
     name: print_products
     displayName: "create a JSON file with products"
     workingDirectory: $(Pipeline.Workspace)
