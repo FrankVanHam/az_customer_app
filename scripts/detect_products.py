@@ -58,6 +58,7 @@ class ProductDetector:
         
     def any_changes_in_path(self, product_path):
         for change in self.changes:
+            print(f"Comparing change {change} with product path {product_path}")
             if change.startswith(product_path):
                 return True
         return False
