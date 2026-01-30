@@ -73,6 +73,12 @@ steps:
     name: print_products
     displayName: "create a JSON file with products"
     workingDirectory: $(Pipeline.Workspace)
+
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish products_config.json'
+    inputs:
+      targetPath: $(Pipeline.Workspace)/products_config.json
+      publishLocation: 'pipeline'
   
   - script: |
       $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json > compile.log
