@@ -118,7 +118,7 @@ jobs:
       displayName: 'Extract repo.zip'
       inputs:
         archiveFilePatterns: '$(Pipeline.Workspace)/repo.zip'
-        destinationFolder: '$(Pipeline.Workspace)/repo'
+        destinationFolder: '$(Pipeline.Workspace)'
 
     - task: ArchiveFiles@2
       displayName: 'Archive $(product_path)'
