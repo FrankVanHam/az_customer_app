@@ -15,6 +15,7 @@ _endmethod
 $
 
 
+
 _pragma(classify_level=restricted)
 _method blaak_plugin.activate()
 	##
