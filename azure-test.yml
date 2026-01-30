@@ -27,10 +27,9 @@ jobs:
 
       # note this script runs in /repo
     - script: |
-        git diff --name-only HEAD HEAD~1 > changed_files.txt
+        git diff --name-only HEAD HEAD~1 > ..\changed_files.txt
         cat changed_files.txt
       displayName: 'Get changed files'
-      workingDirectory: $(Pipeline.Workspace)
 
     - task: PythonScript@0
       displayName: 'Detect products'
