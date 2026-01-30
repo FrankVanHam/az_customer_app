@@ -1,7 +1,0 @@
-parameters:
-  product_name: ""
-  product_path: ""
-
-steps:
-    - script: |
-        echo " ${{ parameters.product_name }} - ${{ parameters.product_path }}"

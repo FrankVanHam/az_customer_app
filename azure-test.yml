@@ -5,45 +5,46 @@ trigger:
 pool:
   vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
 
+# set variables. Get the volatile one from the library group. The rest is set to point to directories for easy reading
+variables:
+  - group: customer-app-vars
+  - name: CORE_DIR
+    value: $(Pipeline.Workspace)/core
+
+# ### Directory structure
+# $(Pipeline.Workspace)/repo     contains the repository and become the working directory
+# $(Pipeline.Workspace)/core     contains the core installation of Smallworld
+# Build.ArtifactStagingDirectory contains the zipfiles to be uploaded as artifacts
+# 
 jobs:
-- job: Setup
+- job: Download
   steps:
     - checkout: self
       persistCredentials: true
       fetchDepth: 2 
       workspaceRepo: false
       path: repo
+
+      # note this script runs in /repo
     - script: |
-        pwd
-        echo "$(System.DefaultWorkingDirectory)"
-        git diff --name-only HEAD HEAD~1 > ../changed_files.txt
-        ls -al
-        ls -la ../
+        git diff --name-only HEAD HEAD~1 > changed_files.txt
+        cat changed_files.txt
+      displayName: 'Get changed files'
+      workingDirectory: $(Pipeline.Workspace)
+
     - task: PythonScript@0
+      displayName: 'Detect products'
       name: detect_products
       inputs:
-        scriptSource: 'filePath' # 'filePath' | 'inline'. Required. Script source. Default: filePath.
-        scriptPath: scripts/detect_products.py # string. Required when scriptSource = filePath. Script path. 
-        #script: # string. Required when scriptSource = inline. Script. 
-        arguments: ". 2 products_config"
-        # Advanced
-        #pythonInterpreter: # string. Python interpreter. 
-        #workingDirectory: # string. Working directory. 
+        scriptSource: 'filePath'
+        scriptPath: 'scripts/detect_products.py'
+        arguments: '. 2 changed_files.txt products_config'
         failOnStderr: true
-      displayName: 'Test Script'
-    - script: |
-        echo "Detected products: $(detect_products.products_config)"
-        echo $(detect_products.products_config) > ../products_config_output.json
-        ls -la
-      name: print_products
-
-- job: Deploy
-  dependsOn: Setup
-  strategy: 
-    matrix: $[dependencies.Setup.outputs['detect_products.products_config']]
-  steps:
-    - checkout: none
-    - template: single-deploy.yml
-      parameters:
-        product_name:  $(product_name)
-        product_path:  $(product_path)
+- job: Compile
+  variables:
+    anything_changed: $[ ne(dependencies.Download.outputs['detect_products.products_config'], '{}') ]
+  condition: eq(variables.anything_changed, 'true')
+  dependsOn: Download
+  tasks:
+    - script: echo "Changes detected, proceeding to compile."
+      displayName: 'Confirm changes detected'
