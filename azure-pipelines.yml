@@ -164,7 +164,7 @@ jobs:
     - task: ArchiveFiles@2
       displayName: 'Archive $(artifact)'
       inputs:
-        rootFolderOrFile: '$(Pipeline.Workspace)/$(directory)'
+        rootFolderOrFile: '$(Pipeline.Workspace)/repo/$(directory)'
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/$(artifact).zip'
 
