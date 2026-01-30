@@ -37,7 +37,7 @@ jobs:
       inputs:
         scriptSource: 'filePath'
         scriptPath: 'scripts/detect_products.py'
-        arguments: '. 2 changed_files.txt products_config'
+        arguments: '. 2 $(Pipeline.Workspace)/changed_files.txt products_config'
         failOnStderr: true
 - job: Compile
   variables:
