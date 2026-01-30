@@ -21,7 +21,7 @@ class ProductDetector:
         if os.path.isfile(change_file):
             with open(change_file, "r") as f:
                 for line in f:
-                    changes.append(line.strip())
+                    changes.append(os.path.abspath(line.strip()))
         return changes
     
     def do_detect(self, path, max_depth):
