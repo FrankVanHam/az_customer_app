@@ -143,7 +143,7 @@ jobs:
 - job: AdditionalArchive
   dependsOn: Compile
   strategy: 
-    matrix: ${{ADDITIONAL_ARTIFACT_DIRS}}
+    matrix: $(ADDITIONAL_ARTIFACT_DIRS)
   # strategy provided variables $(directory) and $(artifact)
   steps:
     - checkout: none
