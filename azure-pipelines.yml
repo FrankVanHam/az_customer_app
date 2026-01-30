@@ -116,7 +116,6 @@ jobs:
       displayName: 'Download the repo.zip'
     
     - script: |
-        pwd
         ls -la $(Pipeline.Workspace)
       displayName: 'List files in $(Pipeline.Workspace)'
 
@@ -125,9 +124,9 @@ jobs:
       inputs:
         archiveFilePatterns: '$(Pipeline.Workspace)/repo.zip'
         destinationFolder: '$(Pipeline.Workspace)'
+        cleanDestinationFolder: false
 
     - script: |
-        pwd
         ls -la $(Pipeline.Workspace)
       displayName: 'List files in $(Pipeline.Workspace)'
 
