@@ -10,136 +10,132 @@ variables:
   - group: customer-app-vars
   - name: CORE_DIR
     value: $(Pipeline.Workspace)/core
-  - name: SMALLWORLD_REGISTRY
-    value: $(Build.SourcesDirectory)/smallworld_registry
-  - name: RUN_DIR
-    value: $(Build.SourcesDirectory)/run
-  - name: REGISTRY_ARTIFACT
-    value: smallworld_registry-$(CUSTOMER_APP_VERSION).zip
-  - name: RUN_ARTIFACT
-    value: run-$(CUSTOMER_APP_VERSION).zip
-#
+
+# ### Directory structure
 # $(Pipeline.Workspace)/repo    contains the repository and become the working directory
-# $(Pipeline.Workspace)/core
+# $(Pipeline.Workspace)/core    contains the core installation of Smallworld
+# 
+jobs:
+- job: Compile
+  steps:
+    - task: JavaToolInstaller@1
+      displayName: 'Activate java 17 sdk'
+      inputs:
+        versionSpec: '17' # string. Required. JDK version. Default: 8.
+        jdkArchitectureOption: 'x64' #| 'x86' | 'arm64'. Required. JDK architecture. 
+        jdkSourceOption: 'PreInstalled' # 'AzureStorage' | 'LocalDirectory' | 'PreInstalled'
 
-steps:
-  - task: JavaToolInstaller@1
-    displayName: 'Activate java 17 sdk'
-    inputs:
-      versionSpec: '17' # string. Required. JDK version. Default: 8.
-      jdkArchitectureOption: 'x64' #| 'x86' | 'arm64'. Required. JDK architecture. 
-      jdkSourceOption: 'PreInstalled' # 'AzureStorage' | 'LocalDirectory' | 'PreInstalled'
+    - checkout: self
+      persistCredentials: true
+      fetchDepth: 2 
+      workspaceRepo: false
+      path: repo
 
-  - checkout: self
-    persistCredentials: true
-    fetchDepth: 2 
-    workspaceRepo: false
-    path: repo
+      # note this script runs in /repo
+    - script: |
+        git diff --name-only HEAD HEAD~1 > ../changed_files.txt
+      displayName: 'Get changed files'
 
-    # note this script runs in /repo
-  - script: |
-      git diff --name-only HEAD HEAD~1 > ../changed_files.txt
-    displayName: 'Get changed files'
+    - task: UniversalPackages@0
+      displayName: 'Download the core application'
+      inputs:
+        command: download
+        vstsFeed: 'SW/froggie'
+        vstsFeedPackage: 'cst.jar'
+        vstsPackageVersion: $(SW_VERSION)
+        downloadDirectory: '$(CORE_DIR)'
 
-  - task: UniversalPackages@0
-    displayName: 'Download the core application'
-    inputs:
-      command: download
-      vstsFeed: 'SW/froggie'
-      vstsFeedPackage: 'cst.jar'
-      vstsPackageVersion: $(SW_VERSION)
-      downloadDirectory: '$(CORE_DIR)'
+    - script: |
+        sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
+      displayName: 'Install the core products'
 
-  - script: |
-      sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
-    displayName: 'Install the core products'
+    - script: |
+        sed -i 's:\\:/:g' $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
+      displayName: 'Replace the backslash with a forward slash to avoid confusion in ubuntu Magik'
 
-  - script: |
-      sed -i 's:\\:/:g' $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
-    displayName: 'Replace the backslash with a forward slash to avoid confusion in ubuntu Magik'
+    - task: PythonScript@0
+      displayName: 'Detect products'
+      name: detect_products
+      inputs:
+        scriptSource: 'filePath'
+        scriptPath: scripts/detect_products.py
+        arguments: ". 2 products_config"
+        failOnStderr: true
 
-  - task: PythonScript@0
-    displayName: 'Detect products'
-    name: detect_products
-    inputs:
-      scriptSource: 'filePath'
-      scriptPath: scripts/detect_products.py
-      arguments: ". 2 products_config"
-      failOnStderr: true
+    - script: |
+        echo $(detect_products.products_config)
+        echo '$(detect_products.products_config)' > products_config.json
+      name: print_products
+      displayName: "create a JSON file with products config"
+      workingDirectory: $(Pipeline.Workspace)
 
-  - script: |
-      echo $(detect_products.products_config)
-      echo '$(detect_products.products_config)' > products_config.json
-    name: print_products
-    displayName: "create a JSON file with products"
-    workingDirectory: $(Pipeline.Workspace)
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish products_config.json'
+      inputs:
+        targetPath: $(Pipeline.Workspace)/products_config.json
+        artifact: $(System.JobAttempt)-products_config
+        publishLocation: 'pipeline'
+    
+    - script: |
+        $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json > compile.log
+      displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to compile and build'
+      workingDirectory: $(Pipeline.Workspace)
+      env:
+        SW_MSF_STARTUP_MAGIK: $(Build.SourcesDirectory)/scripts/compile_and_build.magik
+        CUSTOMER_APP_BASE_DIR: $(Build.SourcesDirectory)
 
-  - task: PublishPipelineArtifact@1
-    displayName: 'Publish products_config.json'
-    inputs:
-      targetPath: $(Pipeline.Workspace)/products_config.json
-      artifact: $(System.JobAttempt)-products_config
-      publishLocation: 'pipeline'
-  
-  - script: |
-      $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json > compile.log
-    displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to compile and build'
-    workingDirectory: $(Pipeline.Workspace)
-    env:
-      SW_MSF_STARTUP_MAGIK: $(Build.SourcesDirectory)/scripts/compile_and_build.magik
-      CUSTOMER_APP_BASE_DIR: $(Build.SourcesDirectory)
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish compile log'
+      inputs:
+        targetPath: $(Pipeline.Workspace)/compile.log
+        artifact: $(System.JobAttempt)-compile_log
+        publishLocation: 'pipeline'
 
-  - task: PublishPipelineArtifact@1
-    displayName: 'Publish compile log'
-    inputs:
-      targetPath: $(Pipeline.Workspace)/compile.log
-      artifact: $(System.JobAttempt)-compile_log
-      publishLocation: 'pipeline'
+    - task: ArchiveFiles@2
+      displayName: 'Archive the compiled product'
+      inputs:
+        rootFolderOrFile: $(Pipeline.Workspace)/repo
+        archiveType: 'zip'
+        archiveFile: $(Pipeline.Workspace)/repo.zip
 
-  # - task: ArchiveFiles@2
-  #   displayName: 'Archive $AZ_SW_PRODUCT_TO_BUILD'
-  #   inputs:
-  #     rootFolderOrFile: $(CUSTOMER_APP_BASE_DIR)/$(AZ_SW_PRODUCT_TO_BUILD)
-  #     archiveType: 'zip'
-  #     archiveFile: $(Build.ArtifactStagingDirectory)/$(AZ_SW_PRODUCT_TO_BUILD).zip
-  
-  # - task: ArchiveFiles@2
-  #   displayName: 'Archive smallworld_registry'
-  #   inputs:
-  #     rootFolderOrFile: $(SMALLWORLD_REGISTRY)
-  #     archiveType: 'zip'
-  #     archiveFile: $(Build.ArtifactStagingDirectory)/smallworld_registry.zip
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish compiled result (repo.zip) to be reused in the Archive job'
+      inputs:
+        targetPath: $(Pipeline.Workspace)/repo.zip
+        artifact: $(System.JobAttempt)-repo_zip
+        publishLocation: 'pipeline'
 
-  # - task: ArchiveFiles@2
-  #   displayName: 'Archive run directory'
-  #   inputs:
-  #     rootFolderOrFile: $(RUN_DIR)
-  #     archiveType: 'zip'
-  #     archiveFile: $(Build.ArtifactStagingDirectory)/run.zip
+- job: Archive
+  dependsOn: Compile
+  strategy: 
+    matrix: $[dependencies.Compile.outputs['detect_products.products_config']]
+  # strategy provided variables $(product_name) and $(product_path)
+  steps:
+    - checkout: none
 
-  # - task: UniversalPackages@0
-  #   displayName: 'Upload customer app $AZ_SW_PRODUCT_TO_BUILD'
-  #   inputs:
-  #     command: publish
-  #     vstsFeedPublish: 'SW/froggie'
-  #     vstsFeedPackagePublish: $(CUSTOMER_ARTIFACT)
-  #     packagePublishDescription: My customer app smallworld product zip
-  #     publishDirectory: '$(Build.ArtifactStagingDirectory)/$(AZ_SW_PRODUCT_TO_BUILD).zip'
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifact: $(System.JobAttempt)-repo_zip
+      displayName: Download the repo.zip
 
-  # - task: UniversalPackages@0
-  #   displayName: 'Upload smallworld registry'
-  #   inputs:
-  #     command: publish
-  #     vstsFeedPublish: 'SW/froggie'
-  #     vstsFeedPackagePublish: $(REGISTRY_ARTIFACT)
-  #     packagePublishDescription: My registry
-  #     publishDirectory: '$(Build.ArtifactStagingDirectory)/smallworld_registry.zip'
- 
-  # - task: UniversalPackages@0
-  #   displayName: 'Upload run folder'
-  #   inputs:
-  #     command: publish
-  #     vstsFeedPublish: 'SW/froggie'
-  #     vstsFeedPackagePublish: $(RUN_ARTIFACT)
-  #     packagePublishDescription: Run directory
-  #     publishDirectory: '$(Build.ArtifactStagingDirectory)/run.zip'
+    - task: ExtractFiles@1
+      displayName: 'Extract repo.zip'
+      inputs:
+        archiveFilePatterns: '$(Pipeline.Workspace)/repo.zip'
+        destinationFolder: '$(Pipeline.Workspace)/repo'
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive $(product_path)'
+      inputs:
+        rootFolderOrFile: $(product_path)
+        archiveType: 'zip'
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(product_name).zip
+
+    - task: UniversalPackages@0
+      displayName: 'Upload $(product_path)'
+      inputs:
+        command: publish
+        vstsFeedPublish: 'SW/froggie'
+        vstsFeedPackagePublish: $(product_name)-$(CUSTOMER_APP_VERSION).zip
+        packagePublishDescription: Archive upload of product $(product_name) built for version $(CUSTOMER_APP_VERSION)
+        publishDirectory: $(Build.ArtifactStagingDirectory)/$(product_name).zip
