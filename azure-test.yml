@@ -29,6 +29,7 @@ jobs:
     - script: |
         git diff --name-only HEAD HEAD~1 > ..\changed_files.txt
         cat ..\changed_files.txt
+        cat $(Pipeline.Workspace)/changed_files.txt
       displayName: 'Get changed files'
 
     - task: PythonScript@0
