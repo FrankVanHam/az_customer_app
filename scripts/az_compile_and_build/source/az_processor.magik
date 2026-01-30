@@ -34,6 +34,8 @@ $
 
 _pragma(classify_level=restricted)
 _method az_processor.int!compile_and_build()
+	_self.correct_slashes_in_layer_products()
+	
 	_local file << _self.get_option("-products_config").default("")
 	file << system.canonicalise(file)
 	_if system.file_readable?(file).not
@@ -63,5 +65,20 @@ _method az_processor.get_option(p_key)
 	_else
 		_return system.args[index+1]
 	_endif 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method az_processor.correct_slashes_in_layer_products()
+	##
+	_for i_prop _over smallworld_product.layered_product_data().fast_elements()
+	_loop
+		_if system.os_name _is :windows
+		_then
+			i_prop[:path].substitute_character(%/, %\)
+		_else
+			i_prop[:path].substitute_character(%\, %/)
+		_endif 
+	_endloop 
 _endmethod
 $

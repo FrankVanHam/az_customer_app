@@ -49,10 +49,6 @@ jobs:
         sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
       displayName: 'Install the core products'
 
-    - script: |
-        sed -i 's:\\:/:g' $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
-      displayName: 'Replace the backslash with a forward slash to avoid confusion in ubuntu Magik'
-
     - task: PythonScript@0
       displayName: 'Detect products'
       name: detect_products
