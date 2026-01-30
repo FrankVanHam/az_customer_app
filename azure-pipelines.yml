@@ -34,8 +34,10 @@ jobs:
 
       # note this script runs in /repo
     - script: |
-        git diff --name-only HEAD HEAD~1 > ../changed_files.txt
+        git diff --name-only HEAD HEAD~1 > changed_files.txt
+        cat changed_files.txt
       displayName: 'Get changed files'
+      workingDirectory: $(Pipeline.Workspace)
 
     - task: UniversalPackages@0
       displayName: 'Download the core application'
@@ -49,6 +51,7 @@ jobs:
     - script: |
         sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
       displayName: 'Install the core products'
+      workingDirectory: $(Pipeline.Workspace)
 
     - task: PythonScript@0
       displayName: 'Detect products'
@@ -56,11 +59,10 @@ jobs:
       inputs:
         scriptSource: 'filePath'
         scriptPath: 'scripts/detect_products.py'
-        arguments: '. 2 products_config'
+        arguments: '. 2 changed_files.txt products_config'
         failOnStderr: true
 
     - script: |
-        echo $(detect_products.products_config)
         echo '$(detect_products.products_config)' > products_config.json
       name: print_products
       displayName: "create a JSON file with products config"
