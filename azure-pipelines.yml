@@ -78,6 +78,7 @@ steps:
     displayName: 'Publish products_config.json'
     inputs:
       targetPath: $(Pipeline.Workspace)/products_config.json
+      artifact: $(System.JobAttempt)-products_config
       publishLocation: 'pipeline'
   
   - script: |
@@ -92,6 +93,7 @@ steps:
     displayName: 'Publish compile log'
     inputs:
       targetPath: $(Pipeline.Workspace)/compile.log
+      artifact: $(System.JobAttempt)-compile_log
       publishLocation: 'pipeline'
 
   # - task: ArchiveFiles@2
