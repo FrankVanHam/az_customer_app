@@ -1,0 +1,62 @@
+_package user
+$
+
+_pragma(classify_level=restricted)
+##
+## JSON tokenizer for a simple JSON, just enough for the task
+##
+def_slotted_exemplar(:simple_json_tokenizer,
+	{
+		{:in, _unset}
+	})
+$
+
+_pragma(classify_level=restricted)
+_method simple_json_tokenizer.new(p_stream)
+	##
+	_return _clone.init(p_stream)
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method simple_json_tokenizer.init(p_stream)
+	.in << p_stream
+	_return _self
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method simple_json_tokenizer.get()
+	##
+	_local token << _self.int!get()
+	_return token
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method simple_json_tokenizer.int!get()
+	_loop 
+		_local char << .in.get()
+		_if char _is _unset _then _return _unset _endif 
+		_if char = %{ _then _return {:symbol, :open} _endif
+		_if char = %} _then _return {:symbol, :close} _endif
+		_if char = %: _then _return {:symbol, :colon} _endif
+		_if char = %, _then _return {:symbol, :comma} _endif
+		_if char = %" _then _return {:text, _self.get_text()} _endif
+	_endloop 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method simple_json_tokenizer.get_text()
+	##
+	_local text << ""
+	_loop
+		_local char << .in.get()
+		_if char _is _unset _then _return _unset _endif
+		_if char = %" _then _return text _endif
+		text +<< char
+	_endloop 
+_endmethod
+$
+

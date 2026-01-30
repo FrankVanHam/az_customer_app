@@ -1,0 +1,67 @@
+_package user
+$
+
+_pragma(classify_level=restricted)
+##
+## Object that kicks of the processing
+##
+def_slotted_exemplar(:az_processor,
+	{})
+$
+
+_pragma(classify_level=restricted)
+_method az_processor.compile_and_build()
+	##
+	_try
+		_handling error _with _self.error_proc
+		_self.int!compile_and_build()
+	_when error 
+		
+	_endtry
+	quit()
+_endmethod
+$
+
+_pragma(classify_level=restricted, topic={azure})
+_method az_processor.error_proc
+	## 
+	_return _proc(p_condition)
+			p_condition.report_contents_on(!output!)
+			!traceback!(!output!)
+		_endproc 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method az_processor.int!compile_and_build()
+	_local file << _self.get_option("-products_config").default("")
+	file << system.canonicalise(file)
+	_if system.file_readable?(file).not
+	_then
+		condition.raise(:error, :string, write_string("The file ", file, " is not readable"))
+	_endif
+	_local config << simple_json_reader.new().read(file)
+	_if config.empty?
+	_then
+		write("No products to compile and build")
+	_else
+		bob.new().build(config)
+	_endif 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method az_processor.get_option(p_key)
+	##
+	_local index << system.args.index_equal_of(p_key)
+	_if index _is _unset
+	_then
+		_return _unset
+	_elif index = system.args.size
+	_then
+		_return _unset
+	_else
+		_return system.args[index+1]
+	_endif 
+_endmethod
+$

@@ -1,0 +1,4 @@
+az_compile_and_build	1
+description
+	Tooling for Azure pipline to compile and build products
+end

@@ -15,7 +15,7 @@ jobs:
       path: repo
     - script: |
         pwd
-        echo "$(Pipeline.DefaultWorkingDirectory)"
+        echo "$(System.DefaultWorkingDirectory)"
         git diff --name-only HEAD HEAD~1 > ../changed_files.txt
         ls -al
         ls -la ../
@@ -33,7 +33,7 @@ jobs:
       displayName: 'Test Script'
     - script: |
         echo "Detected products: $(detect_products.products_config)"
-        echo $(detect_products.products_config) > products_config_output.json
+        echo $(detect_products.products_config) > ../products_config_output.json
         ls -la
       name: print_products
 

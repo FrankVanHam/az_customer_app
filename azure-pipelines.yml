@@ -9,32 +9,39 @@ pool:
 variables:
   - group: customer-app-vars
   - name: CORE_DIR
-    value: $(Build.SourcesDirectory)/../download_core
+    value: $(System.DefaultWorkingDirectory)/core
   - name: CUSTOMER_APP_BASE_DIR
     value: $(Build.SourcesDirectory)
   - name: SMALLWORLD_REGISTRY
     value: $(Build.SourcesDirectory)/smallworld_registry
   - name: RUN_DIR
     value: $(Build.SourcesDirectory)/run
-  - name: SW_MSF_STARTUP_MAGIK
-    value: $(Build.SourcesDirectory)/scripts/compile_and_build.magik
-  - name: AZ_SW_PRODUCT_TO_BUILD
-    value: customer_app
-  - name: CUSTOMER_ARTIFACT
-    value: $(AZ_SW_PRODUCT_TO_BUILD)-$(CUSTOMER_APP_VERSION).zip
   - name: REGISTRY_ARTIFACT
     value: smallworld_registry-$(CUSTOMER_APP_VERSION).zip
   - name: RUN_ARTIFACT
     value: run-$(CUSTOMER_APP_VERSION).zip
+#
+# $(System.DefaultWorkingDirectory)/repo    contains the repository and become the working directory
+# $(System.DefaultWorkingDirectory)/core
 
 steps:
-#  - checkout: 
   - task: JavaToolInstaller@1
     displayName: 'Activate java 17 sdk'
     inputs:
       versionSpec: '17' # string. Required. JDK version. Default: 8.
       jdkArchitectureOption: 'x64' #| 'x86' | 'arm64'. Required. JDK architecture. 
       jdkSourceOption: 'PreInstalled' # 'AzureStorage' | 'LocalDirectory' | 'PreInstalled'
+
+  - checkout: self
+    persistCredentials: true
+    fetchDepth: 2 
+    workspaceRepo: false
+    path: repo
+
+    # note this script runs in /repo
+  - script: |
+      git diff --name-only HEAD HEAD~1 > ../changed_files.txt
+    displayName: 'Get changed files'
 
   - task: UniversalPackages@0
     displayName: 'Download the core application'
@@ -46,89 +53,92 @@ steps:
       downloadDirectory: '$(CORE_DIR)'
 
   - script: |
-      sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
-    displayName: 'Install the core products'
+      echo System.DefaultWorkingDirectory : $(System.DefaultWorkingDirectory)
+      echo CORE_DIR: $(CORE_DIR)
+      pwd
+      ls -la
+      ls -la $(CORE_DIR)
+    displayName: 'List core directory contents'
 
-  - script: |
-      sed -i 's:\\:/:g' $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
-    displayName: 'Replace the backslash with a forward slash to avoid confusion in ubuntu Magik'
-    
-  - script: |
-      echo '############ $(Build.SourcesDirectory)'
-      ls $(Build.SourcesDirectory)
-      echo '############ list environment'
-      env
-      echo '############ cat layered products'
-      cat $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
-      echo '############ list customer app'
-      ls $CUSTOMER_APP_BASE_DIR/customer_app
-    displayName: 'List the situation on the container if AZ_DEBUG = TRUE'
-    condition: eq(variables.AZ_DEBUG, 'TRUE')
+
+  # - script: |
+  #     sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
+  #   displayName: 'Install the core products'
+
+  # - script: |
+  #     sed -i 's:\\:/:g' $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
+  #   displayName: 'Replace the backslash with a forward slash to avoid confusion in ubuntu Magik'
+
+  # - task: PythonScript@0
+  #   displayName: 'Detect products'
+  #   name: detect_products
+  #   inputs:
+  #     scriptSource: 'filePath'
+  #     scriptPath: scripts/detect_products.py
+  #     arguments: ". 2 products_config"
+  #     failOnStderr: true
+
+  # - script: |
+  #     echo $(detect_products.products_config) > ../products_config.json
+  #   name: print_products
+  #   displayName: "create a JSON file with products"
   
-  - script: |
-      $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base > compile.log
-    displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to compile and build $AZ_SW_PRODUCT_TO_BUILD'
+  # - script: |
+  #     $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Build.SourcesDirectory)/products_config_output.json > compile.log
+  #   displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to compile and build'
+  #   env:
+  #     SW_MSF_STARTUP_MAGIK: $(Build.SourcesDirectory)/scripts/compile_and_build.magik
 
-  - task: PublishPipelineArtifact@1
-    inputs:
-      targetPath: compile.log
-      publishLocation: 'pipeline'
 
-  - task: ArchiveFiles@2
-    displayName: 'Archive $AZ_SW_PRODUCT_TO_BUILD'
-    inputs:
-      rootFolderOrFile: $(CUSTOMER_APP_BASE_DIR)/$(AZ_SW_PRODUCT_TO_BUILD)
-      archiveType: 'zip'
-      archiveFile: $(Build.ArtifactStagingDirectory)/$(AZ_SW_PRODUCT_TO_BUILD).zip
+  # - task: PublishPipelineArtifact@1
+  #   inputs:
+  #     targetPath: compile.log
+  #     publishLocation: 'pipeline'
+
+  # - task: ArchiveFiles@2
+  #   displayName: 'Archive $AZ_SW_PRODUCT_TO_BUILD'
+  #   inputs:
+  #     rootFolderOrFile: $(CUSTOMER_APP_BASE_DIR)/$(AZ_SW_PRODUCT_TO_BUILD)
+  #     archiveType: 'zip'
+  #     archiveFile: $(Build.ArtifactStagingDirectory)/$(AZ_SW_PRODUCT_TO_BUILD).zip
   
-  - task: ArchiveFiles@2
-    displayName: 'Archive smallworld_registry'
-    inputs:
-      rootFolderOrFile: $(SMALLWORLD_REGISTRY)
-      archiveType: 'zip'
-      archiveFile: $(Build.ArtifactStagingDirectory)/smallworld_registry.zip
+  # - task: ArchiveFiles@2
+  #   displayName: 'Archive smallworld_registry'
+  #   inputs:
+  #     rootFolderOrFile: $(SMALLWORLD_REGISTRY)
+  #     archiveType: 'zip'
+  #     archiveFile: $(Build.ArtifactStagingDirectory)/smallworld_registry.zip
 
-  - task: ArchiveFiles@2
-    displayName: 'Archive run directory'
-    inputs:
-      rootFolderOrFile: $(RUN_DIR)
-      archiveType: 'zip'
-      archiveFile: $(Build.ArtifactStagingDirectory)/run.zip
+  # - task: ArchiveFiles@2
+  #   displayName: 'Archive run directory'
+  #   inputs:
+  #     rootFolderOrFile: $(RUN_DIR)
+  #     archiveType: 'zip'
+  #     archiveFile: $(Build.ArtifactStagingDirectory)/run.zip
 
-  - script: |
-      echo '############ $(Build.SourcesDirectory)'
-      ls $(Build.SourcesDirectory)
-      echo '############ list environment'
-      env
-      echo '############ cat layered products'
-      cat $SMALLWORLD_REGISTRY/LAYERED_PRODUCTS
-      echo '############ list customer app'
-      ls $CUSTOMER_APP_BASE_DIR/customer_app
-    displayName: 'list the situation on the container if AZ_DEBUG = TRUE'
+  # - task: UniversalPackages@0
+  #   displayName: 'Upload customer app $AZ_SW_PRODUCT_TO_BUILD'
+  #   inputs:
+  #     command: publish
+  #     vstsFeedPublish: 'SW/froggie'
+  #     vstsFeedPackagePublish: $(CUSTOMER_ARTIFACT)
+  #     packagePublishDescription: My customer app smallworld product zip
+  #     publishDirectory: '$(Build.ArtifactStagingDirectory)/$(AZ_SW_PRODUCT_TO_BUILD).zip'
 
-  - task: UniversalPackages@0
-    displayName: 'Upload customer app $AZ_SW_PRODUCT_TO_BUILD'
-    inputs:
-      command: publish
-      vstsFeedPublish: 'SW/froggie'
-      vstsFeedPackagePublish: $(CUSTOMER_ARTIFACT)
-      packagePublishDescription: My customer app smallworld product zip
-      publishDirectory: '$(Build.ArtifactStagingDirectory)/$(AZ_SW_PRODUCT_TO_BUILD).zip'
-
-  - task: UniversalPackages@0
-    displayName: 'Upload smallworld registry'
-    inputs:
-      command: publish
-      vstsFeedPublish: 'SW/froggie'
-      vstsFeedPackagePublish: $(REGISTRY_ARTIFACT)
-      packagePublishDescription: My registry
-      publishDirectory: '$(Build.ArtifactStagingDirectory)/smallworld_registry.zip'
+  # - task: UniversalPackages@0
+  #   displayName: 'Upload smallworld registry'
+  #   inputs:
+  #     command: publish
+  #     vstsFeedPublish: 'SW/froggie'
+  #     vstsFeedPackagePublish: $(REGISTRY_ARTIFACT)
+  #     packagePublishDescription: My registry
+  #     publishDirectory: '$(Build.ArtifactStagingDirectory)/smallworld_registry.zip'
  
-  - task: UniversalPackages@0
-    displayName: 'Upload run folder'
-    inputs:
-      command: publish
-      vstsFeedPublish: 'SW/froggie'
-      vstsFeedPackagePublish: $(RUN_ARTIFACT)
-      packagePublishDescription: Run directory
-      publishDirectory: '$(Build.ArtifactStagingDirectory)/run.zip'
+  # - task: UniversalPackages@0
+  #   displayName: 'Upload run folder'
+  #   inputs:
+  #     command: publish
+  #     vstsFeedPublish: 'SW/froggie'
+  #     vstsFeedPackagePublish: $(RUN_ARTIFACT)
+  #     packagePublishDescription: Run directory
+  #     publishDirectory: '$(Build.ArtifactStagingDirectory)/run.zip'

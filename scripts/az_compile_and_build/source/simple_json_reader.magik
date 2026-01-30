@@ -1,0 +1,131 @@
+_package user
+$
+
+_pragma(classify_level=restricted)
+##
+## JSON reader for a simple JSON, just enough for the task
+##
+def_slotted_exemplar(:simple_json_reader,
+	{})
+$
+
+_pragma(classify_level=restricted)
+_method simple_json_reader.new()
+	_return _clone
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method simple_json_reader.read(p_file_name)
+	##
+	_local in << external_text_input_stream.new(p_file_name)
+	_protect
+		_return _self.read_in(simple_json_tokenizer.new(in))
+	_protection
+		in.close()
+	_endprotect 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method simple_json_reader.read_in(p_tokenizer)
+	##
+	_self.expect_open(p_tokenizer)
+	_return _self.read_object(p_tokenizer)
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method simple_json_reader.read_object(p_tokenizer)
+	_local result << equality_hash_table.new()
+	_loop 
+		_local key << _self.expect_text(p_tokenizer)
+		_self.expect_colon(p_tokenizer)
+		_local value << _self.expect_text_or_object(p_tokenizer)
+		result[key] << value
+		
+		_local next_token << p_tokenizer.get()
+		_if next_token _is _unset _then _return result _endif
+		_if next_token[1] = :symbol _andif next_token[2] = :comma
+		_then
+			# continue
+		_elif next_token[1] = :symbol _andif next_token[2] = :close
+		_then
+			_return result
+		_else
+			_self.unexpected_token("expected comma or }", next_token)
+		_endif 
+		
+	_endloop
+	_return result 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method simple_json_reader.expect_open(p_tokenizer)
+	_local token << p_tokenizer.get()
+	_if token _is _unset _then _self.unexpected_end("Expected a {") _endif
+	_if (token[2] _isnt :open)
+	_then
+		_self.unexpected_token("Expected {", token)
+	_endif 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method simple_json_reader.expect_colon(p_tokenizer)
+	_local token << p_tokenizer.get()
+	_if token _is _unset _then _self.unexpected_end("Expected a colon") _endif
+	_if (token[2] _isnt :colon)
+	_then
+		_self.unexpected_token("Expected :", token)
+	_endif 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method simple_json_reader.expect_text(p_tokenizer)
+	_local token << p_tokenizer.get()
+	_if token _is _unset _then _self.unexpected_end("Expected a text") _endif
+	_if (token[1] _isnt :text)
+	_then
+		_self.unexpected_token("Expected a text", token)
+	_endif
+	_return token[2]
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method simple_json_reader.expect_text_or_object(p_tokenizer)
+	_local token << p_tokenizer.get()
+	_if token _is _unset _then _self.unexpected_end("Expected a text or object") _endif
+	_if token[1] _is :text
+	_then
+		_return token[2]
+	_elif token[2] _is :open
+	_then
+		_return _self.read_object(p_tokenizer)
+	_else
+		_self.unexpected_token("Expected a text or object", token)
+	_endif 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method simple_json_reader.unexpected_end(p_string)
+	##
+	condition.raise(:error, :string, write_string(p_string, ", but got to the end of the input"))
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method simple_json_reader.unexpected_token(p_string, p_token)
+	##
+	condition.raise(:error, :string, write_string(p_string, ", but got ", p_token[1], " ", p_token[2]))
+_endmethod
+$
+
+
+
+
+
