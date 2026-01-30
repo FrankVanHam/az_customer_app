@@ -43,7 +43,7 @@ jobs:
 - job: Compile
   variables:
     anything_changed: $[ ne(dependencies.Download.outputs['detect_products.products_config'], '{}') ]
-  condition: eq(variables.anything_changed, 'true')
+  condition: eq(variables.anything_changed, true)
   dependsOn: Download
   steps:
     - script: echo "Changes detected, proceeding to compile."
