@@ -134,7 +134,7 @@ jobs:
 - job: Archive
   dependsOn: Compile
   strategy: 
-    matrix: $[dependencies.Compile.variables['products_config']]
+    matrix: $[dependencies.Compile['variables.products_config']]
   # strategy provided variables $(product_name) and $(product_path)
   steps:
     # - script: |
