@@ -130,16 +130,21 @@ jobs:
         targetPath: '$(Pipeline.Workspace)/repo.zip'
         artifact: 'repo_zip'
         publishLocation: 'pipeline'
+    - script: |
+        'echo "##vso[task.setvariable variable=products_config;isOutput=true]$(products_config)"'
+      displayName: 'Create script to pass products_config to the next job'
+      name: pass_products_config
+      workingDirectory: $(Pipeline.Workspace)
 
 - job: Archive
   dependsOn: Compile
   strategy: 
-    matrix: $[dependencies.Compile['variables.products_config']]
+    matrix: $[dependencies.Compile.outputs['pass_products_config.products_config']]
   # strategy provided variables $(product_name) and $(product_path)
   steps:
-    # - script: |
-    #     echo $[dependencies.Compile.outputs['variables.products_config']]
-    #   displayName: 'Show matrix variables'
+    - script: |
+        echo $[dependencies.Compile.outputs['pass_products_config.products_config']]
+      displayName: 'Show matrix variables'
 
     - checkout: none
 
