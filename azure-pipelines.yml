@@ -44,7 +44,7 @@ jobs:
     ## TO BE REMOVED WHEN THE DETECTION SCRIPT IS FUNCTIONAL
     ################
     - script: |
-        echo '##vso[task.setvariable variable=products_config;isOutput=true]{"customer_engine_app": {"product_path": "/home/vsts/work/1/repo/az_customer_app/customer_engine_app", "product_name": "customer_engine_app", "product_type": "layered_product"}}'
+        echo '##vso[task.setvariable variable=products_config;isOutput=true]{"customer_engine_app": {"product_path": "/home/vsts/work/1/repo/customer_engine_app", "product_name": "customer_engine_app", "product_type": "layered_product"}}'
       name: detect_products
 
     - script: |
