@@ -46,11 +46,10 @@ jobs:
       workingDirectory: $(Pipeline.Workspace)
 
     - task: PublishPipelineArtifact@1
-      condition: ne($(detect_products.products_config), '{}')
       displayName: 'Publish products_config.json'
       inputs:
         targetPath: '$(Pipeline.Workspace)/products_config.json'
-        artifact: '$(System.JobAttempt)-products_config'
+        artifact: 'products_config'
         publishLocation: 'pipeline'
 
 - job: Compile
@@ -88,6 +87,12 @@ jobs:
           sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
         displayName: 'Install the core products'
         workingDirectory: $(Pipeline.Workspace)
+
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          artifact: 'products_config'
+          targetPath: '$(Pipeline.Workspace)'
+        displayName: 'Download the products_config'
       
       - script: |
           $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json > compile.log
@@ -101,7 +106,7 @@ jobs:
         displayName: 'Publish compile log'
         inputs:
           targetPath: '$(Pipeline.Workspace)/compile.log'
-          artifact: '$(System.JobAttempt)-compile_log'
+          artifact: 'compile_log'
           publishLocation: 'pipeline'
 
     - task: ArchiveFiles@2
@@ -115,7 +120,7 @@ jobs:
       displayName: 'Publish compiled result (repo.zip) to be reused in the Archive job'
       inputs:
         targetPath: '$(Pipeline.Workspace)/repo.zip'
-        artifact: '$(System.JobAttempt)-repo_zip'
+        artifact: 'repo_zip'
         publishLocation: 'pipeline'
 
 - job: Archive
@@ -132,7 +137,7 @@ jobs:
 
     - task: DownloadPipelineArtifact@2
       inputs:
-        artifact: '$(System.JobAttempt)-repo_zip'
+        artifact: 'repo_zip'
         targetPath: '$(Pipeline.Workspace)'
       displayName: 'Download the repo.zip'
 
