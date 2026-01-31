@@ -32,7 +32,7 @@ jobs:
 
     - task: PythonScript@0
       displayName: 'Detect products'
-      name: detect_products
+      name: detect_products_out #############################################################################
       inputs:
         scriptSource: 'filePath'
         scriptPath: 'scripts/detect_products.py'
@@ -45,6 +45,7 @@ jobs:
     ################
     - script: |
         echo '##vso[task.setvariable variable=products_config;isOutput=true]{"customer_engine_app": {"path": "d:\\az_customer_app\\customer_engine_app", "name": "customer_engine_app", "type": "layered_product"}}'
+      name: detect_products
 
     - script: |
         echo '$(detect_products.products_config)' > products_config.json
