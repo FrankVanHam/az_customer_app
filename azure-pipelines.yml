@@ -67,7 +67,7 @@ jobs:
       workspaceRepo: false
       path: repo
 
-    - ${{ if eq(need_compile, true) }}:
+    - ${{ if eq(variables.need_compile, true) }}:
       - task: JavaToolInstaller@1
         displayName: 'Activate java 17 sdk'
         inputs:
