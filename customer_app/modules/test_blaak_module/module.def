@@ -1,0 +1,11 @@
+test_blaak_module	1
+description
+	Test Example blaak module 
+end
+requires
+	blaak_module
+end
+tests_modules
+	blaak_module
+end
+hidden

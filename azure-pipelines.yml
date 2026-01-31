@@ -17,41 +17,18 @@ variables:
 # Build.ArtifactStagingDirectory contains the zipfiles to be uploaded as artifacts
 # 
 jobs:
-- job: Compile
+- job: Download
   steps:
-    - task: JavaToolInstaller@1
-      displayName: 'Activate java 17 sdk'
-      inputs:
-        versionSpec: '17' # string. Required. JDK version. Default: 8.
-        jdkArchitectureOption: 'x64' #| 'x86' | 'arm64'. Required. JDK architecture. 
-        jdkSourceOption: 'PreInstalled' # 'AzureStorage' | 'LocalDirectory' | 'PreInstalled'
-
     - checkout: self
       persistCredentials: true
       fetchDepth: 2 
       workspaceRepo: false
       path: repo
 
-      # note this script runs in /repo
+    # note this script runs in /repo
     - script: |
-        git diff --name-only HEAD HEAD~1 > changed_files.txt
-        cat changed_files.txt
+        git diff --name-only HEAD HEAD~1 > $(Pipeline.Workspace)/changed_files.txt
       displayName: 'Get changed files'
-      workingDirectory: $(Pipeline.Workspace)
-
-    - task: UniversalPackages@0
-      displayName: 'Download the core application'
-      inputs:
-        command: download
-        vstsFeed: 'SW/froggie'
-        vstsFeedPackage: 'cst.jar'
-        vstsPackageVersion: $(SW_VERSION)
-        downloadDirectory: '$(CORE_DIR)'
-
-    - script: |
-        sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
-      displayName: 'Install the core products'
-      workingDirectory: $(Pipeline.Workspace)
 
     - task: PythonScript@0
       displayName: 'Detect products'
@@ -59,7 +36,7 @@ jobs:
       inputs:
         scriptSource: 'filePath'
         scriptPath: 'scripts/detect_products.py'
-        arguments: '. 2 changed_files.txt products_config'
+        arguments: '. 2 $(ADDITIONAL_ARTIFACT_DIRS) $(Pipeline.Workspace)/changed_files.txt products_config'
         failOnStderr: true
 
     - script: |
@@ -75,21 +52,57 @@ jobs:
         targetPath: '$(Pipeline.Workspace)/products_config.json'
         artifact: '$(System.JobAttempt)-products_config'
         publishLocation: 'pipeline'
-    
-    - script: |
-        $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json > compile.log
-      displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to compile and build'
-      workingDirectory: '$(Pipeline.Workspace)'
-      env:
-        SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/compile_and_build.magik'
-        CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
 
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish compile log'
-      inputs:
-        targetPath: '$(Pipeline.Workspace)/compile.log'
-        artifact: '$(System.JobAttempt)-compile_log'
-        publishLocation: 'pipeline'
+- job: Compile
+  variables:
+    products_config: $[ dependencies.Download.outputs['detect_products.products_config'] ]
+    anything_changed: $[ ne(products_config, '{}') ]
+    need_compile: $[ contains(products_config, 'layered_product') ]
+  condition: eq(variables.anything_changed, true)
+  dependsOn: Download
+  steps:
+    - checkout: self
+      persistCredentials: true
+      fetchDepth: 2 
+      workspaceRepo: false
+      path: repo
+
+    - ${{ if eq(need_compile, true) }}:
+      - task: JavaToolInstaller@1
+        displayName: 'Activate java 17 sdk'
+        inputs:
+          versionSpec: '17' # string. Required. JDK version. Default: 8.
+          jdkArchitectureOption: 'x64' #| 'x86' | 'arm64'. Required. JDK architecture. 
+          jdkSourceOption: 'PreInstalled' # 'AzureStorage' | 'LocalDirectory' | 'PreInstalled'
+
+      - task: UniversalPackages@0
+        displayName: 'Download the core application'
+        inputs:
+          command: download
+          vstsFeed: 'SW/froggie'
+          vstsFeedPackage: 'cst.jar'
+          vstsPackageVersion: $(SW_VERSION)
+          downloadDirectory: '$(CORE_DIR)'
+
+      - script: |
+          sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
+        displayName: 'Install the core products'
+        workingDirectory: $(Pipeline.Workspace)
+      
+      - script: |
+          $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json > compile.log
+        displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to compile and build'
+        workingDirectory: '$(Pipeline.Workspace)'
+        env:
+          SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/compile_and_build.magik'
+          CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
+
+      - task: PublishPipelineArtifact@1
+        displayName: 'Publish compile log'
+        inputs:
+          targetPath: '$(Pipeline.Workspace)/compile.log'
+          artifact: '$(System.JobAttempt)-compile_log'
+          publishLocation: 'pipeline'
 
     - task: ArchiveFiles@2
       displayName: 'Archive the compiled product'
@@ -108,11 +121,11 @@ jobs:
 - job: Archive
   dependsOn: Compile
   strategy: 
-    matrix: $[dependencies.Compile.outputs['detect_products.products_config']]
+    matrix: $[dependencies.Compile.variables['products_config']]
   # strategy provided variables $(product_name) and $(product_path)
   steps:
     - script: |
-        echo $[dependencies.Compile.outputs['detect_products.products_config']]
+        echo $[dependencies.Compile.variables['products_config']]
       displayName: 'Show matrix variables'
 
     - checkout: none
@@ -145,41 +158,3 @@ jobs:
         vstsFeedPackagePublish: '$(product_name)-$(CUSTOMER_APP_VERSION).zip'
         packagePublishDescription: 'Archive upload of product $(product_name) built for version $(CUSTOMER_APP_VERSION)'
         publishDirectory: '$(Build.ArtifactStagingDirectory)/$(product_name).zip'
-
-
-- job: AdditionalArchive
-  dependsOn: Compile
-  strategy: 
-    matrix: $[variables['ADDITIONAL_ARTIFACT_DIRS']]   # variable comes from the library group
-  # strategy provided variables $(directory) and $(artifact)
-  steps:
-    - checkout: none
-
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        artifact: '$(System.JobAttempt)-repo_zip'
-        targetPath: '$(Pipeline.Workspace)'
-      displayName: 'Download the repo.zip'
-
-    - task: ExtractFiles@1
-      displayName: 'Extract repo.zip'
-      inputs:
-        archiveFilePatterns: '$(Pipeline.Workspace)/repo.zip'
-        destinationFolder: '$(Pipeline.Workspace)'
-        cleanDestinationFolder: false
-
-    - task: ArchiveFiles@2
-      displayName: 'Archive $(artifact)'
-      inputs:
-        rootFolderOrFile: '$(Pipeline.Workspace)/repo/$(directory)'
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(artifact).zip'
-
-    - task: UniversalPackages@0
-      displayName: 'Upload $(artifact)'
-      inputs:
-        command: publish
-        vstsFeedPublish: 'SW/froggie'
-        vstsFeedPackagePublish: '$(artifact)-$(CUSTOMER_APP_VERSION).zip'
-        packagePublishDescription: 'Archive upload of $(artifact) built for version $(CUSTOMER_APP_VERSION)'
-        publishDirectory: '$(Build.ArtifactStagingDirectory)/$(artifact).zip'

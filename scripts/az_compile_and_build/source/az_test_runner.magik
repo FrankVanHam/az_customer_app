@@ -1,0 +1,33 @@
+_package user
+$
+
+_pragma(classify_level=restricted, topic={tests})
+def_slotted_exemplar(:az_test_runner,
+	{
+	})
+$
+
+_pragma(classify_level=restricted, topic={tests})
+_method az_test_runner.new()
+	_return _clone 
+_endmethod
+$
+
+_pragma(classify_level=restricted, topic={tests})
+_method az_test_runner.run(p_output_dir, p_config)
+	##
+	_for i_key, i_props _over p_config.fast_keys_and_elements()
+	_loop
+		_local product_name << i_props["product_name"].default(:no_product).as_symbol()
+		_self.run_tests(p_output_dir, product_name)
+	_endloop 
+_endmethod
+$
+
+_pragma(classify_level=restrictedb, topic={tests})
+_method az_test_runner.run_tests(p_output_dir, p_product_name)
+	smallworld_product.add_product(p_product_name)
+	product_test_runner.run(p_output_dir, p_product_name)
+_endmethod
+$
+

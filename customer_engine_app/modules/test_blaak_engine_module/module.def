@@ -1,0 +1,11 @@
+test_blaak_engine_module	1
+description
+	Test Example module
+end
+requires
+	blaak_engine_module
+end
+tests_modules
+	blaak_engine_module
+end
+hidden

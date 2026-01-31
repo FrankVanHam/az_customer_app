@@ -1,0 +1,19 @@
+_package user
+$
+
+_block
+	smallworld_product.add_product(:sw_dev_tools)
+	smallworld_product.add_product(:munit)
+	sw_module_manager.load_module(:munit_product)
+
+	_local (file_name, dir) << system.pathname_components(!compiler_file!)
+	_local module_dir << system.pathname_down(dir, "az_compile_and_build")
+	sw_module_manager.load_standalone_module(module_dir)
+_endblock
+$
+
+_block
+	az_processor.run_tests()
+_endblock
+$
+

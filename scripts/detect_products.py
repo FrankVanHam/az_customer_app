@@ -10,10 +10,11 @@ class ProductDetector:
         self.changes = []
         self.result = {}
 
-    def detect(self, path, max_depth, change_file):
+    def detect(self, path, max_depth, adds, change_file):
         self.changes = self.read_changes(change_file)
         self.result = {}
         self.do_detect(path, max_depth)
+        self.do_add_adds(adds)
         return self.result
     
     def read_changes(self, change_file):
@@ -22,6 +23,8 @@ class ProductDetector:
             with open(change_file, "r") as f:
                 for line in f:
                     changes.append(os.path.abspath(line.strip()))
+        else:
+            raise Exception(f"Change file {change_file} does not exist.")
         return changes
     
     def do_detect(self, path, max_depth):
@@ -56,6 +59,14 @@ class ProductDetector:
                                         "product_name": product_name,
                                         "product_type": product_type}
         
+    def do_add_adds(self, adds):
+        for path in adds:
+            if os.path.isdir(path):
+                if self.any_changes_in_path(path):
+                    self.add_product(path, os.path.basename(path), "additional_repository")
+            else:
+                print(f"Additional path {path} is not a directory, skipping.")
+
     def any_changes_in_path(self, product_path):
         for change in self.changes:
             print(f"Comparing change {change} with product path {product_path}")
@@ -67,15 +78,17 @@ def main():
     parser = argparse.ArgumentParser("detect_products will scan through a given 'path' to find Smallworld layered products and set the results as a comma-separated string in the azure variable 'var_name'.")
     parser.add_argument("path", help="The path to scan through to find Smallworld layered products", type=str)
     parser.add_argument("depth", help="The maximum depth to scan through", type=int)
+    parser.add_argument("adds", help="A list of additional directories in the repository", type=str)
     parser.add_argument("changes", help="The file containing the changes in the repository", type=str)
     parser.add_argument("var_name", help="The name of the variable to set in the azure pipeline", type=str)
     args = parser.parse_args()
     
+    adds = [os.path.abspath(x.strip()) for x in args.adds.split(',')]
     path = os.path.abspath(args.path)
     changes = os.path.abspath(args.changes)
     
     detector = ProductDetector()
-    results = detector.detect(path, args.depth, changes)
+    results = detector.detect(path, args.depth, adds, changes)
     result_string = json.dumps(results)
     print("")
     print(f"##vso[task.setvariable variable={args.var_name};;isOutput=true]{result_string}")

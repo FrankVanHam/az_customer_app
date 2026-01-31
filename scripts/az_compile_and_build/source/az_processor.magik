@@ -22,20 +22,51 @@ _method az_processor.compile_and_build()
 _endmethod
 $
 
-_pragma(classify_level=restricted, topic={azure})
-_method az_processor.error_proc
-	## 
-	_return _proc(p_condition)
-			p_condition.report_contents_on(!output!)
-			!traceback!(!output!)
-		_endproc 
+_pragma(classify_level=restricted)
+_method az_processor.run_tests()
+	##
+	_try
+		_handling error _with _self.error_proc
+		_self.int!run_tests()
+	_when error 
+		
+	_endtry
+	quit()
 _endmethod
 $
+
 
 _pragma(classify_level=restricted)
 _method az_processor.int!compile_and_build()
 	_self.correct_slashes_in_layer_products()
 	
+	_local config << _self.get_product_config_from_command_line()
+	_if config.empty?
+	_then
+		write("No products to compile and build")
+	_else
+		bob.new().build(config)
+	_endif 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method az_processor.int!run_tests()
+	_self.correct_slashes_in_layer_products()
+	_local output_dir << _self.get_output_dir_from_command_line()
+	_local config << _self.get_product_config_from_command_line()
+	_if config.empty?
+	_then
+		write("No products to test")
+	_else
+		az_test_runner.new().run(output_dir, config)
+	_endif 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method az_processor.get_product_config_from_command_line()
+	##
 	_local file << _self.get_option("-products_config").default("")
 	file << system.canonicalise(file)
 	_if system.file_readable?(file).not
@@ -43,12 +74,28 @@ _method az_processor.int!compile_and_build()
 		condition.raise(:error, :string, write_string("The file ", file, " is not readable"))
 	_endif
 	_local config << simple_json_reader.new().read(file)
-	_if config.empty?
+
+	# Filter out only the layered products
+	_for key, props _over config.keys_and_elements()
+	_loop
+		_if props["product_type"].default("") <> "layered_product"
+		_then
+			config.remove_key(key)
+		_endif 
+	_endloop
+	_return config 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method az_processor.get_output_dir_from_command_line()
+	_local dir << _self.get_option("-test_output_dir").default("")
+	dir << system.canonicalise(dir)
+	_if system.file_exists?(dir).not
 	_then
-		write("No products to compile and build")
-	_else
-		bob.new().build(config)
-	_endif 
+		condition.raise(:error, :string, write_string("The directory ", dir, " does not exist or the proces has no access to it."))
+	_endif
+	_return dir
 _endmethod
 $
 
@@ -82,5 +129,16 @@ _method az_processor.correct_slashes_in_layer_products()
 			i_prop[:path].substitute_character(%\, %/)
 		_endif 
 	_endloop 
+_endmethod
+$
+
+
+_pragma(classify_level=restricted, topic={azure})
+_method az_processor.error_proc
+	## 
+	_return _proc(p_condition)
+			p_condition.report_contents_on(!output!)
+			!traceback!(!output!)
+		_endproc 
 _endmethod
 $
