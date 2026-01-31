@@ -65,7 +65,7 @@ jobs:
     products_config: $[ dependencies.Download.outputs['detect_products.products_config'] ]
     anything_changed: $[ ne(variables.products_config, '{}') ]
     need_compile: $[ contains(variables.products_config, 'layered_product') ]
-  condition: eq(variables.anything_changed, true)
+  condition: eq(variables.anything_changed, 'true')
   dependsOn: Download
   steps:
     - checkout: self
@@ -74,7 +74,7 @@ jobs:
       workspaceRepo: false
       path: repo
 
-    - ${{ if eq(variables.need_compile, true) }}:
+    - ${{ if eq(variables.need_compile, 'true') }}:
       - task: JavaToolInstaller@1
         displayName: 'Activate java 17 sdk'
         inputs:
