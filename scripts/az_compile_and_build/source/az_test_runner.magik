@@ -14,20 +14,69 @@ _endmethod
 $
 
 _pragma(classify_level=restricted, topic={tests})
-_method az_test_runner.run(p_output_dir, p_config)
+_method az_test_runner.run(p_output_dir, p_config, p_aspects)
+	## run test on all configured products and return the results
+	## in folder P_OUTPUT_DIR.
+	## method returns _true if all tests went well
 	##
+
+	_local tests_ok? << _true
 	_for i_key, i_props _over p_config.fast_keys_and_elements()
 	_loop
 		_local product_name << i_props["product_name"].default(:no_product).as_symbol()
-		_self.run_tests(p_output_dir, product_name)
-	_endloop 
+		_local sub_ok? << _self.run_tests(p_output_dir, product_name, p_aspects)
+		tests_ok? << tests_ok? _and sub_ok?
+	_endloop
+	_return tests_ok?
 _endmethod
 $
 
 _pragma(classify_level=restrictedb, topic={tests})
-_method az_test_runner.run_tests(p_output_dir, p_product_name)
+_method az_test_runner.run_tests(p_output_dir, p_product_name, p_aspects)
 	smallworld_product.add_product(p_product_name)
-	product_test_runner.run(p_output_dir, p_product_name)
+	_local old_aspects << smallworld_product.set_run_aspects(p_aspects)
+	print(smallworld_product.sys!perform(:test_aspects))
+	_protect 
+		_return _self.run_test_on_product(p_output_dir, p_product_name)
+	_protection
+		smallworld_product.set_run_aspects(old_aspects)
+	_endprotect 
 _endmethod
 $
 
+_pragma(classify_level=restrictedb, topic={tests})
+_method az_test_runner.run_test_on_product(p_output_dir, p_product_name)
+	_local tests_ok? << _true
+	_local runner << sw:xml_test_runner.new(_unset,
+						:output_dir, p_output_dir,
+						:traceback_errors?, _true,
+						:traceback_failures?, _true)
+	_local tests << product_test_suite.new(p_product_name)
+
+	_for module_tests _over tests.tests()
+	_loop
+		_for suite _over module_tests.tests()
+		_loop
+			_local a_stream << runner.new_stream(suite)
+			_protect
+				new_runner << runner.new(a_stream, _scatter runner.properties.for_scatter())
+				new_runner.int!run(suite)
+				a_stream.flush()
+			_protection
+				a_stream.close()
+			_endprotect
+			
+			_if new_runner.test_result _is _unset
+			_then
+				show("No test results for: ", suite)
+			_else 
+				tests_ok? << tests_ok? _andif
+					     new_runner.test_result.error_count() = 0 _andif
+					     new_runner.test_result.failure_count() = 0
+			_endif			
+		_endloop
+	_endloop
+
+	>> tests_ok?	
+_endmethod
+$

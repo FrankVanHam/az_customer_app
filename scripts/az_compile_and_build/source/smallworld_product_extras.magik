@@ -1,0 +1,13 @@
+_package sw
+$
+
+
+_pragma(classify_level=restricted)
+_method smallworld_product.set_run_aspects(p_aspects)
+	##
+	_local old << _self.test_aspects.copy()
+	_self.test_aspects.empty()
+	_self.test_aspects.add_all(p_aspects)
+	_return old
+_endmethod
+$

@@ -9,7 +9,7 @@ $
 
 _pragma(classify_level=advanced, topic={service, test})
 blaak_engine_test_case1.define_shared_constant(
-	:test_aspects_keys,
+	:test_aspects,
 	property_list.new_with(
 		:az_build_pipeline, "Run in Azure Build pipeline"),
 	:public)

@@ -3,3 +3,5 @@ simple_json_reader
 bob
 az_processor
 az_test_runner
+
+smallworld_product_extras

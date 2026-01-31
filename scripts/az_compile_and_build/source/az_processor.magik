@@ -25,13 +25,14 @@ $
 _pragma(classify_level=restricted)
 _method az_processor.run_tests()
 	##
+	_local ok? << _false
 	_try
 		_handling error _with _self.error_proc
-		_self.int!run_tests()
+		ok? << _self.int!run_tests()
 	_when error 
 		
 	_endtry
-	quit()
+	quit(ok?)
 _endmethod
 $
 
@@ -55,11 +56,13 @@ _method az_processor.int!run_tests()
 	_self.correct_slashes_in_layer_products()
 	_local output_dir << _self.get_output_dir_from_command_line()
 	_local config << _self.get_product_config_from_command_line()
+	_local aspects << _self.get_aspects_from_command_line()
 	_if config.empty?
 	_then
 		write("No products to test")
+		_return _true 
 	_else
-		az_test_runner.new().run(output_dir, config)
+		_return az_test_runner.new().run(output_dir, config, aspects)
 	_endif 
 _endmethod
 $
@@ -96,6 +99,20 @@ _method az_processor.get_output_dir_from_command_line()
 		condition.raise(:error, :string, write_string("The directory ", dir, " does not exist or the proces has no access to it."))
 	_endif
 	_return dir
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method az_processor.get_aspects_from_command_line()
+	##
+	_local aspect_string << _self.get_option("-test_aspects").default("")
+	_local aspect_keys << aspect_string.split_by(%,).map(_proc(x) >> x.trim_spaces().as_symbol() _endproc)
+	_local aspects << property_list.new()
+	_for key _over aspect_keys.fast_elements()
+	_loop
+		aspects[key] << write_string(key)
+	_endloop
+	_return aspects
 _endmethod
 $
 
