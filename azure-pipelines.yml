@@ -142,10 +142,6 @@ jobs:
     matrix: $[dependencies.Compile.outputs['pass_products_config.products_config']]
   # strategy provided variables $(product_name) and $(product_path)
   steps:
-    - script: |
-        echo $[dependencies.Compile.outputs['pass_products_config.products_config']]
-      displayName: 'Show matrix variables'
-
     - checkout: none
 
     - task: DownloadPipelineArtifact@2
