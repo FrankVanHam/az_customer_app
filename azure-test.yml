@@ -111,9 +111,10 @@ jobs:
       workingDirectory: '$(Pipeline.Workspace)'
       displayName: 'Display test run log'
     
-    - task: PublishTestResults@2
-      displayName: 'Publish MUnit test results'
-      inputs:
-        testResultsFormat: 'XUnit'
-        testResultsFiles: '$(Common.TestResultsDirectory)/**/*.xml'
-        failTaskOnFailedTests: true         
+    - ${{ each(format in ['JUnit', 'NUnit', 'VSTest', 'XUnit', 'CTest']) }}:
+      - task: PublishTestResults@2
+        displayName: 'Publish MUnit test results'
+        inputs:
+          testResultsFormat: 'XUnit'
+          testResultsFiles: '$(Common.TestResultsDirectory)/**/*.xml'
+          failTaskOnFailedTests: true
