@@ -59,7 +59,7 @@ jobs:
       displayName: 'Download the core application'
       inputs:
         command: download
-        vstsFeed: 'SW/froggie'
+        vstsFeed: '$(AZ_FEED)'
         vstsFeedPackage: 'cst.jar'
         vstsPackageVersion: $(SW_VERSION)
         downloadDirectory: '$(CORE_DIR)'
@@ -68,7 +68,7 @@ jobs:
       displayName: 'Download munit'
       inputs:
         command: download
-        vstsFeed: 'SW/froggie'
+        vstsFeed: '$(AZ_FEED)'
         vstsFeedPackage: 'munit.zip'
         vstsPackageVersion: $(SW_VERSION)
         downloadDirectory: '$(EXTERNAL_DIR)'
