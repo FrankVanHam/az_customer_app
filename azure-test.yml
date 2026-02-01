@@ -81,7 +81,7 @@ jobs:
       displayName: 'Extract munit.zip'
       inputs:
         archiveFilePatterns: '$(EXTERNAL_DIR)/munit.zip'
-        destinationFolder: '$(Pipeline.Workspace)'
+        destinationFolder: '$(EXTERNAL_DIR)'
         cleanDestinationFolder: false
 
     - script: |
