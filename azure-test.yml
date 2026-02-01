@@ -22,7 +22,6 @@ jobs:
     - checkout: self
       persistCredentials: true
       fetchDepth: 2 
-      workspaceRepo: false
       path: repo
 
     # note this script runs in /repo
