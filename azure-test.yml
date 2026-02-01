@@ -114,32 +114,6 @@ jobs:
     - task: PublishTestResults@2
       displayName: 'Publish MUnit test results'
       inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '$(Common.TestResultsDirectory)/**/*.xml'
-        failTaskOnFailedTests: true
-    - task: PublishTestResults@2
-      displayName: 'Publish MUnit test results'
-      inputs:
         testResultsFormat: 'NUnit'
-        testResultsFiles: '$(Common.TestResultsDirectory)/**/*.xml'
+        testResultsFiles: '$(Pipeline.Workspace)/test_result_30.txt'
         failTaskOnFailedTests: true
-    - task: PublishTestResults@2
-      displayName: 'Publish MUnit test results'
-      inputs:
-        testResultsFormat: 'VSTest'
-        testResultsFiles: '$(Common.TestResultsDirectory)/**/*.xml'
-        failTaskOnFailedTests: true
-    - task: PublishTestResults@2
-      displayName: 'Publish MUnit test results'
-      inputs:
-        testResultsFormat: 'XUnit'
-        testResultsFiles: '$(Common.TestResultsDirectory)/**/*.xml'
-        failTaskOnFailedTests: true
-    - task: PublishTestResults@2
-      displayName: 'Publish MUnit test results'
-      inputs:
-        testResultsFormat: 'CTest'
-        testResultsFiles: '$(Common.TestResultsDirectory)/**/*.xml'
-        failTaskOnFailedTests: true
-    
-      
