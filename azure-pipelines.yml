@@ -74,6 +74,9 @@ jobs:
       workspaceRepo: false
       path: repo
 
+    - script: echo "$(variables.need_compile)"
+      displayName: 'Check if compile is needed'
+
     - ${{ if eq(variables.need_compile, 'true') }}:
       - task: JavaToolInstaller@1
         displayName: 'Activate java 17 sdk'

@@ -25,26 +25,57 @@ jobs:
       workspaceRepo: false
       path: repo
 
-      # note this script runs in /repo
+    # note this script runs in /repo
     - script: |
-        git diff --name-only HEAD HEAD~1 > ../changed_files.txt
-        cat ../changed_files.txt
-        cat $(Pipeline.Workspace)/changed_files.txt
+        git diff --name-only HEAD HEAD~1 > $(Pipeline.Workspace)/changed_files.txt
       displayName: 'Get changed files'
 
-    - task: PythonScript@0
-      displayName: 'Detect products'
+    ################
+    ## TEMPORARY CODE TO SIMULATE DETECTION OF CHANGED FILES
+    ## TO BE REMOVED WHEN THE DETECTION SCRIPT IS FUNCTIONAL
+    ################
+    - script: |
+        echo '##vso[task.setvariable variable=products_config;isOutput=true]{"customer_engine_app": {"product_path": "/home/vsts/work/1/repo/customer_engine_app", "product_name": "customer_engine_app", "product_type": "layered_product"}}'
       name: detect_products
+
+    - checkout: self
+      persistCredentials: true
+      fetchDepth: 2 
+      workspaceRepo: false
+      path: repo
+
+    - task: JavaToolInstaller@1
+      displayName: 'Activate java 17 sdk'
       inputs:
-        scriptSource: 'filePath'
-        scriptPath: 'scripts/detect_products.py'
-        arguments: '. 2 $(Pipeline.Workspace)/changed_files.txt products_config'
-        failOnStderr: true
-- job: Compile
-  variables:
-    anything_changed: $[ ne(dependencies.Download.outputs['detect_products.products_config'], '{}') ]
-  condition: eq(variables.anything_changed, true)
-  dependsOn: Download
-  steps:
-    - script: echo "Changes detected, proceeding to compile."
-      displayName: 'Confirm changes detected'
+        versionSpec: '17'
+        jdkArchitectureOption: 'x64'
+        jdkSourceOption: 'PreInstalled'
+
+    - task: UniversalPackages@0
+      displayName: 'Download the core application'
+      inputs:
+        command: download
+        vstsFeed: 'SW/froggie'
+        vstsFeedPackage: 'cst.jar'
+        vstsPackageVersion: $(SW_VERSION)
+        downloadDirectory: '$(CORE_DIR)'
+
+    - script: |
+        sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
+      displayName: 'Install the core products'
+      workingDirectory: $(Pipeline.Workspace)
+
+    - script: |
+        $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json -test_output_dir $(Common.TestResultsDirectory) -test_aspects $(MUNIT_TEST_ASPECTS) > test_run.log
+      displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to compile and build'
+      workingDirectory: '$(Pipeline.Workspace)'
+      env:
+        SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/run_tests.magik'
+        CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
+    
+    - task: PublishTestResults@2
+      displayName: 'Publish MUnit test results'
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '$(Common.TestResultsDirectory)/**/*.xml'
+        failTaskOnFailedTests: true         
