@@ -115,6 +115,6 @@ jobs:
       - task: PublishTestResults@2
         displayName: 'Publish MUnit test results'
         inputs:
-          testResultsFormat: 'XUnit'
+          testResultsFormat: $(format)
           testResultsFiles: '$(Common.TestResultsDirectory)/**/*.xml'
           failTaskOnFailedTests: true
