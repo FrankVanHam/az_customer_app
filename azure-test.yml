@@ -79,6 +79,7 @@ jobs:
     - script: |
         cat test_run.log
       condition: always()
+      workingDirectory: '$(Pipeline.Workspace)'
       displayName: 'Display test run log'
     
     - task: PublishTestResults@2
