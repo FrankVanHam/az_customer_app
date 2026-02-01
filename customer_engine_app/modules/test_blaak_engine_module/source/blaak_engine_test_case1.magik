@@ -27,9 +27,3 @@ _method blaak_engine_test_case1.test_second_test()
 	_self.assert_false(_false, "This should go well")
 _endmethod
 $
-
-_pragma(classify_level=advanced, topic={service, test})
-_method blaak_engine_test_case1.test_to_fail()
-	_self.assert_true(_false, "This should fail")
-_endmethod
-$

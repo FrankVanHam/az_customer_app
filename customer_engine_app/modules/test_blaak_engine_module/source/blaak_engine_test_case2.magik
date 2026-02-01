@@ -1,0 +1,22 @@
+_package user
+$
+
+_pragma(classify_level=advanced, topic={service, test})
+def_slotted_exemplar( :blaak_engine_test_case2,
+		      {},
+		      :test_case )
+$
+
+_pragma(classify_level=advanced, topic={service, test})
+blaak_engine_test_case2.define_shared_constant(
+	:test_aspects,
+	property_list.new_with(
+		:az_build_pipeline_fail, "Run in Azure Build pipeline and fail"),
+	:public)
+$
+
+_pragma(classify_level=advanced, topic={service, test})
+_method blaak_engine_test_case2.test_to_fail()
+	_self.assert_true(_false, "This should fail")
+_endmethod
+$
