@@ -111,7 +111,7 @@ jobs:
       workingDirectory: '$(Pipeline.Workspace)'
       displayName: 'Display test run log'
     
-    - ${{ each(format in ['JUnit', 'NUnit', 'VSTest', 'XUnit', 'CTest']) }}:
+    - ${{ each format in ['JUnit', 'NUnit', 'VSTest', 'XUnit', 'CTest'] }}:
       - task: PublishTestResults@2
         displayName: 'Publish MUnit test results'
         inputs:
