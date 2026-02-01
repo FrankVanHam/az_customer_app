@@ -53,7 +53,6 @@ $
 
 _pragma(classify_level=restricted)
 _method az_processor.int!run_tests()
-	_self.correct_slashes_in_layer_products()
 	_local output_dir << _self.get_output_dir_from_command_line()
 	_local config << _self.get_product_config_from_command_line()
 	_local aspects << _self.get_aspects_from_command_line()

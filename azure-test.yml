@@ -69,11 +69,15 @@ jobs:
 
     - script: |
         $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json -test_output_dir $(Common.TestResultsDirectory) -test_aspects $(MUNIT_TEST_ASPECTS) > test_run.log
-      displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to run the mnunit tests of the given aspects'
+      displayName: 'Run the script /run_tests.magik to run the munit tests of the given aspects'
       workingDirectory: '$(Pipeline.Workspace)'
       env:
         SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/run_tests.magik'
         CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
+
+    - script: |
+        cat test_run.log
+      displayName: 'Display test run log'
     
     - task: PublishTestResults@2
       displayName: 'Publish MUnit test results'

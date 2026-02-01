@@ -8,6 +8,11 @@ _block
 _endblock
 $
 
+_block 
+	az_processor.correct_slashes_in_layer_products()
+_endblock
+$
+
 _block
 	az_processor.compile_and_build()
 _endblock
