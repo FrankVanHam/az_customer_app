@@ -75,6 +75,7 @@ jobs:
       env:
         SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/run_tests.magik'
         CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
+        SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
 
     - script: |
         cat test_run.log
