@@ -115,5 +115,5 @@ jobs:
       displayName: 'Publish MUnit test results'
       inputs:
         testResultsFormat: 'NUnit'
-        testResultsFiles: '$(Pipeline.Workspace)/testresult_30.txt'
+        testResultsFiles: '$(Pipeline.Workspace)/repo/testresult_30.txt'
         failTaskOnFailedTests: true
