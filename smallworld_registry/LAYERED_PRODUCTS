@@ -29,5 +29,5 @@ sw_dev_tools:
 	path	=	%SMALLWORLD_GIS%\sw_core\modules\sw_dev_tools\
 	version	=	5.3.0.100
 munit:
-	path	=	%SMALLWORLD_GIS%\..\..\SW530-external\munit-external-5.3.0-PB\
+	path	=	%SMALLWORLD_GIS%\..\..\SW-external\munit-external-5.3.0-PB\
 	version	=	5.3.0.0

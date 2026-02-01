@@ -11,7 +11,7 @@ variables:
   - name: CORE_DIR
     value: $(Pipeline.Workspace)/core
   - name: EXTERNAL_DIR
-    value: $(Pipeline.Workspace)/SW530-external
+    value: $(Pipeline.Workspace)/SW-external
 
 # ### Directory structure
 # $(Pipeline.Workspace)/repo     contains the repository and become the working directory
@@ -90,30 +90,30 @@ jobs:
         ls -la
       displayName: 'Debug list the situation'
 
-    # - script: |
-    #     sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
-    #   displayName: 'Install the core products'
-    #   workingDirectory: $(Pipeline.Workspace)
+    - script: |
+        sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
+      displayName: 'Install the core products'
+      workingDirectory: $(Pipeline.Workspace)
 
-    # - script: |
-    #     $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json -test_output_dir $(Common.TestResultsDirectory) -test_aspects $(MUNIT_TEST_ASPECTS) > test_run.log
-    #   displayName: 'Run the script /run_tests.magik to run the munit tests of the given aspects'
-    #   workingDirectory: '$(Pipeline.Workspace)'
-    #   timeoutInMinutes: 2
-    #   env:
-    #     SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/run_tests.magik'
-    #     CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
-    #     SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
+    - script: |
+        $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json -test_output_dir $(Common.TestResultsDirectory) -test_aspects $(MUNIT_TEST_ASPECTS) > test_run.log
+      displayName: 'Run the script /run_tests.magik to run the munit tests of the given aspects'
+      workingDirectory: '$(Pipeline.Workspace)'
+      timeoutInMinutes: 2
+      env:
+        SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/run_tests.magik'
+        CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
+        SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
 
-    # - script: |
-    #     cat test_run.log
-    #   condition: always()
-    #   workingDirectory: '$(Pipeline.Workspace)'
-    #   displayName: 'Display test run log'
+    - script: |
+        cat test_run.log
+      condition: always()
+      workingDirectory: '$(Pipeline.Workspace)'
+      displayName: 'Display test run log'
     
-    # - task: PublishTestResults@2
-    #   displayName: 'Publish MUnit test results'
-    #   inputs:
-    #     testResultsFormat: 'JUnit'
-    #     testResultsFiles: '$(Common.TestResultsDirectory)/**/*.xml'
-    #     failTaskOnFailedTests: true         
+    - task: PublishTestResults@2
+      displayName: 'Publish MUnit test results'
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '$(Common.TestResultsDirectory)/**/*.xml'
+        failTaskOnFailedTests: true         
