@@ -27,6 +27,8 @@ jobs:
 
     # note this script runs in /repo
     - script: |
+        pwd
+        ls
         git diff --name-only HEAD HEAD~1 > $(Pipeline.Workspace)/changed_files.txt
       displayName: 'Get changed files'
 
