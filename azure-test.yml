@@ -72,9 +72,13 @@ jobs:
         vstsFeedPackage: 'munit.zip'
         vstsPackageVersion: $(SW_VERSION)
         downloadDirectory: '$(EXTERNAL_DIR)'
-
+    - script: |
+        cd $(EXTERNAL_DIR)
+        pwd
+        ls -la
+      displayName: 'Debug list the situation'
     - task: ExtractFiles@1
-      displayName: 'Extract muni.zip'
+      displayName: 'Extract munit.zip'
       inputs:
         archiveFilePatterns: '$(EXTERNAL_DIR)/munit.zip'
         destinationFolder: '$(Pipeline.Workspace)'
