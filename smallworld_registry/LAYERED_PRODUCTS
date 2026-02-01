@@ -26,8 +26,8 @@ customer_engine_app:
 	path	=	%CUSTOMER_APP_BASE_DIR%\customer_engine_app\
 	version	=	5.3.0.100
 sw_dev_tools:
-	path	=	%SMALLWORLD_GIS%\sw_core\modules\sw_dev_tools
+	path	=	%SMALLWORLD_GIS%\sw_core\modules\sw_dev_tools\
 	version	=	5.3.0.100
 munit:
-	path	=	%SMALLWORLD_GIS%\..\..\SW530-external\munit-external-5.3.0-PB
+	path	=	%SMALLWORLD_GIS%\..\..\SW530-external\munit-external-5.3.0-PB\
 	version	=	5.3.0.0

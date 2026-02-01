@@ -1,6 +1,39 @@
 _package user
 $
 
+_block 
+	## Need this fix because loading products with backslashes
+	## combined with forward slashes will fail on Ubuntu.
+	##
+	_for i_prop _over smallworld_product.layered_product_data().fast_elements()
+	_loop
+		_if system.os_name _is :windows
+		_then
+			i_prop[:path].substitute_character(%/, %\)
+		_else
+			i_prop[:path].substitute_character(%\, %/)
+		_endif 
+	_endloop 
+_endblock 
+$
+
+_block 
+	_for e _over smallworld_product.layered_product_data().fast_elements()
+	_loop
+		print(e)
+	_endloop
+	_local ok? << _false 
+	_protect 
+		smallworld_product.add_product(:sw_dev_tools)
+		smallworld_product.add_product(:munit)
+		sw_module_manager.load_module(:munit_product)
+		ok? << _true 
+	_protection
+		_if _not ok? _then quit() _endif 
+	_endprotect 
+_endblock
+$
+
 _block
 	_local (file_name, dir) << system.pathname_components(!compiler_file!)
 	_local module_dir << system.pathname_down(dir, "az_compile_and_build")
@@ -8,16 +41,9 @@ _block
 _endblock
 $
 
-_block 
-	az_processor.correct_slashes_in_layer_products()
-	smallworld_product.add_product(:sw_dev_tools)
-	smallworld_product.add_product(:munit)
-	sw_module_manager.load_module(:munit_product)
+_block
+	get_global_value(:az_processor).run_tests()
 _endblock
 $
 
-_block
-	az_processor.run_tests()
-_endblock
-$
 

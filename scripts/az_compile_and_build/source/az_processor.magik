@@ -131,24 +131,6 @@ _method az_processor.get_option(p_key)
 _endmethod
 $
 
-_pragma(classify_level=restricted)
-_method az_processor.correct_slashes_in_layer_products()
-	## Need this fix because loading products with backslashes
-	## combined with forward slashes will fail on Ubuntu.
-	##
-	_for i_prop _over smallworld_product.layered_product_data().fast_elements()
-	_loop
-		_if system.os_name _is :windows
-		_then
-			i_prop[:path].substitute_character(%/, %\)
-		_else
-			i_prop[:path].substitute_character(%\, %/)
-		_endif 
-	_endloop 
-_endmethod
-$
-
-
 _pragma(classify_level=restricted, topic={azure})
 _method az_processor.error_proc
 	## 
