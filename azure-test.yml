@@ -109,10 +109,19 @@ jobs:
       condition: always()
       workingDirectory: '$(Pipeline.Workspace)'
       displayName: 'Display test run log'
+
+    - task: PythonScript@0
+      displayName: 'Create NUnit test results from Magik test results'
+      name: create_nunit_xml
+      inputs:
+        scriptSource: 'filePath'
+        scriptPath: 'scripts/convert_magik_xml_to_nunit_xml.py'
+        arguments: '$(Common.TestResultsDirectory) $(Pipeline.Workspace)/testresult.xml'
+        failOnStderr: true
     
     - task: PublishTestResults@2
       displayName: 'Publish MUnit test results'
       inputs:
         testResultsFormat: 'NUnit'
-        testResultsFiles: '$(Pipeline.Workspace)/repo/testresult_30.txt'
+        testResultsFiles: '$(Pipeline.Workspace)/testresult.xml'
         failTaskOnFailedTests: true
