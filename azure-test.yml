@@ -14,9 +14,10 @@ variables:
     value: $(Pipeline.Workspace)/SW-external
 
 # ### Directory structure
-# $(Pipeline.Workspace)/repo     contains the repository and become the working directory
-# $(Pipeline.Workspace)/core     contains the core installation of Smallworld
-# Build.ArtifactStagingDirectory contains the zipfiles to be uploaded as artifacts
+# $(Build.SourcesDirectory)           contains the repository and become the working directory
+# $(Pipeline.Workspace)/core          contains the core installation of Smallworld
+# Build.ArtifactStagingDirectory      contains the zipfiles to be uploaded as artifacts
+# $(Common.TestResultsDirectory)      contains the test results to be published
 # 
 jobs:
 - job: Download
@@ -25,9 +26,7 @@ jobs:
       persistCredentials: true
       fetchDepth: 2 
       workspaceRepo: true
-      path: repo
 
-    # note this script runs in /repo
     - script: |
         pwd
         ls
@@ -39,7 +38,7 @@ jobs:
     ## TO BE REMOVED WHEN THE DETECTION SCRIPT IS FUNCTIONAL
     ################
     - script: |
-        echo '##vso[task.setvariable variable=products_config;isOutput=true]{"customer_engine_app": {"product_path": "/home/vsts/work/1/repo/customer_engine_app", "product_name": "customer_engine_app", "product_type": "layered_product"}}'
+        echo '##vso[task.setvariable variable=products_config;isOutput=true]{"customer_engine_app": {"product_path": "$(Build.SourcesDirectory)/customer_engine_app", "product_name": "customer_engine_app", "product_type": "layered_product"}}'
       name: detect_products
     - script: |
         echo '$(detect_products.products_config)' > products_config.json
