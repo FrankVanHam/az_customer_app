@@ -16,9 +16,9 @@ pool:
 jobs:
 - job: Download
   steps:
-    - checkout: none
-    - script: |
-        pwd
-        ls
-        git diff --name-only HEAD HEAD~1 > $(Pipeline.Workspace)/changed_files.txt
-      displayName: 'Get changed files'
+  - checkout: none
+  - script: |
+      pwd
+      ls
+      git diff --name-only HEAD HEAD~1 > $(Pipeline.Workspace)/changed_files.txt
+    displayName: 'Get changed files'
