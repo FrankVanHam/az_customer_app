@@ -25,7 +25,7 @@ jobs:
     - checkout: self
       persistCredentials: true
       fetchDepth: 2 
-      workspaceRepo: true
+      #workspaceRepo: true
 
     - script: |
         pwd
