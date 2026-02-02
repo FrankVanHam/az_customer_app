@@ -16,7 +16,7 @@ pool:
 jobs:
 - job: Download
   steps:
-    
+    - checkout: none
     - script: |
         pwd
         ls
