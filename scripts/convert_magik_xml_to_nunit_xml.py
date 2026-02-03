@@ -58,7 +58,7 @@ class XMLConverter:
 
     def suite_attributes(self, nunit_root, count, magik_suite):
         return {
-            'type': "TestSuite",
+            'type': "Assembly",
             'id': nunit_root.attrib['id'] + '.' + str(count),
             'name': magik_suite.attrib['name'],
             'fullname': nunit_root.attrib['name'] +'/'+ magik_suite.attrib['name'],
