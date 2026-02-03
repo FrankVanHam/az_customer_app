@@ -49,10 +49,12 @@ jobs:
 - job: Recall
   dependsOn: Download
   steps:
+    - checkout: none
     - task: DownloadPipelineArtifact@2
       displayName: 'Download compiled result (repo.zip) from the Download job'
       inputs:
         artifact: 'repo_zip'
+        targetPath: '$(Pipeline.Workspace)'        
     - script: |
         ls -al $(Build.SourcesDirectory)
         ls -al $(Pipeline.Workspace)
@@ -62,6 +64,7 @@ jobs:
       inputs:
         archiveFilePatterns: '$(Pipeline.Workspace)/repo.zip'
         destinationFolder: '$(Pipeline.Workspace)'
+        cleanDestinationFolder: false
     - script: |
         ls -al $(Build.SourcesDirectory)
         ls -al $(Pipeline.Workspace)
