@@ -20,8 +20,8 @@ class XMLConverter:
                     print(f"Found XML file: {item_path}")
                     if os.stat(item_path).st_size > 0:
                         xml = self.convert_file(item_path)
-                    if xml is not None:
-                        xmls.append(xml)
+                        if xml is not None:
+                            xmls.append(xml)
         tree = self.combine_nunit_xmls(xmls)
         tree.write(target, encoding='utf-8', xml_declaration=True)
     
