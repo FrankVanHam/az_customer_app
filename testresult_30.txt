@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-run id="2" name="mock-assembly.dll" fullname="D:\Dev\NUnit\nunit-3.0\work\bin\vs2008\Debug\mock-assembly.dll" run-date="2011-07-26" start-time="11:34:27">
+<test-run id="2" name="mock-assembly.dll"  run-date="2011-07-26" start-time="11:34:27">
   <test-suite type="Assembly" id="1036" name="mock-assembly.dll" fullname="D:\Dev\NUnit\nunit-3.0\work\bin\vs2008\Debug\mock-assembly.dll" testcasecount="25" result="Failed" time="0.154" total="18" passed="12" failed="2" inconclusive="1" skipped="3" asserts="2">
       <test-case id="1005" name="FailingTest" fullname="NUnit.Tests.Assemblies.MockTestFixture.FailingTest" result="Failed" time="0.023" asserts="0">
         <failure>
