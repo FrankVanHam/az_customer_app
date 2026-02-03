@@ -42,6 +42,7 @@ _method az_processor.int!compile_and_build()
 	_self.correct_slashes_in_layer_products()
 	
 	_local config << _self.get_product_config_from_command_line()
+	write(write_string(:int!compile_and_build, " config ", config))
 	_if config.empty?
 	_then
 		write("No products to compile and build")
@@ -56,6 +57,7 @@ _method az_processor.int!run_tests()
 	_local output_dir << _self.get_output_dir_from_command_line()
 	_local config << _self.get_product_config_from_command_line()
 	_local aspects << _self.get_aspects_from_command_line()
+	write(write_string(:int!run_tests, " output_dir ", output_dir, " config ", config, "aspects ", aspects))
 	_if config.empty?
 	_then
 		write("No products to test")

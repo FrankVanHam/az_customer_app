@@ -118,6 +118,11 @@ jobs:
         scriptPath: 'scripts/convert_magik_xml_to_nunit_xml.py'
         arguments: '$(Common.TestResultsDirectory) $(Pipeline.Workspace)/testresult.xml'
         failOnStderr: true
+
+    - script: |
+        cat $(Pipeline.Workspace)/testresult.xml
+      displayName: 'Display converted NUnit test results'
+      condition: always()
     
     - task: PublishTestResults@2
       displayName: 'Publish MUnit test results'

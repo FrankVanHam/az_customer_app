@@ -18,9 +18,10 @@ class XMLConverter:
             if os.path.isfile(item_path):
                 if item_path.lower().endswith(".xml"):
                     print(f"Found XML file: {item_path}")
-                    xml = self.convert_file(item_path)
-                    if xml is not None:
-                        xmls.append(xml)
+                    if os.stat(item_path).st_size > 0:
+                        xml = self.convert_file(item_path)
+                        if xml is not None:
+                            xmls.append(xml)
         tree = self.combine_nunit_xmls(xmls)
         tree.write(target, encoding='utf-8', xml_declaration=True)
     
@@ -28,7 +29,7 @@ class XMLConverter:
         try:
             tree = ET.parse(xml_file)
             return tree.getroot()
-        except:
+        except Exception as e:
             print(f"Failed to parse XML file: {xml_file}")
             return None
         
