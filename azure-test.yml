@@ -37,8 +37,7 @@ jobs:
   variables:
     products_config: $[ dependencies.Download.outputs['detect_products.products_config'] ]
     anything_changed: $[ ne(variables.products_config, '{}') ]
-    need_compile1: $[ contains(variables.products_config, 'layered_product') ]
-    need_compile: true
+    need_compile: $[ contains(variables.products_config, 'layered_product') ]
   condition: eq(variables.anything_changed, 'true')
   dependsOn: Download
   steps:
@@ -48,6 +47,12 @@ jobs:
         echo "$(need_compile)"
         echo "$(anything_changed)"
       displayName: 'Check if compile is needed'
+
+    - script: |
+        echo "doing it"
+      condition: eq(variables.need_compile, true)
+    - script: |
+        echo "after doing it"
 
     - ${{ if eq(variables.need_compile, true) }}:
       - script: |
