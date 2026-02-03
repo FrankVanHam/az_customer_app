@@ -59,3 +59,26 @@ jobs:
           echo "doing it 2"
     - script: |
         echo "after doing it 2"
+    - ${{ if eq(variables.need_compile, 'True') }}:
+      - script: |
+          echo "doing it"
+    - script: |
+        echo "after doing it"
+
+    - ${{ if eq(variables['need_compile'], 'True') }}:
+      - script: |
+          echo "doing it 2"
+    - script: |
+        echo "after doing it 2"
+
+    - ${{ if eq(variables.need_compile, 'true') }}:
+      - script: |
+          echo "doing it"
+    - script: |
+        echo "after doing it"
+
+    - ${{ if eq(variables['need_compile'], 'true') }}:
+      - script: |
+          echo "doing it 2"
+    - script: |
+        echo "after doing it 2"
