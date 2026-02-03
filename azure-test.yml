@@ -46,7 +46,7 @@ jobs:
     - script: echo "$(need_compile)"
       displayName: 'Check if compile is needed'
 
-    - ${{ if eq(variables.need_compile, 'True') }}:
+    - ${{ if eq(need_compile, 'True') }}:
       - script: |
           echo "doing it"
     - script: |
