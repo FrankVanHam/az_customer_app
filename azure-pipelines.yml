@@ -76,109 +76,119 @@ jobs:
     - script: echo "$(need_compile)"
       displayName: 'Check if compile is needed'
 
-    - ${{ if eq(variables.need_compile, 'true') }}:
-      - task: JavaToolInstaller@1
-        displayName: 'Activate java 17 sdk'
-        inputs:
-          versionSpec: '17'
-          jdkArchitectureOption: 'x64'
-          jdkSourceOption: 'PreInstalled'
+    - task: JavaToolInstaller@1
+      condition: eq(variables.need_compile, true)
+      displayName: 'Activate java 17 sdk'
+      inputs:
+        versionSpec: '17'
+        jdkArchitectureOption: 'x64'
+        jdkSourceOption: 'PreInstalled'
 
-      - task: UniversalPackages@0
-        displayName: 'Download the core application'
-        inputs:
-          command: download
-          vstsFeed: '$(AZ_FEED)'
-          vstsFeedPackage: 'cst.jar'
-          vstsPackageVersion: $(SW_VERSION)
-          downloadDirectory: '$(CORE_DIR)'
+    - task: UniversalPackages@0
+      condition: eq(variables.need_compile, true)
+      displayName: 'Download the core application'
+      inputs:
+        command: download
+        vstsFeed: '$(AZ_FEED)'
+        vstsFeedPackage: 'cst.jar'
+        vstsPackageVersion: $(SW_VERSION)
+        downloadDirectory: '$(CORE_DIR)'
 
-      - script: |
-          sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
-        displayName: 'Install the core products'
-        workingDirectory: $(Pipeline.Workspace)
+    - script: |
+        sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
+      condition: eq(variables.need_compile, true)
+      displayName: 'Install the core products'
+      workingDirectory: $(Pipeline.Workspace)
 
-      - task: UniversalPackages@0
-        displayName: 'Download munit'
-        inputs:
-          command: download
-          vstsFeed: '$(AZ_FEED)'
-          vstsFeedPackage: 'munit.zip'
-          vstsPackageVersion: $(SW_VERSION)
-          downloadDirectory: '$(EXTERNAL_DIR)'
+    - task: UniversalPackages@0
+      condition: eq(variables.need_compile, true)
+      displayName: 'Download munit'
+      inputs:
+        command: download
+        vstsFeed: '$(AZ_FEED)'
+        vstsFeedPackage: 'munit.zip'
+        vstsPackageVersion: $(SW_VERSION)
+        downloadDirectory: '$(EXTERNAL_DIR)'
 
-      - task: ExtractFiles@1
-        displayName: 'Extract munit.zip'
-        inputs:
-          archiveFilePatterns: '$(EXTERNAL_DIR)/munit.zip'
-          destinationFolder: '$(EXTERNAL_DIR)'
-          cleanDestinationFolder: false
+    - task: ExtractFiles@1
+      condition: eq(variables.need_compile, true)
+      displayName: 'Extract munit.zip'
+      inputs:
+        archiveFilePatterns: '$(EXTERNAL_DIR)/munit.zip'
+        destinationFolder: '$(EXTERNAL_DIR)'
+        cleanDestinationFolder: false
 
-      - task: DownloadPipelineArtifact@2
-        inputs:
-          artifact: 'products_config'
-          targetPath: '$(Pipeline.Workspace)'
-        displayName: 'Download the products_config'
-      
-      - script: |
-          $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json > compile.log
-        displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to compile and build'
-        workingDirectory: '$(Pipeline.Workspace)'
-        env:
-          SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/compile_and_build.magik'
-          CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
-          SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
+    - task: DownloadPipelineArtifact@2
+      condition: eq(variables.need_compile, true)
+      inputs:
+        artifact: 'products_config'
+        targetPath: '$(Pipeline.Workspace)'
+      displayName: 'Download the products_config'
+    
+    - script: |
+        $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json > compile.log
+      condition: eq(variables.need_compile, true)
+      displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to compile and build'
+      workingDirectory: '$(Pipeline.Workspace)'
+      env:
+        SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/compile_and_build.magik'
+        CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
+        SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
 
-      - task: PublishPipelineArtifact@1
-        displayName: 'Publish compile log'
-        inputs:
-          targetPath: '$(Pipeline.Workspace)/compile.log'
-          artifact: 'compile_log'
-          publishLocation: 'pipeline'
+    - task: PublishPipelineArtifact@1
+      condition: eq(variables.need_compile, true)
+      displayName: 'Publish compile log'
+      inputs:
+        targetPath: '$(Pipeline.Workspace)/compile.log'
+        artifact: 'compile_log'
+        publishLocation: 'pipeline'
 
-      - script: |
-          $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json -test_output_dir $(Common.TestResultsDirectory) -test_aspects $(MUNIT_TEST_ASPECTS) > test_run.log
-        displayName: 'Run the script /run_tests.magik to run the munit tests of the given aspects'
-        workingDirectory: '$(Pipeline.Workspace)'
-        timeoutInMinutes: 2
-        env:
-          SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/run_tests.magik'
-          CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
-          SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
+    - script: |
+        $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json -test_output_dir $(Common.TestResultsDirectory) -test_aspects $(MUNIT_TEST_ASPECTS) > test_run.log
+      condition: eq(variables.need_compile, true)
+      displayName: 'Run the script /run_tests.magik to run the munit tests of the given aspects'
+      workingDirectory: '$(Pipeline.Workspace)'
+      timeoutInMinutes: 2
+      env:
+        SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/run_tests.magik'
+        CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
+        SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
 
-      - script: |
-          cat test_run.log
-        condition: always()
-        workingDirectory: '$(Pipeline.Workspace)'
-        displayName: 'Display test run log'
+    - script: |
+        cat test_run.log
+      condition: eq(variables.need_compile, true)
+      workingDirectory: '$(Pipeline.Workspace)'
+      displayName: 'Display test run log'
 
-      - task: PythonScript@0
-        displayName: 'Create NUnit test results from Magik test results'
-        name: create_nunit_xml
-        inputs:
-          scriptSource: 'filePath'
-          scriptPath: 'scripts/convert_magik_xml_to_nunit_xml.py'
-          arguments: '$(Common.TestResultsDirectory) $(Pipeline.Workspace)/testresult.xml'
-          failOnStderr: true
+    - task: PythonScript@0
+      condition: eq(variables.need_compile, true)
+      displayName: 'Create NUnit test results from Magik test results'
+      name: create_nunit_xml
+      inputs:
+        scriptSource: 'filePath'
+        scriptPath: 'scripts/convert_magik_xml_to_nunit_xml.py'
+        arguments: '$(Common.TestResultsDirectory) $(Pipeline.Workspace)/testresult.xml'
+        failOnStderr: true
 
-      - script: |
-          cat $(Pipeline.Workspace)/testresult.xml
-        displayName: 'Display converted NUnit test results'
-        condition: always()
-      
-      - task: PublishTestResults@2
-        displayName: 'Publish MUnit test results'
-        inputs:
-          testResultsFormat: 'NUnit'
-          testResultsFiles: '$(Pipeline.Workspace)/testresult.xml'
-          failTaskOnFailedTests: true
+    - script: |
+        cat $(Pipeline.Workspace)/testresult.xml
+      condition: eq(variables.need_compile, true)
+      displayName: 'Display converted NUnit test results'
+    
+    - task: PublishTestResults@2
+      condition: eq(variables.need_compile, true)
+      displayName: 'Publish MUnit test results'
+      inputs:
+        testResultsFormat: 'NUnit'
+        testResultsFiles: '$(Pipeline.Workspace)/testresult.xml'
+        failTaskOnFailedTests: true
 
-      - task: ArchiveFiles@2
-        displayName: 'Archive the compiled product'
-        inputs:
-          rootFolderOrFile: '$(Build.SourcesDirectory)'
-          archiveType: 'zip'
-          archiveFile: '$(Pipeline.Workspace)/repo.zip'
+    - task: ArchiveFiles@2
+      displayName: 'Archive the compiled product'
+      inputs:
+        rootFolderOrFile: '$(Build.SourcesDirectory)'
+        archiveType: 'zip'
+        archiveFile: '$(Pipeline.Workspace)/repo.zip'
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish compiled result (repo.zip) to be reused in the Archive job'
