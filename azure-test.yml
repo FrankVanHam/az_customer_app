@@ -43,7 +43,9 @@ jobs:
   steps:
     - checkout: none
 
-    - script: echo "$(need_compile)"
+    - script: |
+        echo "$(need_compile)"
+        echo "$(anything_changed)"
       displayName: 'Check if compile is needed'
 
     - ${{ if eq(variables.need_compile, true) }}:
@@ -51,3 +53,9 @@ jobs:
           echo "doing it"
     - script: |
         echo "after doing it"
+
+    - ${{ if eq(variables['need_compile'], true) }}:
+      - script: |
+          echo "doing it 2"
+    - script: |
+        echo "after doing it 2"
