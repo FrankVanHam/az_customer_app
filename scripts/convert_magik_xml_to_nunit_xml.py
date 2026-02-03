@@ -1,4 +1,4 @@
-import sys, os, re, json
+import os, datetime
 import argparse
 import xml.etree.ElementTree as ET
 
@@ -20,8 +20,8 @@ class XMLConverter:
                     print(f"Found XML file: {item_path}")
                     if os.stat(item_path).st_size > 0:
                         xml = self.convert_file(item_path)
-                        if xml is not None:
-                            xmls.append(xml)
+                    if xml is not None:
+                        xmls.append(xml)
         tree = self.combine_nunit_xmls(xmls)
         tree.write(target, encoding='utf-8', xml_declaration=True)
     
@@ -34,16 +34,25 @@ class XMLConverter:
             return None
         
     def combine_nunit_xmls(self, xmls):
-        nunit_root = ET.Element('test-run', {'name': 'root', 'id': '0'})
+        attrib = self.root_attributes()
+        nunit_root = ET.Element('test-run', attrib)
         c = 0
         for xml in xmls:
             self.add_suite(nunit_root, c, xml)
             c += 1
-        
         nunit_tree = ET.ElementTree(nunit_root)
         ET.indent(nunit_tree, space="  ", level=0)
         return nunit_tree
 
+    def root_attributes(self):
+        d = datetime.date.today()
+        return {
+            'name': 'root', 
+            'id': '0',
+            'run-date': d.strftime("%Y-%m-%d"),
+            'start-time': d.strftime("%H:%M:%S")
+            }
+        
     def add_suite(self, nunit_root, count, magik_suite):
         attrib = self.suite_attributes(nunit_root, count, magik_suite)
         suite = ET.SubElement(nunit_root, "test-suite", attrib)
@@ -58,7 +67,7 @@ class XMLConverter:
 
     def suite_attributes(self, nunit_root, count, magik_suite):
         return {
-            'type': "Assembly",
+            'type': "TestSuite",
             'id': nunit_root.attrib['id'] + '.' + str(count),
             'name': magik_suite.attrib['name'],
             'fullname': nunit_root.attrib['name'] +'/'+ magik_suite.attrib['name'],
