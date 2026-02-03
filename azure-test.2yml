@@ -1,0 +1,30 @@
+# trigger the pipeline on a push on the main branch
+trigger:
+- no_main
+
+pool:
+  vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
+
+# set variables. Get the volatile one from the library group. The rest is set to point to directories for easy reading
+variables:
+  - group: customer-app-vars
+  - name: CORE_DIR
+    value: $(Pipeline.Workspace)/core
+  - name: EXTERNAL_DIR
+    value: $(Pipeline.Workspace)/SW-external
+
+# ### Directory structure
+# $(Build.SourcesDirectory)           contains the repository and become the working directory
+# $(Pipeline.Workspace)/core          contains the core installation of Smallworld
+# Build.ArtifactStagingDirectory      contains the zipfiles to be uploaded as artifacts
+# $(Common.TestResultsDirectory)      contains the test results to be published
+# 
+jobs:
+- job: Download
+  steps:
+  - task: PublishTestResults@2
+    displayName: 'Publish MUnit test results'
+    inputs:
+      testResultsFormat: 'NUnit'
+      testResultsFiles: 'testresult_30.txt'
+      failTaskOnFailedTests: true
