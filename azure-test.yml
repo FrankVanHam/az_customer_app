@@ -37,7 +37,8 @@ jobs:
   variables:
     products_config: $[ dependencies.Download.outputs['detect_products.products_config'] ]
     anything_changed: $[ ne(variables.products_config, '{}') ]
-    need_compile: $[ contains(variables.products_config, 'layered_product') ]
+    need_compile1: $[ contains(variables.products_config, 'layered_product') ]
+    need_compile: true
   condition: eq(variables.anything_changed, 'true')
   dependsOn: Download
   steps:
