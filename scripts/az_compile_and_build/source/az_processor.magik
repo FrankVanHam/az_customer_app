@@ -12,13 +12,14 @@ $
 _pragma(classify_level=restricted)
 _method az_processor.compile_and_build()
 	##
+	_local ok? << _false
 	_try
 		_handling error _with _self.error_proc
-		_self.int!compile_and_build()
+		ok? << _self.int!compile_and_build()
 	_when error 
 		
 	_endtry
-	quit()
+	quit(ok?)
 _endmethod
 $
 
@@ -46,8 +47,10 @@ _method az_processor.int!compile_and_build()
 	_if config.empty?
 	_then
 		write("No products to compile and build")
+		_return _true
 	_else
 		bob.new().build(config)
+		_return _true
 	_endif 
 _endmethod
 $
