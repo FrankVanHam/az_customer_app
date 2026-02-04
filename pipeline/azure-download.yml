@@ -1,13 +1,9 @@
-parameters:
-- name: ADDITIONAL_ARTIFACT_DIRS
-  type: string
+# parameters:
+# - name: ADDITIONAL_ARTIFACT_DIRS
+#   type: string
 
 steps:
-- script: |
-    echo "$(ADDITIONAL_ARTIFACT_DIRS)"
-    echo "$(parameters.ADDITIONAL_ARTIFACT_DIRS)"
-    echo "$(variables.ADDITIONAL_ARTIFACT_DIRS)"
-    
+
 - checkout: self
   persistCredentials: true
   fetchDepth: 2 

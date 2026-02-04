@@ -1,0 +1,209 @@
+# trigger the pipeline on a push on the main branch
+trigger:
+- no_main
+
+pool:
+  vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
+
+# set variables. Get the volatile one from the library group. The rest is set to point to directories for easy reading
+variables:
+  - group: customer-app-vars
+  - name: CORE_DIR
+    value: $(Pipeline.Workspace)/core
+  - name: EXTERNAL_DIR
+    value: $(Pipeline.Workspace)/SW-external
+
+# ### Directory structure
+# $(Build.SourcesDirectory)           contains the repository and become the working directory
+# $(Pipeline.Workspace)/core          contains the core installation of Smallworld
+# Build.ArtifactStagingDirectory      contains the zipfiles to be uploaded as artifacts
+# $(Common.TestResultsDirectory)      contains the test results to be published
+# 
+jobs:
+- job: Download
+  steps:
+  - template: azure-download.yml
+    parameters:
+      ADDITIONAL_ARTIFACT_DIRS: $(ADDITIONAL_ARTIFACT_DIRS)
+
+  - script: |
+      echo "$(detect_products.products_config)"
+
+- job: Compile
+  variables:
+    products_config: $[ dependencies.Download.outputs['detect_products.products_config'] ]
+    anything_changed: $[ ne(variables.products_config, '{}') ]
+    need_compile: $[ contains(variables.products_config, 'layered_product') ]
+  condition: eq(variables.anything_changed, 'true')
+  dependsOn: Download
+  steps:
+    - checkout: self
+      persistCredentials: true
+      fetchDepth: 2 
+
+    - script: echo "$(need_compile)"
+      displayName: 'Check if compile is needed'
+
+    - task: JavaToolInstaller@1
+      condition: eq(variables.need_compile, true)
+      displayName: 'Activate java 17 sdk'
+      inputs:
+        versionSpec: '17'
+        jdkArchitectureOption: 'x64'
+        jdkSourceOption: 'PreInstalled'
+
+    - task: UniversalPackages@0
+      condition: eq(variables.need_compile, true)
+      displayName: 'Download the core application'
+      inputs:
+        command: download
+        vstsFeed: '$(AZ_FEED)'
+        vstsFeedPackage: 'cst.jar'
+        vstsPackageVersion: $(SW_VERSION)
+        downloadDirectory: '$(CORE_DIR)'
+
+    - script: |
+        sudo java -Daccept_licences="YES" -Dinstall_language_packs="YES" -jar $(CORE_DIR)/core_installer.jar $(CORE_DIR) vsts vsts
+      condition: eq(variables.need_compile, true)
+      displayName: 'Install the core products'
+      workingDirectory: $(Pipeline.Workspace)
+
+    - task: UniversalPackages@0
+      condition: eq(variables.need_compile, true)
+      displayName: 'Download munit'
+      inputs:
+        command: download
+        vstsFeed: '$(AZ_FEED)'
+        vstsFeedPackage: 'munit.zip'
+        vstsPackageVersion: $(SW_VERSION)
+        downloadDirectory: '$(EXTERNAL_DIR)'
+
+    - task: ExtractFiles@1
+      condition: eq(variables.need_compile, true)
+      displayName: 'Extract munit.zip'
+      inputs:
+        archiveFilePatterns: '$(EXTERNAL_DIR)/munit.zip'
+        destinationFolder: '$(EXTERNAL_DIR)'
+        cleanDestinationFolder: false
+
+    - task: DownloadPipelineArtifact@2
+      condition: eq(variables.need_compile, true)
+      inputs:
+        artifact: 'products_config'
+        targetPath: '$(Pipeline.Workspace)'
+      displayName: 'Download the products_config'
+    
+    - script: |
+        $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json > compile.log
+      condition: eq(variables.need_compile, true)
+      displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to compile and build'
+      workingDirectory: '$(Pipeline.Workspace)'
+      env:
+        SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/compile_and_build.magik'
+        CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
+        SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
+
+    - task: PublishPipelineArtifact@1
+      condition: eq(variables.need_compile, true)
+      displayName: 'Publish compile log'
+      inputs:
+        targetPath: '$(Pipeline.Workspace)/compile.log'
+        artifact: 'compile_log'
+        publishLocation: 'pipeline'
+
+    - script: |
+        $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json -test_output_dir $(Common.TestResultsDirectory) -test_aspects $(MUNIT_TEST_ASPECTS) > test_run.log
+      condition: eq(variables.need_compile, true)
+      displayName: 'Run the script /run_tests.magik to run the munit tests of the given aspects'
+      workingDirectory: '$(Pipeline.Workspace)'
+      timeoutInMinutes: 2
+      env:
+        SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/run_tests.magik'
+        CUSTOMER_APP_BASE_DIR: '$(Build.SourcesDirectory)'
+        SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
+
+    - script: |
+        cat test_run.log
+      condition: eq(variables.need_compile, true)
+      workingDirectory: '$(Pipeline.Workspace)'
+      displayName: 'Display test run log'
+
+    - task: PythonScript@0
+      condition: eq(variables.need_compile, true)
+      displayName: 'Create NUnit test results from Magik test results'
+      name: create_nunit_xml
+      inputs:
+        scriptSource: 'filePath'
+        scriptPath: 'scripts/convert_magik_xml_to_nunit_xml.py'
+        arguments: '$(Common.TestResultsDirectory) $(Pipeline.Workspace)/testresult.xml'
+        failOnStderr: true
+
+    - script: |
+        cat $(Pipeline.Workspace)/testresult.xml
+      condition: eq(variables.need_compile, true)
+      displayName: 'Display converted NUnit test results'
+    
+    - task: PublishTestResults@2
+      condition: eq(variables.need_compile, true)
+      displayName: 'Publish MUnit test results'
+      inputs:
+        testResultsFormat: 'NUnit'
+        testResultsFiles: '$(Pipeline.Workspace)/testresult.xml'
+        failTaskOnFailedTests: true
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive the compiled product'
+      inputs:
+        rootFolderOrFile: '$(Build.SourcesDirectory)'
+        archiveType: 'zip'
+        archiveFile: '$(Pipeline.Workspace)/repo.zip'
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish compiled result (repo.zip) to be reused in the Archive job'
+      inputs:
+        targetPath: '$(Pipeline.Workspace)/repo.zip'
+        artifact: 'repo_zip'
+        publishLocation: 'pipeline'
+
+    - script: |
+        echo '##vso[task.setvariable variable=products_config;isOutput=true]$(products_config)'
+      displayName: 'Create script to pass products_config to the next job'
+      name: pass_products_config
+      workingDirectory: $(Pipeline.Workspace)
+
+- job: Archive
+  dependsOn: Compile
+  strategy: 
+    matrix: $[dependencies.Compile.outputs['pass_products_config.products_config']]
+  # strategy provided variables $(product_name) and $(product_path)
+  steps:
+    - checkout: none
+
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifact: 'repo_zip'
+        targetPath: '$(Pipeline.Workspace)'
+      displayName: 'Download the repo.zip'
+
+    - task: ExtractFiles@1
+      displayName: 'Extract repo.zip'
+      inputs:
+        archiveFilePatterns: '$(Pipeline.Workspace)/repo.zip'
+        destinationFolder: '$(Pipeline.Workspace)'
+        cleanDestinationFolder: false
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive $(product_path)'
+      inputs:
+        rootFolderOrFile: '$(product_path)'
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(product_name).zip'
+
+    - task: UniversalPackages@0
+      displayName: 'Upload $(product_path)'
+      inputs:
+        command: publish
+        vstsFeedPublish: '$(AZ_FEED)'
+        vstsFeedPackagePublish: '$(product_name)-$(CUSTOMER_APP_VERSION).zip'
+        packagePublishDescription: 'Archive upload of product $(product_name) built for version $(CUSTOMER_APP_VERSION)'
+        publishDirectory: '$(Build.ArtifactStagingDirectory)/$(product_name).zip'

@@ -1,16 +1,16 @@
-parameters:
-- name: need_compile
-  type: boolean
-- name: AZ_FEED
-  type: string
-- name: SW_VERSION
-  type: string
-- name: CORE_DIR
-  type: string
-- name: EXTERNAL_DIR
-  type: string
-- name: MUNIT_TEST_ASPECTS
-  type: string
+# parameters:
+# - name: need_compile
+#   type: boolean
+# - name: AZ_FEED
+#   type: string
+# - name: SW_VERSION
+#   type: string
+# - name: CORE_DIR
+#   type: string
+# - name: EXTERNAL_DIR
+#   type: string
+# - name: MUNIT_TEST_ASPECTS
+#   type: string
 
 steps:
 - task: JavaToolInstaller@1

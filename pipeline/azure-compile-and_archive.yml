@@ -1,30 +1,30 @@
-parameters:
-- name: need_compile
-  type: boolean
-- name: AZ_FEED
-  type: string
-- name: SW_VERSION
-  type: string
-- name: CORE_DIR
-  type: string
-- name: EXTERNAL_DIR
-  type: string
-- name: MUNIT_TEST_ASPECTS
-  type: string
+# parameters:
+# - name: need_compile
+#   type: boolean
+# - name: AZ_FEED
+#   type: string
+# - name: SW_VERSION
+#   type: string
+# - name: CORE_DIR
+#   type: string
+# - name: EXTERNAL_DIR
+#   type: string
+# - name: MUNIT_TEST_ASPECTS
+#   type: string
 
 steps:
 - checkout: self
   persistCredentials: true
   fetchDepth: 2 
 
-- template: azure-compile.yml      
-  parameters:
-    need_compile: $(need_compile)
-    AZ_FEED: $(AZ_FEED)
-    SW_VERSION: $(SW_VERSION)
-    CORE_DIR: $(CORE_DIR)
-    EXTERNAL_DIR: $(EXTERNAL_DIR)
-    MUNIT_TEST_ASPECTS: $(MUNIT_TEST_ASPECTS)
+- template: azure-compile.yml
+  # parameters:
+  #   need_compile: $(need_compile)
+  #   AZ_FEED: $(AZ_FEED)
+  #   SW_VERSION: $(SW_VERSION)
+  #   CORE_DIR: $(CORE_DIR)
+  #   EXTERNAL_DIR: $(EXTERNAL_DIR)
+  #   MUNIT_TEST_ASPECTS: $(MUNIT_TEST_ASPECTS)
 
 - template: azure-archive-products.yml
 
