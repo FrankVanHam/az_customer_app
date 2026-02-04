@@ -40,8 +40,6 @@ $
 
 _pragma(classify_level=restricted)
 _method az_processor.int!compile_and_build()
-	_self.correct_slashes_in_layer_products()
-	
 	_local config << _self.get_product_config_from_command_line()
 	write(write_string(:int!compile_and_build, " config ", config))
 	_if config.empty?

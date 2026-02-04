@@ -1,0 +1,14 @@
+steps:
+- task: ArchiveFiles@2
+  displayName: 'Archive the compiled product'
+  inputs:
+    rootFolderOrFile: '$(Build.SourcesDirectory)'
+    archiveType: 'zip'
+    archiveFile: '$(Pipeline.Workspace)/repo.zip'
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish compiled result (repo.zip) to be reused in the Archive job'
+  inputs:
+    targetPath: '$(Pipeline.Workspace)/repo.zip'
+    artifact: 'repo_zip'
+    publishLocation: 'pipeline'

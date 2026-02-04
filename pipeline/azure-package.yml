@@ -1,0 +1,41 @@
+parameters:
+- name: product_path
+  type: string
+- name: product_name
+  type: string
+- name: AZ_FEED
+  type: string
+- name: CUSTOMER_APP_VERSION
+  type: string
+
+steps:
+- checkout: none
+
+- task: DownloadPipelineArtifact@2
+  inputs:
+    artifact: 'repo_zip'
+    targetPath: '$(Pipeline.Workspace)'
+  displayName: 'Download the repo.zip'
+
+- task: ExtractFiles@1
+  displayName: 'Extract repo.zip'
+  inputs:
+    archiveFilePatterns: '$(Pipeline.Workspace)/repo.zip'
+    destinationFolder: '$(Pipeline.Workspace)'
+    cleanDestinationFolder: false
+
+- task: ArchiveFiles@2
+  displayName: 'Archive $(product_path)'
+  inputs:
+    rootFolderOrFile: '$(product_path)'
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(product_name).zip'
+
+- task: UniversalPackages@0
+  displayName: 'Upload $(product_path)'
+  inputs:
+    command: publish
+    vstsFeedPublish: '$(AZ_FEED)'
+    vstsFeedPackagePublish: '$(product_name)-$(CUSTOMER_APP_VERSION).zip'
+    packagePublishDescription: 'Archive upload of product $(product_name) built for version $(CUSTOMER_APP_VERSION)'
+    publishDirectory: '$(Build.ArtifactStagingDirectory)/$(product_name).zip'

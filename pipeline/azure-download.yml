@@ -1,43 +1,43 @@
 parameters:
-  - name: ADDITIONAL_ARTIFACT_DIRS
-    type: string
+- name: ADDITIONAL_ARTIFACT_DIRS
+  type: string
 
 steps:
-  - checkout: self
-    persistCredentials: true
-    fetchDepth: 2 
-    #workspaceRepo: true
+- checkout: self
+  persistCredentials: true
+  fetchDepth: 2 
+  #workspaceRepo: true
 
-  - script: |
-      git diff --name-only HEAD HEAD~1 > $(Pipeline.Workspace)/changed_files.txt
-    displayName: 'Get changed files'
+- script: |
+    git diff --name-only HEAD HEAD~1 > $(Pipeline.Workspace)/changed_files.txt
+  displayName: 'Get changed files'
 
-  - task: PythonScript@0
-    displayName: 'Detect products'
-    name: detect_products_out #############################################################################
-    inputs:
-      scriptSource: 'filePath'
-      scriptPath: 'scripts/detect_products.py'
-      arguments: '. 2 $(ADDITIONAL_ARTIFACT_DIRS) $(Pipeline.Workspace)/changed_files.txt products_config'
-      failOnStderr: true
+- task: PythonScript@0
+  displayName: 'Detect products'
+  name: detect_products_out #############################################################################
+  inputs:
+    scriptSource: 'filePath'
+    scriptPath: 'scripts/detect_products.py'
+    arguments: '. 2 $(ADDITIONAL_ARTIFACT_DIRS) $(Pipeline.Workspace)/changed_files.txt products_config'
+    failOnStderr: true
 
-  ################
-  ## TEMPORARY CODE TO SIMULATE DETECTION OF CHANGED FILES
-  ## TO BE REMOVED WHEN THE DETECTION SCRIPT IS FUNCTIONAL
-  ################
-  - script: |
-      echo '##vso[task.setvariable variable=products_config;isOutput=true]{"customer_engine_app": {"product_path": "$(Build.SourcesDirectory)/customer_engine_app", "product_name": "customer_engine_app", "product_type": "layered_product"}}'
-    name: detect_products
+################
+## TEMPORARY CODE TO SIMULATE DETECTION OF CHANGED FILES
+## TO BE REMOVED WHEN THE DETECTION SCRIPT IS FUNCTIONAL
+################
+- script: |
+    echo '##vso[task.setvariable variable=products_config;isOutput=true]{"customer_engine_app": {"product_path": "$(Build.SourcesDirectory)/customer_engine_app", "product_name": "customer_engine_app", "product_type": "layered_product"}}'
+  name: detect_products
 
-  - script: |
-      echo '$(detect_products.products_config)' > products_config.json
-    name: print_products
-    displayName: "create a JSON file with products config"
-    workingDirectory: $(Pipeline.Workspace)
+- script: |
+    echo '$(detect_products.products_config)' > products_config.json
+  name: print_products
+  displayName: "create a JSON file with products config"
+  workingDirectory: $(Pipeline.Workspace)
 
-  - task: PublishPipelineArtifact@1
-    displayName: 'Publish products_config.json'
-    inputs:
-      targetPath: '$(Pipeline.Workspace)/products_config.json'
-      artifact: 'products_config'
-      publishLocation: 'pipeline'
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish products_config.json'
+  inputs:
+    targetPath: '$(Pipeline.Workspace)/products_config.json'
+    artifact: 'products_config'
+    publishLocation: 'pipeline'
