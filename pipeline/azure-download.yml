@@ -1,7 +1,6 @@
 parameters:
   - name: ADDITIONAL_ARTIFACT_DIRS
     type: string
-    mandatory: true
 
 steps:
   - checkout: self
