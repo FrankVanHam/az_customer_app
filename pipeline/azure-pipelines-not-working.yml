@@ -1,0 +1,57 @@
+# trigger the pipeline on a push on the main branch
+trigger:
+- no_main
+
+pool:
+  vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
+
+# set variables. Get the volatile one from the library group. The rest is set to point to directories for easy reading
+variables:
+  - group: customer-app-vars
+  - name: CORE_DIR
+    value: $(Pipeline.Workspace)/core
+  - name: EXTERNAL_DIR
+    value: $(Pipeline.Workspace)/SW-external
+
+# ### Directory structure
+# $(Build.SourcesDirectory)           contains the repository and become the working directory
+# $(Pipeline.Workspace)/core          contains the core installation of Smallworld
+# $(Build.ArtifactStagingDirectory)   contains the zipfiles to be uploaded as artifacts
+# $(Common.TestResultsDirectory)      contains the test results to be published
+# 
+jobs:
+- job: Download
+  steps:
+  - template: azure-download.yml
+    parameters:
+      ADDITIONAL_ARTIFACT_DIRS: $(ADDITIONAL_ARTIFACT_DIRS)
+
+- job: Compile
+  variables:
+    products_config: $[ dependencies.Download.outputs['detect_products.products_config'] ]
+    anything_changed: $[ ne(variables.products_config, '{}') ]
+    need_compile: $[ contains(variables.products_config, 'layered_product') ]
+  condition: eq(variables.anything_changed, 'true')
+  dependsOn: Download
+  steps:
+    - template: azure-compile-and_archive.yml
+      parameters:
+        need_compile: $(variables.need_compile)
+        AZ_FEED: $(AZ_FEED)
+        SW_VERSION: $(SW_VERSION)
+        CORE_DIR: $(CORE_DIR)
+        EXTERNAL_DIR: $(EXTERNAL_DIR)
+        MUNIT_TEST_ASPECTS: $(MUNIT_TEST_ASPECTS) 
+
+- job: Archive
+  dependsOn: Compile
+  strategy: 
+    matrix: $[dependencies.Compile.outputs['pass_products_config.products_config']]
+  # strategy provides variables $(product_name) and $(product_path)
+  steps:
+  - template: azure-package.yml
+    parameters:
+      product_path: '$(product_path)'
+      product_name: '$(product_name)'
+      AZ_FEED: $(AZ_FEED)
+      CUSTOMER_APP_VERSION: $(CUSTOMER_APP_VERSION)
