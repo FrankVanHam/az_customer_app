@@ -25,6 +25,9 @@ jobs:
   - template: azure-download.yml
     parameters:
       ADDITIONAL_ARTIFACT_DIRS: $(ADDITIONAL_ARTIFACT_DIRS)
+  - script: |
+      echo '##vso[task.setvariable variable=products_config;isOutput=true]{"customer_engine_app": {"product_path": "$(Build.SourcesDirectory)/customer_engine_app", "product_name": "customer_engine_app", "product_type": "layered_product"}}'
+    name: detect_products
 
 - job: Compile
   variables:
@@ -36,7 +39,7 @@ jobs:
   steps:
     - template: azure-compile-and_archive.yml
       parameters:
-        need_compile: $(need_compile)
+        need_compile: $(variables.need_compile)
         AZ_FEED: $(AZ_FEED)
         SW_VERSION: $(SW_VERSION)
         CORE_DIR: $(CORE_DIR)
