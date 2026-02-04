@@ -39,7 +39,7 @@ jobs:
   steps:
     - template: azure-compile-and_archive.yml
       parameters:
-        need_compile: $(variables.need_compile)
+        #need_compile: $(variables.need_compile)
         AZ_FEED: $(AZ_FEED)
         SW_VERSION: $(SW_VERSION)
         CORE_DIR: $(CORE_DIR)
