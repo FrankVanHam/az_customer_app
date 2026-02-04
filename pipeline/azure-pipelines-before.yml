@@ -23,8 +23,8 @@ jobs:
 - job: Download
   steps:
   - template: azure-download.yml
-    parameters:
-      ADDITIONAL_ARTIFACT_DIRS: $(ADDITIONAL_ARTIFACT_DIRS)
+    # parameters:
+    #   ADDITIONAL_ARTIFACT_DIRS: $(ADDITIONAL_ARTIFACT_DIRS)
 
   - script: |
       echo "$(detect_products.products_config)"
