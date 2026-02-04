@@ -21,7 +21,7 @@ variables:
 # 
 jobs:
 - job: Download
-- template: pipeline/azure-download.yml
+- template: azure-download.yml
   parameters:
     ADDITIONAL_ARTIFACT_DIRS: $(ADDITIONAL_ARTIFACT_DIRS)
 
