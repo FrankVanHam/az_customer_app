@@ -14,7 +14,7 @@ steps:
     echo '$(parameters.AZ_BUILD_ALL)'
     echo '$(parameters.AZ_BUILD_THIS)'
 
-- ${{ if eq(parameters.AZ_BUILD_ALL, 'true') }}:
+- ${{ if eq(parameters.AZ_BUILD_ALL, true) }}:
   - script: |
       cp ./artifact.json $(Pipeline.Workspace)/products_config.json
     displayName: 'Build all products - copy artifact.json to products_config.json'
