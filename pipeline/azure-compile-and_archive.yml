@@ -17,8 +17,8 @@ steps:
 
 - template: azure-compile.yml
   parameters:
-    AZ_DEBUG: ${{(parameters.AZ_DEBUG}}
+    AZ_DEBUG: ${{parameters.AZ_DEBUG}}
 
 - template: azure-archive-product.yml
   parameters:
-    AZ_DEBUG: ${{(parameters.AZ_DEBUG}}
+    AZ_DEBUG: ${{parameters.AZ_DEBUG}}
