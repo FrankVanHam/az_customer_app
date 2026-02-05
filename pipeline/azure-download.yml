@@ -11,7 +11,7 @@ steps:
 
 - ${{ if eq(variables.AZ_BUILD_ALL, 'true') }}:
   - script: |
-      cp $(Pipeline.Workspace)/artifact.json $(Pipeline.Workspace)/products_config.json
+      cp ./artifact.json $(Pipeline.Workspace)/products_config.json
     displayName: 'Build all products - copy artifact.json to products_config.json'
 - ${{ elseif eq(variables.AZ_BUILD_THIS, 'true') }}:
   - script: |
@@ -36,7 +36,7 @@ steps:
     inputs:
       scriptSource: 'filePath'
       scriptPath: 'scripts/detect_products.py'
-      arguments: '$(Pipeline.Workspace)/changed_files.txt $(Pipeline.Workspace)/artifacts.json $(Pipeline.Workspace)/products_config.json'
+      arguments: '$(Pipeline.Workspace)/changed_files.txt ./artifacts.json $(Pipeline.Workspace)/products_config.json'
       failOnStderr: true
 # ${{ endif }}
 
