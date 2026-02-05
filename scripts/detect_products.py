@@ -80,18 +80,18 @@ def main():
     parser.add_argument("depth", help="The maximum depth to scan through", type=int)
     parser.add_argument("adds", help="A list of additional directories in the repository", type=str)
     parser.add_argument("changes", help="The file containing the changes in the repository", type=str)
-    parser.add_argument("var_name", help="The name of the variable to set in the azure pipeline", type=str)
+    parser.add_argument("target", help="The name of the json file to create", type=str)
     args = parser.parse_args()
     
     adds = [os.path.abspath(x.strip()) for x in args.adds.split(',')]
     path = os.path.abspath(args.path)
     changes = os.path.abspath(args.changes)
+    target = os.path.abspath(args.target)
     
     detector = ProductDetector()
     results = detector.detect(path, args.depth, adds, changes)
-    result_string = json.dumps(results)
-    print("")
-    print(f"##vso[task.setvariable variable={args.var_name};;isOutput=true]{result_string}")
+    with open(target, 'w') as f:
+        json.dump(results, f)
 
 if __name__ == "__main__":
     main()

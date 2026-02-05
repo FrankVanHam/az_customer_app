@@ -1,12 +1,8 @@
-# parameters:
+# variables import:
 # - name: product_path
-#   type: string
 # - name: product_name
-#   type: string
 # - name: AZ_FEED
-#   type: string
 # - name: CUSTOMER_APP_VERSION
-#   type: string
 
 steps:
 - checkout: none

@@ -23,6 +23,9 @@ jobs:
 - job: Download
   steps:
   - template: azure-download.yml
+    ## The step detect_products creates a variable products_config with the information about the changed products,
+    ## which is then used in the Compile job to decide which products to compile. 
+    ## The same variable is also passed to the Archive job to know which products to archive.
 
 - job: Compile
   variables:
@@ -38,6 +41,5 @@ jobs:
   dependsOn: [Download, Compile]
   strategy: 
     matrix: $[dependencies.Download.outputs['detect_products.products_config']]
-  # strategy provides variables $(product_name) and $(product_path)
   steps:
   - template: azure-package.yml

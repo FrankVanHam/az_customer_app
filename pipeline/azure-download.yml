@@ -1,17 +1,24 @@
-# parameters:
+# variables import:
 # - name: ADDITIONAL_ARTIFACT_DIRS
-#   type: string
 
 steps:
 
 - checkout: self
+  displayName: 'Checkout the repository'
   persistCredentials: true
-  fetchDepth: 2 
-  #workspaceRepo: true
+  fetchDepth: 2
 
 - script: |
     git diff --name-only HEAD HEAD~1 > $(Pipeline.Workspace)/changed_files.txt
-  displayName: 'Get changed files'
+  displayName: 'Get changed files and store them in )/changed_files.txt'
+
+- task: PublishPipelineArtifact@1
+  condition: eq(variables.AZ_DEBUG, true)
+  displayName: 'Publish changed_files.txt for debugging purposes'
+  inputs:
+    targetPath: '$(Pipeline.Workspace)/changed_files.txt'
+    artifact: 'changed_files'
+    publishLocation: 'pipeline'
 
 - task: PythonScript@0
   displayName: 'Detect products'
@@ -19,7 +26,7 @@ steps:
   inputs:
     scriptSource: 'filePath'
     scriptPath: 'scripts/detect_products.py'
-    arguments: '. 2 $(ADDITIONAL_ARTIFACT_DIRS) $(Pipeline.Workspace)/changed_files.txt products_config'
+    arguments: '. 2 $(ADDITIONAL_ARTIFACT_DIRS) $(Pipeline.Workspace)/changed_files.txt $(Pipeline.Workspace)/products_config.json'
     failOnStderr: true
 
 ################
@@ -27,17 +34,16 @@ steps:
 ## TO BE REMOVED WHEN THE DETECTION SCRIPT IS FUNCTIONAL
 ################
 - script: |
-    echo '##vso[task.setvariable variable=products_config;isOutput=true]{"customer_engine_app": {"product_path": "$(Build.SourcesDirectory)/customer_engine_app", "product_name": "customer_engine_app", "product_type": "layered_product"}}'
-  name: detect_products
+    echo '{"customer_engine_app": {"product_path": "$(Build.SourcesDirectory)/customer_engine_app", "product_name": "customer_engine_app", "product_type": "layered_product"}}' > $(Pipeline.Workspace)/products_config.json
+  displayName: 'Simulate detection of changed products'
 
 - script: |
-    echo '$(detect_products.products_config)' > products_config.json
-  name: print_products
-  displayName: "create a JSON file with products config"
-  workingDirectory: $(Pipeline.Workspace)
+    echo '##vso[task.setvariable variable=products_config;isOutput=true]'$(cat $(Pipeline.Workspace)/products_config.json)
+  name: detect_products
 
 - task: PublishPipelineArtifact@1
-  displayName: 'Publish products_config.json'
+  condition: eq(variables.AZ_DEBUG, true)
+  displayName: 'Publish products_config.json for debugging purposes'
   inputs:
     targetPath: '$(Pipeline.Workspace)/products_config.json'
     artifact: 'products_config'
