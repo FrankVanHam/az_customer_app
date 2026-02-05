@@ -37,6 +37,10 @@ jobs:
       echo '${{parameters.AZ_BUILD_ALL}}'
       echo '${{parameters.AZ_BUILD_THIS}}'
   - template: azure-download.yml
+    parameters:
+      AZ_BUILD_ALL: ${{parameters.AZ_BUILD_ALL}}
+      AZ_BUILD_THIS: ${{parameters.AZ_BUILD_THIS}}
+      AZ_DEBUG: ${{parameters.AZ_DEBUG}}
     ## The step detect_products creates a variable products_config with the information about the changed products,
     ## which is then used in the Compile job to decide which products to compile. 
     ## The same variable is also passed to the Archive job to know which products to archive.

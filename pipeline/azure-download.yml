@@ -1,3 +1,11 @@
+parameters:
+  - name: AZ_BUILD_ALL
+    type: boolean
+  - name: AZ_BUILD_THIS
+    type: string
+  - name: AZ_DEBUG
+    type: boolean
+    
 # variables import:
 # - name: ADDITIONAL_ARTIFACT_DIRS
 # - name: AZ_BUILD_ALL
