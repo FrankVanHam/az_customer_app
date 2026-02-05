@@ -2,7 +2,7 @@
 variables:
   - group: customer-app-vars
   - name: AZ_SW_PRODUCT_TO_BUILD
-    value: customer_prd
+    value: customer_app
   - name: CUSTOMER_ARTIFACT
     value: $(AZ_SW_PRODUCT_TO_BUILD)-$(customer_prd_VERSION).zip
   - name: REGISTRY_ARTIFACT
@@ -27,7 +27,7 @@ jobs:
           displayName: 'Download customer app artifact'
           inputs:
             command: download
-            vstsFeed: 'SW/froggie'
+            vstsFeed: '$(AZ_FEED)'
             vstsFeedPackage: $(CUSTOMER_ARTIFACT)
             vstsPackageVersion: '*'
             downloadDirectory: '$(System.DefaultWorkingDirectory)'
@@ -35,7 +35,7 @@ jobs:
           displayName: 'Download smallworld_registry'
           inputs:
             command: download
-            vstsFeed: 'SW/froggie'
+            vstsFeed: '$(AZ_FEED)'
             vstsFeedPackage: $(REGISTRY_ARTIFACT)
             vstsPackageVersion: '*'
             downloadDirectory: '$(System.DefaultWorkingDirectory)'
@@ -43,7 +43,7 @@ jobs:
           displayName: 'Download run folder'
           inputs:
             command: download
-            vstsFeed: 'SW/froggie'
+            vstsFeed: '$(AZ_FEED)'
             vstsFeedPackage: $(RUN_ARTIFACT)
             vstsPackageVersion: '*'
             downloadDirectory: '$(System.DefaultWorkingDirectory)'

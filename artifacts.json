@@ -1,0 +1,22 @@
+{
+    "customer_prd": {
+        "product_path": "customer_prd",
+        "product_name": "customer_prd",
+        "product_type": "layered_product"
+    },
+    "customer_engine_prd": {
+        "product_path": "customer_engine_prd",
+        "product_name": "customer_engine_prd",
+        "product_type": "layered_product"
+    },
+    "smallworld_registry": {
+        "product_path": "smallworld_registry",
+        "product_name": "smallworld_registry",
+        "product_type": "additional"
+    },
+    "run": {
+        "product_path": "run",
+        "product_name": "run",
+        "product_type": "additional"
+    }
+}
