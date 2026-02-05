@@ -1,3 +1,7 @@
+parameters:
+- name: AZ_DEBUG
+  type: boolean
+
 # variables import:
 # - name: product_path
 # - name: product_name

@@ -1,9 +1,13 @@
-# trigger the pipeline on a push on the main branch
-trigger:
-- no_main
-
-pool:
-  vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
+parameters:
+  - name: AZ_BUILD_ALL
+    type: boolean
+    default: false
+  - name: AZ_BUILD_THIS
+    type: string
+    default: ''
+  - name: AZ_DEBUG
+    type: boolean
+    default: false
 
 #### Directory structure
 # $(Build.SourcesDirectory)           contains the repository and become the working directory
@@ -19,16 +23,12 @@ variables:
   - name: EXTERNAL_DIR
     value: $(Pipeline.Workspace)/SW-external
 
-parameters:
-  - name: AZ_BUILD_ALL
-    type: boolean
-    default: false
-  - name: AZ_BUILD_THIS
-    type: string
-    default: ''
-  - name: AZ_DEBUG
-    type: boolean
-    default: false
+# trigger the pipeline on a push on the main branch
+trigger:
+- no_main
+
+pool:
+  vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
 
 jobs:
 - job: Download
@@ -54,6 +54,8 @@ jobs:
   dependsOn: Download
   steps:
     - template: azure-compile-and_archive.yml
+      parameters:
+        AZ_DEBUG: ${{parameters.AZ_DEBUG}}
 
 - job: Archive
   dependsOn: [Download, Compile]
@@ -61,3 +63,5 @@ jobs:
     matrix: $[dependencies.Download.outputs['detect_products.products_config']]
   steps:
   - template: azure-package.yml
+    parameters:
+      AZ_DEBUG: ${{parameters.AZ_DEBUG}}

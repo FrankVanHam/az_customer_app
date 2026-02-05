@@ -1,3 +1,7 @@
+parameters:
+- name: AZ_DEBUG
+  type: boolean
+
 steps:
 - task: ArchiveFiles@2
   displayName: 'Archive the compiled product'

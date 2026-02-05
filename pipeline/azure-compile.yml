@@ -1,3 +1,7 @@
+parameters:
+  - name: AZ_DEBUG
+    type: boolean
+    
 # variables import:
 # - name: need_compile
 # - name: AZ_FEED
@@ -67,7 +71,7 @@ steps:
     SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
 
 - task: PublishPipelineArtifact@1
-  condition: and(eq(variables.need_compile, true), eq(variables.AZ_DEBUG, true))
+  condition: and(eq(variables.need_compile, true), eq(parameters.AZ_DEBUG, true))
   displayName: 'Publish compile log for debugging purposes'
   inputs:
     targetPath: '$(Pipeline.Workspace)/compile.log'
@@ -87,7 +91,7 @@ steps:
 
 - script: |
     cat test_run.log
-  condition: and(eq(variables.need_compile, true), eq(variables.AZ_DEBUG, true))
+  condition: and(eq(variables.need_compile, true), eq(parameters.AZ_DEBUG, true))
   displayName: 'Display testrun log'
   workingDirectory: '$(Pipeline.Workspace)'
 
@@ -102,7 +106,7 @@ steps:
     failOnStderr: true
 
 - task: PublishPipelineArtifact@1
-  condition: and(eq(variables.need_compile, true), eq(variables.AZ_DEBUG, true))
+  condition: and(eq(variables.need_compile, true), eq(parameters.AZ_DEBUG, true))
   displayName: 'publish testresult.xml for debugging purposes'
   inputs:
     targetPath: '$(Pipeline.Workspace)/testresult.xml'
