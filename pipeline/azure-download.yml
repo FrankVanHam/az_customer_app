@@ -42,8 +42,7 @@ steps:
   name: detect_products
 
 - task: PublishPipelineArtifact@1
-  condition: eq(variables.AZ_DEBUG, true)
-  displayName: 'Publish products_config.json for debugging purposes'
+  displayName: 'Publish products_config.json for the next jobs'
   inputs:
     targetPath: '$(Pipeline.Workspace)/products_config.json'
     artifact: 'products_config'

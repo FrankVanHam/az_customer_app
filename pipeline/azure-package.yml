@@ -6,6 +6,7 @@
 
 steps:
 - checkout: none
+  displayName: 'No checkout required'
 
 - task: DownloadPipelineArtifact@2
   inputs:

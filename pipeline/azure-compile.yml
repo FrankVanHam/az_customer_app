@@ -51,10 +51,10 @@ steps:
 
 - task: DownloadPipelineArtifact@2
   condition: eq(variables.need_compile, true)
+  displayName: 'Download the products_config.json for further steps'
   inputs:
     artifact: 'products_config'
     targetPath: '$(Pipeline.Workspace)'
-  displayName: 'Download the products_config'
 
 - script: |
     $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json > compile.log
@@ -67,8 +67,8 @@ steps:
     SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
 
 - task: PublishPipelineArtifact@1
-  condition: eq(variables.need_compile, true)
-  displayName: 'Publish compile log'
+  condition: and(eq(variables.need_compile, true), eq(variables.AZ_DEBUG, true))
+  displayName: 'Publish compile log for debugging purposes'
   inputs:
     targetPath: '$(Pipeline.Workspace)/compile.log'
     artifact: 'compile_log'
@@ -87,9 +87,9 @@ steps:
 
 - script: |
     cat test_run.log
-  condition: eq(variables.need_compile, true)
+  condition: and(eq(variables.need_compile, true), eq(variables.AZ_DEBUG, true))
+  displayName: 'Display testrun log'
   workingDirectory: '$(Pipeline.Workspace)'
-  displayName: 'Display test run log'
 
 - task: PythonScript@0
   condition: eq(variables.need_compile, true)
@@ -100,6 +100,14 @@ steps:
     scriptPath: 'scripts/convert_magik_xml_to_nunit_xml.py'
     arguments: '$(Common.TestResultsDirectory) $(Pipeline.Workspace)/testresult.xml'
     failOnStderr: true
+
+- task: PublishPipelineArtifact@1
+  condition: and(eq(variables.need_compile, true), eq(variables.AZ_DEBUG, true))
+  displayName: 'publish testresult.xml for debugging purposes'
+  inputs:
+    targetPath: '$(Pipeline.Workspace)/testresult.xml'
+    artifact: 'testresults.xml'
+    publishLocation: 'pipeline'
 
 - script: |
     cat $(Pipeline.Workspace)/testresult.xml
