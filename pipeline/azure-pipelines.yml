@@ -35,7 +35,7 @@ jobs:
     - template: azure-compile-and_archive.yml
 
 - job: Archive
-  dependsOn: Download, Compile
+  dependsOn: [Download, Compile]
   strategy: 
     matrix: $[dependencies.Download.outputs['detect_products.products_config']]
   # strategy provides variables $(product_name) and $(product_path)
