@@ -1,0 +1,8 @@
+customer_prd layered_product
+
+title
+	customer Application
+end
+requires
+	customer_engine_prd
+end

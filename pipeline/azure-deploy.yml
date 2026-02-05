@@ -2,22 +2,22 @@
 variables:
   - group: customer-app-vars
   - name: AZ_SW_PRODUCT_TO_BUILD
-    value: customer_app
+    value: customer_prd
   - name: CUSTOMER_ARTIFACT
-    value: $(AZ_SW_PRODUCT_TO_BUILD)-$(CUSTOMER_APP_VERSION).zip
+    value: $(AZ_SW_PRODUCT_TO_BUILD)-$(customer_prd_VERSION).zip
   - name: REGISTRY_ARTIFACT
-    value: smallworld_registry-$(CUSTOMER_APP_VERSION).zip
+    value: smallworld_registry-$(customer_prd_VERSION).zip
   - name: RUN_ARTIFACT
-    value: run-$(CUSTOMER_APP_VERSION).zip
+    value: run-$(customer_prd_VERSION).zip
 
 # Deployment job
 jobs:
-- deployment: Deploy_VM_with_Customer_App
+- deployment: Deploy_VM_with_customer_prd
   displayName: 'Deploy Customer App on VMFrank'
   pool:
     vmImage: 'Ubuntu-latest'
   environment: 
-    name: 'Customer_App_Dev.VMFrank'
+    name: 'customer_prd_Dev.VMFrank'
   strategy:
     runOnce:
       deploy:

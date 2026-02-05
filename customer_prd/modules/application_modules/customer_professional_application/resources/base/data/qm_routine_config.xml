@@ -50,7 +50,7 @@ Routine groups defined elsewhere can be included in this configuration using <gr
 	<source class_name="qm_trace_results_source"/>
     </activity>
 
-    <activity name="customer_app_check" groups="gis, electricity">
+    <activity name="customer_prd_check" groups="gis, electricity">
 	<source class_name="qm_current_window_source"/>
 	<source class_name="qm_current_window_visible_only_source"/>
 	<source class_name="qm_alternative_diffs_source"/>

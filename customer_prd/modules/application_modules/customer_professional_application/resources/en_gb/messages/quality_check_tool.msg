@@ -1,4 +1,4 @@
 #% text_encoding = iso8859_1
 :elec_network_check        Electricity Network
-:customer_app_check        customer_app DB
+:customer_prd_check        customer_prd DB
 :data_integrity_check      Data Integrity

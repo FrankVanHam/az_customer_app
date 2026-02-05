@@ -73,9 +73,9 @@ $
 #_block 
 #	method_finder.auto_start? << _false
 #	write("get_path_from_environment")
-#	show(smallworld_product.get_path_from_environment(:customer_app))
+#	show(smallworld_product.get_path_from_environment(:customer_prd))
 #	write("product_is_defined_in_layered_product_data?")
-#	show(smallworld_product.product_is_defined_in_layered_product_data?(:customer_app,_unset))
+#	show(smallworld_product.product_is_defined_in_layered_product_data?(:customer_prd,_unset))
 #	write(":layered_product_data")
 #	print(sw:smallworld_product.sys!perform(:layered_product_data).last)
 #	
@@ -197,8 +197,8 @@ $
 ##
 ##
 ##_block
-##	_local a_product_dir << "C:\Users\frnkv\Documents\GitHub\python-sample-vscode-flask-tutorial\customer_app"
-##	_local a_session_name << "customer_app_open".as_symbol()
+##	_local a_product_dir << "C:\Users\frnkv\Documents\GitHub\python-sample-vscode-flask-tutorial\customer_prd"
+##	_local a_session_name << "customer_prd_open".as_symbol()
 ##
 ##	_local loaded? << magik_session.sys!perform(:|load_config_product()|, a_product_dir)
 ##	_local session << magik_session.register[a_session_name.as_symbol()]

@@ -13,21 +13,21 @@ _block
 		_endproc
 	
 	magik_session.register_new(
-		"customer_app_closed",
+		"customer_prd_closed",
 
 		:parent_session, "sw_core:swaf",
 		
-		:add_products, {:customer_app},
+		:add_products, {:customer_prd},
 		
-		:optional_products, { :sw_core_lp, :customer_app_lp },
+		:optional_products, { :sw_core_lp, :customer_prd_lp },
 		
 		:load_modules, { :customer_professional_application } )
 	
 	magik_session.register_new(
-		"customer_app_open",
+		"customer_prd_open",
 
 		
-		:parent_session, "customer_app_closed",
+		:parent_session, "customer_prd_closed",
 
 		:startup_proc, :startup,
 		

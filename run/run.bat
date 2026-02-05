@@ -1,10 +1,9 @@
 ECHO OFF
 REM This batch is used to start the application on the target server.
 
-SET PATH="C:\jdk-17\bin";%PATH%
-SET JAVA_HOME=C:\jdk-17
+SET PATH="D:\jdk-17\bin";%PATH%
+SET JAVA_HOME=D:\jdk-17
 
-SET SMALLWORLD_GIS=C:\Smallworld\core
-SET CUSTOMER_APP_BASE_DIR=C:\SW-app\
-SET SMALLWORLD_REGISTRY=C:\SW-app\smallworld_registry
-%SMALLWORLD_GIS%\bin\x86\runalias.exe -a C:\SW-app\customer_app\config\gis_aliases -e %SMALLWORLD_GIS%\config\environment.bat customer_app_open
+SET SMALLWORLD_GIS=%~dp0\..\..\SW\core
+SET CUSTOMER_PRD_BASE_DIR=%~dp0\..
+%SMALLWORLD_GIS%\bin\x86\runalias.exe -a %CUSTOMER_PRD_BASE_DIR%\customer_prd\config\gis_aliases -e %CUSTOMER_PRD_BASE_DIR%\customer_prd\config\environment.bat customer_prd_open

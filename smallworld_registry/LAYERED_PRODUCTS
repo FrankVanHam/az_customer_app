@@ -19,11 +19,11 @@ fme:
 soms:
 	path	=	%SMALLWORLD_GIS%\..\soms\
 	version	=	5.3.0.100
-customer_app:
-	path	=	%CUSTOMER_APP_BASE_DIR%\customer_app\
+customer_prd:
+	path	=	%CUSTOMER_PRD_BASE_DIR%\customer_prd\
 	version	=	5.3.0.100
-customer_engine_app:
-	path	=	%CUSTOMER_APP_BASE_DIR%\customer_engine_app\
+customer_engine_prd:
+	path	=	%CUSTOMER_PRD_BASE_DIR%\customer_engine_prd\
 	version	=	5.3.0.100
 sw_dev_tools:
 	path	=	%SMALLWORLD_GIS%\sw_core\modules\sw_dev_tools\

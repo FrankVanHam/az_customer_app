@@ -1,0 +1,10 @@
+customer_prd_config config_product
+
+title
+	customer_prd Database configuration product
+end
+
+description
+	customer_prd Database configuration product
+end
+

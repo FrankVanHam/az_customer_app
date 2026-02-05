@@ -1,8 +1,0 @@
-customer_app layered_product
-
-title
-	customer Application
-end
-requires
-	customer_engine_app
-end

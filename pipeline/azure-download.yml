@@ -34,7 +34,7 @@ steps:
 ## TO BE REMOVED WHEN THE DETECTION SCRIPT IS FUNCTIONAL
 ################
 - script: |
-    echo '{"customer_engine_app": {"product_path": "$(Build.SourcesDirectory)/customer_engine_app", "product_name": "customer_engine_app", "product_type": "layered_product"}}' > $(Pipeline.Workspace)/products_config.json
+    echo '{"customer_engine_prd": {"product_path": "$(Build.SourcesDirectory)/customer_engine_prd", "product_name": "customer_engine_prd", "product_type": "layered_product"}}' > $(Pipeline.Workspace)/products_config.json
   displayName: 'Simulate detection of changed products'
 
 - script: |

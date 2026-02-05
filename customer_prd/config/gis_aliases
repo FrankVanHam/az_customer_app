@@ -7,17 +7,16 @@
 # must be chosen not to clash with those in the standard aliases file.
 #
 
-customer_app:
-	title              = Start Smallworld customer_app Closed
-	session            = customer_app:customer_app_closed
-	product            = customer_app
+customer_prd:
+	title              = Start Smallworld customer_prd Closed
+	session            = customer_prd:customer_prd_closed
+	product            = customer_prd
 	args               = -cli
 
-customer_app_open:
-	title              = Start Smallworld customer_app Application
-	session            = customer_app:customer_app_open
+customer_prd_open:
+	title              = Start Smallworld customer_prd Application
+	session            = customer_prd:customer_prd_open
 	SW_CONSTRUCTION_PACK_DIR = C:/Temp
-	SW_ACE_DB_DIR      = %SMALLWORLD_GIS%/../cambridge_db/ds/ds_admin
 	splash_screen      = %SMALLWORLD_GIS%\sw_core\resources\base\bitmaps\smallworld_gis_splash.png
-	product            = customer_app
+	product            = customer_prd
 	args               = -cli
