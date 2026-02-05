@@ -11,8 +11,8 @@ steps:
   fetchDepth: 2
 
 - script: |
-    echo '$(parameters.AZ_BUILD_ALL)'
-    echo '$(parameters.AZ_BUILD_THIS)'
+    echo '${{parameters.AZ_BUILD_ALL}}'
+    echo '${{parameters.AZ_BUILD_THIS}}'
 
 - ${{ if eq(parameters.AZ_BUILD_ALL, true) }}:
   - script: |
