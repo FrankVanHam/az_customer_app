@@ -24,7 +24,7 @@ steps:
     displayName: 'Build all products - copy artifact.json to products_config.json'
 - ${{ elseif ne(parameters.AZ_BUILD_THIS, '') }}:
   - script: |
-      echo $(parameters.AZ_BUILD_THIS) > $(Pipeline.Workspace)/products_config.json
+      echo ${{parameters.AZ_BUILD_THIS}} > $(Pipeline.Workspace)/products_config.json
     displayName: 'Build this product - set products_config.json to AZ_BUILD_THIS variable'
 - ${{ else }}:
   - script: |
@@ -32,7 +32,7 @@ steps:
     displayName: 'Get changed files and store them in changed_files.txt'
 
   - task: PublishPipelineArtifact@1
-    condition: eq(parameters.AZ_DEBUG, true)
+    condition: eq(${{parameters.AZ_DEBUG}}, true)
     displayName: 'Publish changed_files.txt for debugging purposes'
     inputs:
       targetPath: '$(Pipeline.Workspace)/changed_files.txt'
