@@ -11,14 +11,14 @@ steps:
   fetchDepth: 2
 
 - script: |
-    echo $(AZ_BUILD_ALL)
-    echo '$(AZ_BUILD_THIS)'
+    echo '$(parameters.AZ_BUILD_ALL)'
+    echo '$(parameters.AZ_BUILD_THIS)'
 
-- ${{ if eq(variables.AZ_BUILD_ALL, 'true') }}:
+- ${{ if eq(parameters.AZ_BUILD_ALL, 'true') }}:
   - script: |
       cp ./artifact.json $(Pipeline.Workspace)/products_config.json
     displayName: 'Build all products - copy artifact.json to products_config.json'
-- ${{ elseif ne(variables.AZ_BUILD_THIS, '') }}:
+- ${{ elseif ne(parameters.AZ_BUILD_THIS, '') }}:
   - script: |
       echo ${variables.AZ_BUILD_THIS} > $(Pipeline.Workspace)/products_config.json
     displayName: 'Build this product - set products_config.json to AZ_BUILD_THIS variable'
