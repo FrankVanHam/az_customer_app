@@ -4,7 +4,7 @@ parameters:
     default: false
   - name: AZ_BUILD_THIS
     type: string
-    default: ''
+    default: '{}'
   - name: AZ_DEBUG
     type: boolean
     default: false
