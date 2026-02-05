@@ -18,7 +18,6 @@ steps:
       echo ${variables.AZ_BUILD_THIS} > $(Pipeline.Workspace)/products_config.json
     displayName: 'Build this product - set products_config.json to AZ_BUILD_THIS variable'
 - ${{ else }}:
-
   - script: |
       git diff --name-only HEAD HEAD~1 > $(Pipeline.Workspace)/changed_files.txt
     displayName: 'Get changed files and store them in )/changed_files.txt'
@@ -33,7 +32,7 @@ steps:
 
   - task: PythonScript@0
     displayName: 'Detect products'
-    name: detect_products
+    name: detect_changes
     inputs:
       scriptSource: 'filePath'
       scriptPath: 'scripts/detect_products.py'
@@ -43,6 +42,7 @@ steps:
 
 - script: |
     echo '##vso[task.setvariable variable=products_config;isOutput=true]'$(cat $(Pipeline.Workspace)/products_config.json)
+  displayName: 'Set pipeline products_config variable from the products_config.json file'
   name: detect_products
 
 - task: PublishPipelineArtifact@1
