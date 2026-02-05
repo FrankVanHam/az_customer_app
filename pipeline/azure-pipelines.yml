@@ -29,10 +29,13 @@ parameters:
   - name: AZ_DEBUG
     type: boolean
     default: false
-    
+
 jobs:
 - job: Download
   steps:
+  - script: |
+      echo '${{parameters.AZ_BUILD_ALL}}'
+      echo '${{parameters.AZ_BUILD_THIS}}'
   - template: azure-download.yml
     ## The step detect_products creates a variable products_config with the information about the changed products,
     ## which is then used in the Compile job to decide which products to compile. 
