@@ -8,16 +8,17 @@ pool:
 # Deployment job
 jobs:
 - job: Prepare
-  tasks:
-  - checkout: self
-    displayName: Checkout just the artifacts
-    sparseCheckoutPatterns: ./artifacts.json
-    fetchDepth: 0
-  - script: |
-      ls -al
-      echo '##vso[task.setvariable variable=products_config;isOutput=true]'$(cat $(Pipeline.Workspace)/products_config.json)
-    displayName: 'Set pipeline products_config variable from the products_config.json file'
-    name: detect_products
+  steps:
+    tasks:
+    - checkout: self
+      displayName: Checkout just the artifacts
+      sparseCheckoutPatterns: ./artifacts.json
+      fetchDepth: 0
+    - script: |
+        ls -al
+        echo '##vso[task.setvariable variable=products_config;isOutput=true]'$(cat $(Pipeline.Workspace)/products_config.json)
+      displayName: 'Set pipeline products_config variable from the products_config.json file'
+      name: detect_products
 
 
 # - deployment: Deploy_VM_with_customer_prd
