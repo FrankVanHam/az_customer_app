@@ -57,7 +57,7 @@ jobs:
       parameters:
         AZ_DEBUG: ${{parameters.AZ_DEBUG}}
 
-- job: Archive
+- job: Package
   dependsOn: [Download, Compile]
   strategy: 
     matrix: $[dependencies.Download.outputs['detect_products.products_config']]

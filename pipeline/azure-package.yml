@@ -16,7 +16,7 @@ steps:
   inputs:
     artifact: 'repo_zip'
     targetPath: '$(Pipeline.Workspace)'
-  displayName: 'Download the repo.zip'
+    displayName: 'Download the repo.zip'
 
 - task: ExtractFiles@1
   displayName: 'Extract repo.zip'
