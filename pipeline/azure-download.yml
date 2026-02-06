@@ -20,8 +20,8 @@ steps:
 
 - ${{ if eq(parameters.AZ_BUILD_ALL, true) }}:
   - script: |
-      cp ./artifact.json $(Pipeline.Workspace)/products_config.json
-    displayName: 'Build all products - copy artifact.json to products_config.json'
+      cp ./artifacts.json $(Pipeline.Workspace)/products_config.json
+    displayName: 'Build all products - copy artifacts.json to products_config.json'
 - ${{ elseif ne(parameters.AZ_BUILD_THIS, '{}') }}:
   - script: |
       echo '${{parameters.AZ_BUILD_THIS}}' > $(Pipeline.Workspace)/products_config.json

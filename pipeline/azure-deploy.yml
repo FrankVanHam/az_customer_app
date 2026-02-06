@@ -4,11 +4,11 @@ variables:
   - name: AZ_SW_PRODUCT_TO_BUILD
     value: customer_app
   - name: CUSTOMER_ARTIFACT
-    value: $(AZ_SW_PRODUCT_TO_BUILD)-$(CUSTOMER_PRD_VERSION).zip
+    value: $(AZ_SW_PRODUCT_TO_BUILD)-$(CUSTOMER_APP_VERSION).zip
   - name: REGISTRY_ARTIFACT
-    value: smallworld_registry-$(CUSTOMER_PRD_VERSION).zip
+    value: smallworld_registry-$(CUSTOMER_APP_VERSION).zip
   - name: RUN_ARTIFACT
-    value: run-$(CUSTOMER_PRD_VERSION).zip
+    value: run-$(CUSTOMER_APP_VERSION).zip
 
 # Deployment job
 jobs:
