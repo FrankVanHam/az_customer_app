@@ -6,7 +6,7 @@ parameters:
 # - name: product_path
 # - name: product_name
 # - name: AZ_FEED
-# - name: customer_prd_VERSION
+# - name: CUSTOMER_PRD_VERSION
 
 steps:
 - checkout: none
@@ -37,6 +37,6 @@ steps:
   inputs:
     command: publish
     vstsFeedPublish: '$(AZ_FEED)'
-    vstsFeedPackagePublish: '$(product_name)-$(customer_prd_VERSION).zip'
-    packagePublishDescription: 'Archive upload of product $(product_name) built for version $(customer_prd_VERSION)'
+    vstsFeedPackagePublish: '$(product_name)-$(CUSTOMER_PRD_VERSION).zip'
+    packagePublishDescription: 'Archive upload of product $(product_name) built for version $(CUSTOMER_PRD_VERSION)'
     publishDirectory: '$(Build.ArtifactStagingDirectory)/$(product_name).zip'

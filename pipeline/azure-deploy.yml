@@ -4,11 +4,11 @@ variables:
   - name: AZ_SW_PRODUCT_TO_BUILD
     value: customer_app
   - name: CUSTOMER_ARTIFACT
-    value: $(AZ_SW_PRODUCT_TO_BUILD)-$(customer_prd_VERSION).zip
+    value: $(AZ_SW_PRODUCT_TO_BUILD)-$(CUSTOMER_PRD_VERSION).zip
   - name: REGISTRY_ARTIFACT
-    value: smallworld_registry-$(customer_prd_VERSION).zip
+    value: smallworld_registry-$(CUSTOMER_PRD_VERSION).zip
   - name: RUN_ARTIFACT
-    value: run-$(customer_prd_VERSION).zip
+    value: run-$(CUSTOMER_PRD_VERSION).zip
 
 # Deployment job
 jobs:
@@ -17,7 +17,7 @@ jobs:
   pool:
     vmImage: 'Ubuntu-latest'
   environment: 
-    name: 'customer_prd_Dev.VMFrank'
+    name: 'Customer_App_dev.VMFrank'
   strategy:
     runOnce:
       deploy:
