@@ -67,7 +67,7 @@ steps:
   workingDirectory: '$(Pipeline.Workspace)'
   env:
     SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/compile_and_build.magik'
-    customer_prd_BASE_DIR: '$(Build.SourcesDirectory)'
+    CUSTOMER_PRD_BASE_DIR: '$(Build.SourcesDirectory)'
     SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
 
 - task: PublishPipelineArtifact@1
@@ -86,7 +86,7 @@ steps:
   timeoutInMinutes: 2
   env:
     SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/run_tests.magik'
-    customer_prd_BASE_DIR: '$(Build.SourcesDirectory)'
+    CUSTOMER_PRD_BASE_DIR: '$(Build.SourcesDirectory)'
     SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
 
 - script: |
