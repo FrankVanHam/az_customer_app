@@ -1,7 +1,8 @@
 # set variables. Get the volatile one from the library group. The rest is set to point to directories for easy reading
 variables:
   - group: customer-app-vars
-  - REAL_DEPLOY_DIR: $(DEPLOY_DIR)\$(Build.BuildId)
+  - name: REAL_DEPLOY_DIR
+    value: $(DEPLOY_DIR)\$(Build.BuildId)
   #AZ_FEED
   #DEPLOY_DIR
   #SW_VERSION
