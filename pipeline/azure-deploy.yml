@@ -2,7 +2,7 @@
 variables:
   - group: customer-app-vars
   - name: REAL_DEPLOY_DIR
-    value: $(DEPLOY_DIR)\$(Build.BuildId)
+    value: '$(DEPLOY_DIR)\$(Build.BuildId)'
   #AZ_FEED
   #DEPLOY_DIR
   #SW_VERSION
