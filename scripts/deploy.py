@@ -20,7 +20,7 @@ def main():
         artifacts = json.load(f)
 
     deployer = Deployer()
-    deployer.deploy(artifacts, parser.version, target)
+    deployer.deploy(artifacts, args.version, target)
 
 if __name__ == "__main__":
     main()
