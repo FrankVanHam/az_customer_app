@@ -26,10 +26,10 @@ jobs:
           fetchDepth: 0
 
         - script: |
-            ls -al
+            dir
             echo '$(REAL_DEPLOY_DIR)'
             mkdir '$(REAL_DEPLOY_DIR)'
-            ls -al '$(DEPLOY_DIR)'
+            dir '$(DEPLOY_DIR)'
 
         - task: PythonScript@0
           displayName: 'Download and install artifacts'
