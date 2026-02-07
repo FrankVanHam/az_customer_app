@@ -11,7 +11,7 @@ variables:
 # pool:
 #   vmImage: 'Ubuntu-latest'
 
-job:
+jobs:
 - deployment: Deploy_VM_with_customer_app
   displayName: 'Deploy Customer App on VMFrank'
   environment: 
