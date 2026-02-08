@@ -1,0 +1,1 @@
+SET CUSTOMER_PRD_BASE_DIR=%~dp0az_customer_app

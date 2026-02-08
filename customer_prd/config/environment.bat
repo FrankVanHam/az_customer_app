@@ -13,8 +13,7 @@ REM
 
 set SW_PRODUCTS_PATH=
 
-REM the current 
-CALL %SMALLWORLD_GIS%\..\..\set_base_dir.bat
+REM CUSTOMER_PRD_BASE_DIR must be set outside of the run_alias call
 
 set SW_MESSAGE_DB_DIR=D:\SW530\smallworld_registry
 set SW_ACE_DB_DIR= D:\SW530\cambridge_db\ds\ds_admin

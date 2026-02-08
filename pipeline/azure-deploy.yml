@@ -10,8 +10,8 @@ variables:
     value: ${{split(variables['Build.Repository.Name'], '/')[1]}}
   - name: APP_DEPLOY_DIR
     value: '$(REPO_NAME)-$(Build.BuildId)'
-  - name: REAL_DEPLOY_DIR
-    value: '$(DEPLOY_DIR)\\$(APP_DEPLOY_DIR)'
+  - name: FULL_DEPLOY_DIR
+    value: '$(DEPLOY_DIR)\$(APP_DEPLOY_DIR)'
   #AZ_FEED
   #DEPLOY_DIR
   #SW_VERSION
@@ -29,19 +29,16 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - script: |
-            echo $(REPO_NAME)
-            echo $(REPO_NAME1)
-            echo $(REPO_NAME2)
-            echo '$(Build.Repository.Name)'
         - checkout: self
           displayName: Checkout just the artifacts
           sparseCheckoutPatterns: artifacts.json base-artifacts.json scripts/*
           fetchDepth: 0
 
         - script: |
-            echo SET CUSTOMER_PRD_BASE_DIR="$(REAL_DEPLOY_DIR)" > "$(DEPLOY_DIR)\set_base_dir.bat"
+            echo SET CUSTOMER_PRD_BASE_DIR="$(FULL_DEPLOY_DIR)" > "$(DEPLOY_DIR)\set_base_dir.bat"
           displayName: 'Redirect the application to the new checkout'
+        - script: |
+            copy scripts\copy_to_base\* "$(DEPLOY_DIR)"
 
         - task: PythonScript@0
           displayName: 'Download and install artifacts'
