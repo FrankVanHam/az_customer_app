@@ -7,11 +7,7 @@ parameters:
 variables:
   - group: customer-app-vars
   - name: REPO_NAME
-    value: ${{split(variables['Build.Repository.Name'], '/')[-1]}}
-  - name: REPO_NAME1
     value: ${{split(variables['Build.Repository.Name'], '/')[1]}}
-  - name: REPO_NAME2
-    value: ${{split(variables['Build.Repository.Name'], '/')[-2]}}
   - name: APP_DEPLOY_DIR
     value: '$(REPO_NAME)-$(Build.BuildId)'
   - name: REAL_DEPLOY_DIR
@@ -53,5 +49,5 @@ jobs:
           inputs:
             scriptSource: 'filePath'
             scriptPath: 'scripts\deploy.py'
-            arguments: '$(Build.SourcesDirectory)\artifacts.json $(CUSTOMER_APP_VERSION) $(DEPLOY_DIR) $(APP_DEPLOY_DIR) $(Build.SourcesDirectory)\base-artifacts.json ${{parameters.AZ_FULL_DEPLOY}}'
+            arguments: '"$(Build.SourcesDirectory)\artifacts.json" $(CUSTOMER_APP_VERSION) "$(DEPLOY_DIR)" "$(APP_DEPLOY_DIR)" "$(Build.SourcesDirectory)\base-artifacts.json" ${{parameters.AZ_FULL_DEPLOY}}'
             failOnStderr: true
