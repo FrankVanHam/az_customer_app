@@ -27,7 +27,7 @@ jobs:
         steps:
         - checkout: self
           displayName: Checkout just the artifacts
-          sparseCheckoutPatterns: artifacts.json scripts/*
+          sparseCheckoutPatterns: artifacts.json base-artifacts.json scripts/*
           fetchDepth: 0
 
         - script: |
@@ -40,5 +40,5 @@ jobs:
           inputs:
             scriptSource: 'filePath'
             scriptPath: 'scripts\deploy.py'
-            arguments: 'artifacts.json $(CUSTOMER_APP_VERSION) $(REAL_DEPLOY_DIR) $(AZ_FULL_DEPLOY) base-artifacts.json $(AZ_FULL_DEPLOY)'
+            arguments: '$(Build.SourcesDirectory)\artifacts.json $(CUSTOMER_APP_VERSION) $(REAL_DEPLOY_DIR) $(AZ_FULL_DEPLOY) $(Build.SourcesDirectory)\base-artifacts.json $(AZ_FULL_DEPLOY)'
             failOnStderr: true
