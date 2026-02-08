@@ -6,8 +6,10 @@ parameters:
 # set variables. Get the volatile one from the library group. The rest is set to point to directories for easy reading
 variables:
   - group: customer-app-vars
+  - name: REPO_NAME
+    value: ${{split(Build.Repository.Name, "/")[-1]}}
   - name: APP_DEPLOY_DIR
-    value: '$(Build.Repository.Name)-$(Build.BuildId)'
+    value: '$(REPO_NAME)-$(Build.BuildId)'
   - name: REAL_DEPLOY_DIR
     value: '$(DEPLOY_DIR)\$(APP_DEPLOY_DIR)'
   #AZ_FEED
