@@ -1,2 +1,2 @@
-az login --identity --allow-no-subscriptions
-az %*
+CALL az login --identity --allow-no-subscriptions
+CALL az %*
