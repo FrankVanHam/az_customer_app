@@ -7,7 +7,7 @@ parameters:
 variables:
   - group: customer-app-vars
   - name: REPO_NAME
-    value: ${{split(parameters['Build.Repository.Name'], "/")[-1]}}
+    value: ${{split(parameters['Build.Repository.Name'], '/'')[-1]}}
   - name: APP_DEPLOY_DIR
     value: '$(REPO_NAME)-$(Build.BuildId)'
   - name: REAL_DEPLOY_DIR
