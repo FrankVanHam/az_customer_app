@@ -109,7 +109,7 @@ def main():
     parser.add_argument('deploy_dir', help='The sub directory artifact extract.', type=str)
     parser.add_argument('base_artifacts', help='The name of the json file with base artifacts', type=str)
     parser.add_argument('base_deploy', help='should the base also be deployed? (true/false).', type=bool)
-    parser.add_argument('debug_settings', help='comma-separated debug settings. 1=reuse artifacts, 2=dont delete artifacts', type=str, default='')
+    parser.add_argument('debug_settings', help='comma-separated debug settings. 1=reuse artifacts, 2=dont delete artifacts', type=str, required=False, default='')
     args = parser.parse_args()
     
     artifacts_file = os.path.abspath(args.artifacts)
