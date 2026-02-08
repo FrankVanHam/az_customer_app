@@ -6,8 +6,10 @@ parameters:
 # set variables. Get the volatile one from the library group. The rest is set to point to directories for easy reading
 variables:
   - group: customer-app-vars
+  - name: APP_DEPLOY_DIR
+    value: '$(Build.Repository.Name)-$(Build.BuildId)'
   - name: REAL_DEPLOY_DIR
-    value: '$(DEPLOY_DIR)\$(Build.Repository.Name)-$(Build.BuildId)'
+    value: '$(DEPLOY_DIR)\$(APP_DEPLOY_DIR)'
   #AZ_FEED
   #DEPLOY_DIR
   #SW_VERSION
@@ -40,5 +42,5 @@ jobs:
           inputs:
             scriptSource: 'filePath'
             scriptPath: 'scripts\deploy.py'
-            arguments: '$(Build.SourcesDirectory)\artifacts.json $(CUSTOMER_APP_VERSION) $(REAL_DEPLOY_DIR) $(AZ_FULL_DEPLOY) $(Build.SourcesDirectory)\base-artifacts.json $(AZ_FULL_DEPLOY)'
+            arguments: '$(Build.SourcesDirectory)\artifacts.json $(CUSTOMER_APP_VERSION) $(DEPLOY_DIR) $(APP_DEPLOY_DIR) $(Build.SourcesDirectory)\base-artifacts.json $(AZ_FULL_DEPLOY)'
             failOnStderr: true
