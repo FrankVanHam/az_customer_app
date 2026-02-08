@@ -112,7 +112,6 @@ def main():
     parser.add_argument('--debug_settings', help='comma-separated debug settings. 1=reuse artifacts, 2=dont delete artifacts', type=str, required=False, default='')
     args = parser.parse_args()
     
-    exit()
     artifacts_file = os.path.abspath(args.artifacts)
     base_artifacts_file = os.path.abspath(args.base_artifacts)
     base_dir = os.path.abspath(args.base_dir)
