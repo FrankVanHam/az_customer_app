@@ -1,8 +1,13 @@
+parameters:
+  - name: AZ_FULL_DEPLOY
+    type: boolean
+    default: false
+
 # set variables. Get the volatile one from the library group. The rest is set to point to directories for easy reading
 variables:
   - group: customer-app-vars
   - name: REAL_DEPLOY_DIR
-    value: '$(DEPLOY_DIR)\$(Build.BuildId)'
+    value: '$(DEPLOY_DIR)\$(Build.Repository.Name)-$(Build.BuildId)'
   #AZ_FEED
   #DEPLOY_DIR
   #SW_VERSION
@@ -26,10 +31,8 @@ jobs:
           fetchDepth: 0
 
         - script: |
-            dir
-            echo '$(REAL_DEPLOY_DIR)'
-            mkdir "$(REAL_DEPLOY_DIR)"
-            dir "$(DEPLOY_DIR)"
+            echo SET CUSTOMER_PRD_BASE_DIR="$(REAL_DEPLOY_DIR)" > "$(DEPLOY_DIR)\set_base_dir.bat"
+          displayName: 'Redirect the application to the new checkout'
 
         - task: PythonScript@0
           displayName: 'Download and install artifacts'
@@ -37,59 +40,5 @@ jobs:
           inputs:
             scriptSource: 'filePath'
             scriptPath: 'scripts\deploy.py'
-            arguments: 'artifacts.json $(CUSTOMER_APP_VERSION) $(REAL_DEPLOY_DIR)'
+            arguments: 'artifacts.json $(CUSTOMER_APP_VERSION) $(REAL_DEPLOY_DIR) $(AZ_FULL_DEPLOY) base-artifacts.json $(AZ_FULL_DEPLOY)'
             failOnStderr: true
-
-
-# - deployment: Deploy_VM_with_customer_prd
-#   displayName: 'Deploy Customer App on VMFrank'
-#   dependsOn: Prepare
-#   environment: 
-#     name: 'Customer_App_dev.VMFrank'
-#   strategy:
-#     runOnce:
-#       deploy:
-#         steps:
-#         # upload customer app
-#         - task: UniversalPackages@0
-#           displayName: 'Download customer app artifact'
-#           inputs:
-#             command: download
-#             vstsFeed: '$(AZ_FEED)'
-#             vstsFeedPackage: $(CUSTOMER_ARTIFACT)
-#             vstsPackageVersion: '*'
-#             downloadDirectory: '$(System.DefaultWorkingDirectory)'
-#         - task: UniversalPackages@0
-#           displayName: 'Download smallworld_registry'
-#           inputs:
-#             command: download
-#             vstsFeed: '$(AZ_FEED)'
-#             vstsFeedPackage: $(REGISTRY_ARTIFACT)
-#             vstsPackageVersion: '*'
-#             downloadDirectory: '$(System.DefaultWorkingDirectory)'
-#         - task: UniversalPackages@0
-#           displayName: 'Download run folder'
-#           inputs:
-#             command: download
-#             vstsFeed: '$(AZ_FEED)'
-#             vstsFeedPackage: $(RUN_ARTIFACT)
-#             vstsPackageVersion: '*'
-#             downloadDirectory: '$(System.DefaultWorkingDirectory)'
-
-#         - task: ExtractFiles@1
-#           displayName: 'Extract custom app artifact to the designated directory on the target server'
-#           inputs:
-#             archiveFilePatterns: '*.zip'
-#             destinationFolder: $(DEPLOY_DIR)
-#             cleanDestinationFolder: false
-
-
-
-# - job: Deploy
-#   dependsOn: [Prepare]
-#   strategy: 
-#     matrix: $[dependencies.Download.outputs['detect_products.products_config']]
-#   steps:
-#   - template: azure-package.yml
-#     parameters:
-#       AZ_DEBUG: ${{parameters.AZ_DEBUG}}

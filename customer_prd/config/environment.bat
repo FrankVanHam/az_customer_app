@@ -13,9 +13,11 @@ REM
 
 set SW_PRODUCTS_PATH=
 
+REM the current 
+CALL %SMALLWORLD_GIS%\..\..\set_base_dir.bat
+
 set SW_MESSAGE_DB_DIR=D:\SW530\smallworld_registry
 set SW_ACE_DB_DIR= D:\SW530\cambridge_db\ds\ds_admin
-SET CUSTOMER_PRD_BASE_DIR=%SMALLWORLD_GIS%\..\..\az_customer_app
 SET SMALLWORLD_REGISTRY=%CUSTOMER_PRD_BASE_DIR%\smallworld_registry
 
 set SW_GIS_PATTERN_DIR=%SMALLWORLD_GIS%\data\xview_patterns
