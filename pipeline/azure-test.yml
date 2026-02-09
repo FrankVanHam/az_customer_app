@@ -16,4 +16,7 @@ jobs:
 - job: Download
   steps:
   - script: |
-      az login --identity --allow-no-subscriptions
+      az artifacts universal download --feed kermit --name cst.jar --path . --version * --project SW --scope project
+      ls -al
+    env:
+      AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
