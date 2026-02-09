@@ -1,0 +1,19 @@
+variables:
+  - group: customer-app-vars
+  - name: CORE_DIR
+    value: $(Pipeline.Workspace)/core
+  - name: EXTERNAL_DIR
+    value: $(Pipeline.Workspace)/SW-external
+
+# trigger the pipeline on a push on the main branch
+trigger:
+- no_main
+
+pool:
+  vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
+
+jobs:
+- job: Download
+  steps:
+  - script: |
+      echo az login --identity --allow-no-subscriptions
