@@ -16,4 +16,4 @@ jobs:
 - job: Download
   steps:
   - script: |
-      echo az login --identity --allow-no-subscriptions
+      az login --identity --allow-no-subscriptions
