@@ -16,6 +16,7 @@ jobs:
 - job: Download
   steps:
   - script: |
+      echo az artifacts universal download --feed kermit --name cst.jar --path . --version * --project SW --scope project
       az artifacts universal download --feed kermit --name cst.jar --path . --version * --project SW --scope project
       ls -al
     env:
