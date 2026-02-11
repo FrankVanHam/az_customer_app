@@ -1,0 +1,90 @@
+parameters:
+  - name: AZ_BUILD_ALL
+    type: boolean
+    default: false
+  - name: AZ_BUILD_THIS
+    type: string
+    default: '{}'
+  - name: AZ_DEBUG
+    type: boolean
+    default: false
+
+#### Directory structure
+# $(Build.SourcesDirectory)           contains the repository and become the working directory
+# $(Pipeline.Workspace)/***           contains the core installation of Smallworld and other base artifacts
+# $(Build.ArtifactStagingDirectory)   contains the zipfiles to be uploaded as artifacts
+# $(Common.TestResultsDirectory)      contains the test results to be published
+# 
+# set variables. Get the volatile one from the library group.
+variables:
+  - group: customer-app-vars
+
+# trigger the pipeline on a push on the main branch
+trigger:
+- no_main
+
+pool:
+  vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
+
+steps:
+- checkout: self
+  displayName: 'Checkout the repository'
+  persistCredentials: true
+  fetchDepth: 2
+
+- ${{ if eq(parameters.AZ_BUILD_ALL, true) }}:
+  - script: |
+      cp ./artifacts.json $(Pipeline.Workspace)/products_config.json
+    displayName: 'Build all products - copy artifacts.json to products_config.json'
+- ${{ elseif ne(parameters.AZ_BUILD_THIS, '{}') }}:
+  - script: |
+      echo '${{parameters.AZ_BUILD_THIS}}' > $(Pipeline.Workspace)/products_config.json
+    displayName: 'Build this product - set products_config.json to AZ_BUILD_THIS variable'
+- ${{ else }}:
+  - script: |
+      git diff --name-only HEAD HEAD~1 > $(Pipeline.Workspace)/changed_files.txt
+    displayName: 'Get changed files and store them in changed_files.txt'
+
+  - task: PublishPipelineArtifact@1
+    condition: eq(${{parameters.AZ_DEBUG}}, true)
+    displayName: 'Publish changed_files.txt for debugging purposes'
+    inputs:
+      targetPath: '$(Pipeline.Workspace)/changed_files.txt'
+      artifact: 'changed_files'
+      publishLocation: 'pipeline'
+
+  - task: PythonScript@0
+    displayName: 'Detect products'
+    name: detect_changes
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: 'scripts/detect_products.py'
+      arguments: '$(Pipeline.Workspace)/changed_files.txt ./artifacts.json $(Pipeline.Workspace)/products_config.json'
+      failOnStderr: true
+# ${{ endif }}
+
+- task: PublishPipelineArtifact@1
+  condition: eq(${{parameters.AZ_DEBUG}}, true)
+  displayName: 'Publish products_config.json for debugging purposes'
+  inputs:
+    targetPath: '$(Pipeline.Workspace)/products_config.json'
+    artifact: 'products_config'
+    publishLocation: 'pipeline'
+
+- task: JavaToolInstaller@1
+  condition: eq(variables.need_compile, true)
+  displayName: 'Activate java 17 sdk'
+  inputs:
+    versionSpec: '17'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+
+- task: PythonScript@0
+  displayName: 'Download and install core and base artifacts'
+  inputs:
+    scriptSource: 'filePath'
+    scriptPath: 'scripts/install.py'
+    arguments: '"$(Pipeline.Workspace)" "$(AZ_PROJECT)" "$(AZ_FEED)" "$(Build.SourcesDirectory)/base_artifacts.json" "$(Pipeline.Workspace)/products_config.json"'
+    failOnStderr: true
+    env:
+      AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)

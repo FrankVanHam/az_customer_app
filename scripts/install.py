@@ -2,17 +2,7 @@ import os, argparse, json
 import subprocess, shutil
 import zipfile
 from az_runner import azRunner
-
-class ArtifactDownloader:
-    def __init__(self, reuse_artifacts):
-        self.reuse_artifacts = reuse_artifacts
-    def download(self, feed, artifact_name, path, project, source_file):
-        if not os.path.isfile(source_file):
-            print(f"Downloading {artifact_name} to {source_file}")
-            azRunner().run(['artifacts', 'universal', 'download', '--feed', feed, '--name', artifact_name, '--path', path, '--version', '*', '--project', project, '--scope', 'project']) 
-        else:
-            print(f"reusing existing download {source_file}")
-
+from az_artifacts import azArtifacts
 
 class Destroyer():
     def empty_directory(self, dir):
@@ -57,7 +47,7 @@ class Deployer:
             source_file = os.path.join(base_dir, product_zip)
             if not os.path.isfile(source_file):
                 print(f"Downloading {artifact_name} to {base_dir}")
-                ArtifactDownloader(self.reuse_artifacts).download('kermit', artifact_name, base_dir, 'SW', source_file)
+                azArtifacts(self.reuse_artifacts).download('kermit', artifact_name, base_dir, 'SW', source_file)
             else:
                 print(f"reusing existing download {source_file}")
             unzip_dir = os.path.join(base_dir, deploy_dir)
@@ -97,32 +87,48 @@ class Deployer:
             if os.path.isdir(dir_to_del):
                 Destroyer().remove_directory(dir_to_del)
 
+class Installer:
+    def __init__(self, debug):
+        self.reuse_artifacts = '1' in debug
+        self.keep_artifacts = '2' in debug
+
+    def install(self, base_dir, project, feed, artifacts):
+        self.download_all(base_dir, project, feed, artifacts)
+        #self.install(self.installable_artifacts_in_order())
+        #self.unzip(self.unzippable_artifacts())
+
+    def download_all(self, base_dir, project, feed, artifacts):
+        for key, props in artifacts.items():
+             if props['product_type'] == 'sw-jar':
+                source_file = os.path.join(base_dir, props['file_name'])
+                artifact = props['artifact_name']
+                azArtifacts(self.reuse_artifacts).download(feed, artifact, base_dir, project, source_file)
+
 def main():
-    parser = argparse.ArgumentParser('Deploy the artifacts in the target folder')
-    parser.add_argument('artifacts', help='The name of the json file artifacts', type=str)
-    parser.add_argument('version', help='The version of the build that is used to store the artifacts', type=str)
-    parser.add_argument('base_dir', help='The base directory of the deployment.', type=str)
-    parser.add_argument('deploy_dir', help='The sub directory artifact extract.', type=str)
-    parser.add_argument('base_artifacts', help='The name of the json file with base artifacts', type=str)
-    parser.add_argument('base_deploy', help='should the base also be deployed? (true/false).', type=bool)
+    parser = argparse.ArgumentParser('Install the core product and other base artifacts')
+    parser.add_argument('base_dir', help='The base directory of the install.', type=str)
+    parser.add_argument('project', help='The name of the devops project.', type=str)
+    parser.add_argument('feed', help='The name of the artifact feed.', type=str)
+    parser.add_argument('artifacts', help='The name of the json file base_artifacts', type=str)
+    parser.add_argument('products_config', help='The name of the products_config json', type=str)
     parser.add_argument('--debug_settings', help='comma-separated debug settings. 1=reuse artifacts, 2=dont delete artifacts', type=str, required=False, default='')
     args = parser.parse_args()
     
-    artifacts_file = os.path.abspath(args.artifacts)
-    base_artifacts_file = os.path.abspath(args.base_artifacts)
     base_dir = os.path.abspath(args.base_dir)
+    artifacts_file = os.path.abspath(args.artifacts)
+    products_config_file = os.path.abspath(args.products_config)
     debug = args.debug_settings.split(',')
-    
+
     with open(artifacts_file) as f:
         artifacts = json.load(f)
-    with open(base_artifacts_file) as f:
-        base_artifacts = json.load(f)
+    with open(products_config_file) as f:
+        products_config = json.load(f)
     
-    deployer = Deployer(debug)
-    if args.base_deploy:
-        Destroyer().empty_directory(base_dir)
-        deployer.deploy_base(base_dir, base_artifacts)
-    deployer.deploy(artifacts, args.version, base_dir, args.deploy_dir)
+    if len(products_config) == 0:
+        print("Detected that no compile is required so nothing will be installed.")
+    else:
+        installer = Installer(debug)
+        installer.install(base_dir, args.project, args.feed, artifacts)
 
 if __name__ == '__main__':
     main()

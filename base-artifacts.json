@@ -1,12 +1,13 @@
-{
-    
+{    
     "core": {
+        "order": 0,
         "product_path": "SW",
         "artifact_name": "cst.jar",
         "file_name": "core_installer.jar",
         "product_type": "sw-jar"
     },
     "munit": {
+        "order": 1,
         "product_path": "SW-external",
         "artifact_name": "munit.zip",
         "file_name": "munit.zip",
