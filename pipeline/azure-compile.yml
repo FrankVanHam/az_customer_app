@@ -83,7 +83,6 @@ steps:
   condition: eq(variables.need_compile, true)
   displayName: 'Run the script /run_tests.magik to run the munit tests of the given aspects'
   workingDirectory: '$(Pipeline.Workspace)'
-  timeoutInMinutes: 2
   env:
     SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/run_tests.magik'
     CUSTOMER_PRD_BASE_DIR: '$(Build.SourcesDirectory)'

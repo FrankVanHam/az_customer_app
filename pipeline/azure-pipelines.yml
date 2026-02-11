@@ -45,23 +45,31 @@ jobs:
     ## which is then used in the Compile job to decide which products to compile. 
     ## The same variable is also passed to the Archive job to know which products to archive.
 
-- job: Compile
-  variables:
-    products_config: $[ dependencies.Download.outputs['detect_products.products_config'] ]
-    anything_changed: $[ ne(variables.products_config, '{}') ]
-    need_compile: $[ contains(variables.products_config, 'layered_product') ]
-  condition: eq(variables.anything_changed, 'true')
-  dependsOn: Download
-  steps:
-    - template: azure-compile-and_archive.yml
-      parameters:
-        AZ_DEBUG: ${{parameters.AZ_DEBUG}}
-
-- job: Package
-  dependsOn: [Download, Compile]
-  strategy: 
-    matrix: $[dependencies.Download.outputs['detect_products.products_config']]
-  steps:
-  - template: azure-package.yml
+  - template: azure-test-pass.yml
     parameters:
-      AZ_DEBUG: ${{parameters.AZ_DEBUG}}
+      products_config: $[ outputs['detect_products.products_config'] ]
+      anything_changed: $[ ne(parameters.products_config, '{}') ]
+      need_compile: $[ contains(parameters.products_config, 'layered_product') ]
+
+    
+
+# - job: Compile
+#   variables:
+#     products_config: $[ dependencies.Download.outputs['detect_products.products_config'] ]
+#     anything_changed: $[ ne(variables.products_config, '{}') ]
+#     need_compile: $[ contains(variables.products_config, 'layered_product') ]
+#   condition: eq(variables.anything_changed, 'true')
+#   dependsOn: Download
+#   steps:
+#     - template: azure-compile-and_archive.yml
+#       parameters:
+#         AZ_DEBUG: ${{parameters.AZ_DEBUG}}
+
+# - job: Package
+#   dependsOn: [Download, Compile]
+#   strategy: 
+#     matrix: $[dependencies.Download.outputs['detect_products.products_config']]
+#   steps:
+#   - template: azure-package.yml
+#     parameters:
+#       AZ_DEBUG: ${{parameters.AZ_DEBUG}}

@@ -1,0 +1,15 @@
+parameters:
+  - name: products_config
+    type: str
+  - name: anything_changed
+    type: boolean
+  - name: need_compile
+    type: boolean
+
+
+steps:
+- script:
+    echo '$(paremeters.products_config)'
+    echo '$(paremeters.anything_changed)'
+    echo '$(paremeters.need_compile)'
+    
