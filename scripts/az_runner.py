@@ -6,6 +6,6 @@ class azRunner:
         if os.name == 'nt':
             args = [os.path.join(this_dir, 'run-az.bat')]
         else:
-            args = [os.path.join(this_dir, 'run-az.sh')]
+            args = [os.path.join(this_dir, 'sudo', 'run-az.sh')]
         args.extend(p_args)
         subprocess.run(args)
