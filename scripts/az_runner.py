@@ -8,6 +8,7 @@ class azRunner:
         else:
             sh_file = os.path.join(this_dir, 'run-az.sh')
             if not os.access(sh_file, os.X_OK):
+                print(f"the file {sh_file} is not executable, making it executable for the owner")
                 st = os.stat(sh_file)
                 os.chmod(sh_file, st.st_mode | stat.S_IEXEC)
             args = [sh_file]

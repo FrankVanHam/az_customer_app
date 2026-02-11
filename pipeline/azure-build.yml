@@ -80,7 +80,7 @@ steps:
     jdkSourceOption: 'PreInstalled'
 
 - script:
-    ls -al '/home/vsts/work/1/s/scripts/run-az.sh'
+    ls -al '/home/vsts/work/1/s/scripts/'
 
 - task: PythonScript@0
   displayName: 'Download and install core and base artifacts'
@@ -93,4 +93,5 @@ steps:
     AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
 
 - script:
-    ls -al '/home/vsts/work/1/s/scripts/run-az.sh'
+    ls -al '/home/vsts/work/1/s/scripts/'
+  condition: always()
