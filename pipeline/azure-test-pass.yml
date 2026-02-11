@@ -1,6 +1,6 @@
 parameters:
   - name: products_config
-    type: str
+    type: string
   - name: anything_changed
     type: boolean
   - name: need_compile
