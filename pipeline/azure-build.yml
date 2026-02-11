@@ -97,7 +97,7 @@ steps:
   condition: always()
 - script:
     sh /home/vsts/work/1/s/scripts/run-az.sh artifacts universal download --feed kermit --name cst.jar --path . --version "*" --project  SW --scope project
-  condition: always()
-- script:
-    /home/vsts/work/1/s/scripts/run-az.sh artifacts universal download --feed kermit --name cst.jar --path . --version "*" --project  SW --scope project
-  condition: always()
+  condition: always()  
+  env:
+    AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+
