@@ -93,6 +93,11 @@ steps:
     AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
 
 - script:
-    ./home/vsts/work/1/s/scripts/run-az.sh artifacts universal download --feed kermit--name cst.jar --path . --version "*" --project  SW --scope project
-
+    ls al ./home/vsts/work/1/s/scripts
+  condition: always()
+- script:
+    sh ./home/vsts/work/1/s/scripts/run-az.sh artifacts universal download --feed kermit--name cst.jar --path . --version "*" --project  SW --scope project
+  condition: always()
+- script:
+    sh ./home/vsts/work/1/s/scripts/run-az.sh artifacts universal download --feed kermit--name cst.jar --path . --version "*" --project  SW --scope project
   condition: always()
