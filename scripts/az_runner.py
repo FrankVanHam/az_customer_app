@@ -13,4 +13,5 @@ class azRunner:
                 os.chmod(sh_file, st.st_mode | stat.S_IEXEC)
             args = ["sh", sh_file]
         args.extend(p_args)
+        print(args)
         subprocess.run(args)
