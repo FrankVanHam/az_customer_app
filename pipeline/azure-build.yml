@@ -64,7 +64,6 @@ steps:
 # ${{ endif }}
 
 - task: PublishPipelineArtifact@1
-  condition: eq(${{parameters.AZ_DEBUG}}, true)
   displayName: 'Publish products_config.json for debugging purposes'
   inputs:
     targetPath: '$(Pipeline.Workspace)/products_config.json'
@@ -72,7 +71,6 @@ steps:
     publishLocation: 'pipeline'
 
 - task: JavaToolInstaller@1
-  condition: eq(variables.need_compile, true)
   displayName: 'Activate java 17 sdk'
   inputs:
     versionSpec: '17'

@@ -1,7 +1,7 @@
 import os
 from az_runner import azRunner
 
-class azazInstaller:
+class azInstaller:
     def __init__(self):
         pass
     def install(self, the_file, target):
