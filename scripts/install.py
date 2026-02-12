@@ -98,11 +98,17 @@ class Installer:
         #self.unzip(self.unzippable_artifacts())
 
     def download_all(self, base_dir, organization, project, feed, artifacts):
+        arts = azArtifacts(self.reuse_artifacts, organization, project, feed)
         for key, props in artifacts.items():
-             if props['product_type'] == 'sw-jar':
+            if props['product_type'] == 'sw-jar':
                 source_file = os.path.join(base_dir, props['file_name'])
                 artifact = props['artifact_name']
-                azArtifacts(self.reuse_artifacts).download(base_dir, organization, project, feed, artifact, source_file)
+                arts.download(base_dir, artifact, source_file)
+            elif props['product_type'] == 'zip':
+                source_file = os.path.join(base_dir, props['file_name'])
+                artifact = props['artifact_name']
+                arts.download(base_dir, artifact, source_file)
+            
 
 def main():
     parser = argparse.ArgumentParser('Install the core product and other base artifacts')

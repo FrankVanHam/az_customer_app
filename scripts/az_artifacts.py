@@ -2,12 +2,15 @@ import os
 from az_runner import azRunner
 
 class azArtifacts:
-    def __init__(self, reuse_artifacts):
+    def __init__(self, reuse_artifacts, organization, project, feed):
         self.reuse_artifacts = reuse_artifacts
-    def download(self, base_dir, organization, project, feed, artifact, source_file):
-        if not os.path.isfile(source_file):
+        self.organization = organization
+        self.project = project
+        self.feed = feed
+    def download(self, base_dir, artifact, source_file):
+        if (not self.reuse_artifacts) or (not os.path.isfile(source_file)):
             print(f"Downloading {artifact} to {source_file}")
-            print(f"parameters: {[feed, artifact, base_dir, project]}")
-            azRunner().run(['artifacts', 'universal', 'download', '--feed', feed, '--name', artifact, '--path', base_dir, '--version', '*', '--project', project, '--scope', 'project', '--organization', organization]) 
+            print(f"parameters: {[self.organization, self.project, self.feed, base_dir, artifact]}")
+            azRunner().run(['artifacts', 'universal', 'download', '--feed', self.feed, '--name', artifact, '--path', base_dir, '--version', '*', '--project', self.project, '--scope', 'project', '--organization', self.organization]) 
         else:
             print(f"reusing existing download {source_file}")
