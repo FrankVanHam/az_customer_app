@@ -87,7 +87,7 @@ steps:
   inputs:
     scriptSource: 'filePath'
     scriptPath: 'scripts/install.py'
-    arguments: '"$(Pipeline.Workspace)" "$(AZ_PROJECT)" "$(AZ_FEED)" "$(Build.SourcesDirectory)/base_artifacts.json" "$(Pipeline.Workspace)/products_config.json"'
+    arguments: '"$(Pipeline.Workspace)" "$(System.CollectionUri)" "$(System.TeamProject)" "$(AZ_FEED)" "$(Build.SourcesDirectory)/base_artifacts.json" "$(Pipeline.Workspace)/products_config.json"'
     failOnStderr: true
   env:
     AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)

@@ -92,21 +92,22 @@ class Installer:
         self.reuse_artifacts = '1' in debug
         self.keep_artifacts = '2' in debug
 
-    def install(self, base_dir, project, feed, artifacts):
-        self.download_all(base_dir, project, feed, artifacts)
+    def install(self, base_dir, organization, project, feed, artifacts):
+        self.download_all(base_dir, organization, project, feed, artifacts)
         #self.install(self.installable_artifacts_in_order())
         #self.unzip(self.unzippable_artifacts())
 
-    def download_all(self, base_dir, project, feed, artifacts):
+    def download_all(self, base_dir, organization, project, feed, artifacts):
         for key, props in artifacts.items():
              if props['product_type'] == 'sw-jar':
                 source_file = os.path.join(base_dir, props['file_name'])
                 artifact = props['artifact_name']
-                azArtifacts(self.reuse_artifacts).download(feed, artifact, base_dir, project, source_file)
+                azArtifacts(self.reuse_artifacts).download(base_dir, organization, project, feed, artifact, source_file)
 
 def main():
     parser = argparse.ArgumentParser('Install the core product and other base artifacts')
     parser.add_argument('base_dir', help='The base directory of the install.', type=str)
+    parser.add_argument('organization', help='The name of the organisation, like https://dev.azure.com/fabrikamfiber/', type=str)
     parser.add_argument('project', help='The name of the devops project.', type=str)
     parser.add_argument('feed', help='The name of the artifact feed.', type=str)
     parser.add_argument('artifacts', help='The name of the json file base_artifacts', type=str)
@@ -128,7 +129,7 @@ def main():
         print("Detected that no compile is required so nothing will be installed.")
     else:
         installer = Installer(debug)
-        installer.install(base_dir, args.project, args.feed, artifacts)
+        installer.install(base_dir, args.organization, args.project, args.feed, artifacts)
 
 if __name__ == '__main__':
     main()
