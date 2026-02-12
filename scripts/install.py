@@ -95,7 +95,7 @@ class Installer:
 
     def install(self, base_dir, organization, project, feed, artifacts):
         self.download_all(base_dir, organization, project, feed, artifacts)
-        self.install(base_dir, self.installable_artifacts_in_order(artifacts))
+        self.jar_install(base_dir, self.installable_artifacts_in_order(artifacts))
         self.unzip(base_dir, self.unzippable_artifacts())
 
     def download_all(self, base_dir, organization, project, feed, artifacts):
@@ -110,7 +110,7 @@ class Installer:
                 artifact = props['artifact_name']
                 arts.download(base_dir, artifact, source_file)
     
-    def install(self, base_dir, sorted_artifacts: list):
+    def jar_install(self, base_dir, sorted_artifacts: list):
         installer = azInstaller()
         for props in sorted_artifacts:
             source_file = os.path.join(base_dir, props['file_name'])
