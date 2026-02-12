@@ -4,6 +4,7 @@ import zipfile
 from az_runner import azRunner
 from az_artifacts import azArtifacts
 from az_installer import azInstaller
+from az_zipper import azZipper
 
 class Destroyer():
     def empty_directory(self, dir):
@@ -96,7 +97,7 @@ class Installer:
     def install(self, base_dir, organization, project, feed, artifacts):
         self.download_all(base_dir, organization, project, feed, artifacts)
         self.jar_install(base_dir, self.installable_artifacts_in_order(artifacts))
-        self.unzip(base_dir, self.unzippable_artifacts())
+        self.unzip(base_dir, self.unzippable_artifacts(artifacts))
 
     def download_all(self, base_dir, organization, project, feed, artifacts):
         arts = azArtifacts(self.reuse_artifacts, organization, project, feed)
