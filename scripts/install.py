@@ -3,6 +3,7 @@ import subprocess, shutil
 import zipfile
 from az_runner import azRunner
 from az_artifacts import azArtifacts
+from az_installer import azInstaller
 
 class Destroyer():
     def empty_directory(self, dir):
@@ -94,8 +95,8 @@ class Installer:
 
     def install(self, base_dir, organization, project, feed, artifacts):
         self.download_all(base_dir, organization, project, feed, artifacts)
-        #self.install(self.installable_artifacts_in_order())
-        #self.unzip(self.unzippable_artifacts())
+        self.install(base_dir, self.installable_artifacts_in_order(artifacts))
+        self.unzip(base_dir, self.unzippable_artifacts())
 
     def download_all(self, base_dir, organization, project, feed, artifacts):
         arts = azArtifacts(self.reuse_artifacts, organization, project, feed)
@@ -108,7 +109,26 @@ class Installer:
                 source_file = os.path.join(base_dir, props['file_name'])
                 artifact = props['artifact_name']
                 arts.download(base_dir, artifact, source_file)
-            
+    
+    def install(self, base_dir, sorted_artifacts: list):
+        installer = azInstaller()
+        for props in sorted_artifacts:
+            source_file = os.path.join(base_dir, props['file_name'])
+            target = os.path.join(base_dir, props["product_path"])
+            installer.install(source_file, target)
+    
+    def unzip(self, base_dir, artifacts: list):
+        zipper = azZipper()
+        for props in artifacts:
+            source_file = os.path.join(base_dir, props['file_name'])
+            target = os.path.join(base_dir, props["product_path"])
+            zipper.unzip(source_file, target)
+             
+    def installable_artifacts_in_order(self, artifacts: dict):
+        return list(filter(lambda x: x['product_type'] == 'sw-jar', sorted( artifacts.values(), key=lambda x: x['order'])))
+    
+    def unzippable_artifacts(self, artifacts: dict):
+        return list(filter(lambda x: x['product_type'] == 'zip', artifacts.values()))
 
 def main():
     parser = argparse.ArgumentParser('Install the core product and other base artifacts')

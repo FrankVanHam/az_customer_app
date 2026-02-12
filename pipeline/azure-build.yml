@@ -93,5 +93,3 @@ steps:
     ls -al $(Pipeline.Workspace)
     ls -al $(Build.SourcesDirectory)
   condition: always()
-
-
