@@ -16,7 +16,7 @@ class azArtifacts:
             print(f"reusing existing download {source_file}")
 
     def upload(self, source, artifact_name):
-        print(f"Getting the new vresion for {artifact_name}")
+        print(f"Getting the new version for {artifact_name}")
         new_version = self.next_version(artifact_name)
         print(f"Uploading {source} to {artifact_name} with version {new_version}")
         print(f"parameters: {[self.organization, self.project, self.feed, source, artifact_name]}")
