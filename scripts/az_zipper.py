@@ -13,13 +13,13 @@ class azZipper:
             azRunner().run_bare(['unzip', the_file,'-d', target])
         print(f"Unzipped {the_file} to {target}")
 
-    def zip(self, source, target):
+    def zip(self, the_file, target):
         if not os.path.isfile(target):
-            print(f"Zipping {source} to {target}")
+            print(f"Zipping {the_file} to {target}")
             if os.name == 'nt':
-                azRunner().run_bare(['7z', 'a', '-y', '-tzip', '-o'+target, target])
+                azRunner().run_bare(['7z', 'a', '-y', '-tzip', '-o'+target, the_file])
             else:
                 azRunner().run_bare(['zip', the_file,'-d', target])
-            print(f"Zipped {source} to {target}")
+            print(f"Zipped {the_file} to {target}")
         else:
             print(f"Reusing existing zip {target}")
