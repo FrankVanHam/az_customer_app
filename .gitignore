@@ -3,3 +3,4 @@
 *.msgc
 *.zip
 *.pyc
+**/__pycache__/

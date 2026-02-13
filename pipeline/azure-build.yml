@@ -65,6 +65,7 @@ steps:
 
 - task: PublishPipelineArtifact@1
   displayName: 'Publish products_config.json for debugging purposes'
+  condition: eq(${{parameters.AZ_DEBUG}}, true)
   inputs:
     targetPath: '$(Pipeline.Workspace)/products_config.json'
     artifact: 'products_config'
@@ -86,11 +87,74 @@ steps:
     scriptSource: 'filePath'
     scriptPath: 'scripts/install.py'
     arguments: '"$(Pipeline.Workspace)" "$(System.CollectionUri)" "$(System.TeamProject)" "$(AZ_FEED)" "$(Build.SourcesDirectory)/base_artifacts.json" "$(Pipeline.Workspace)/products_config.json"'
-    failOnStderr: true
+    failOnStderr: false # because somehow something is written to Stderr even when nothing is failing....
   env:
     AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
 
-- script:
-    ls -al $(Pipeline.Workspace)
-    ls -al $(Build.SourcesDirectory)
-  condition: always()
+- script: |
+    $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json > compile.log
+  displayName: 'Run the script $SW_MSF_STARTUP_MAGIK to compile and build'
+  workingDirectory: '$(Pipeline.Workspace)'
+  env:
+    SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/compile_and_build.magik'
+    CUSTOMER_PRD_BASE_DIR: '$(Build.SourcesDirectory)'
+    SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
+
+- task: PublishPipelineArtifact@1
+  condition: and(succeededOrFailed(), eq(${{parameters.AZ_DEBUG}}, true))
+  displayName: 'Publish compile log for debugging purposes'
+  inputs:
+    targetPath: '$(Pipeline.Workspace)/compile.log'
+    artifact: 'compile_log'
+    publishLocation: 'pipeline'
+
+- script: |
+    $(CORE_DIR)/core/bin/share/runalias -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json -test_output_dir $(Common.TestResultsDirectory) -test_aspects $(MUNIT_TEST_ASPECTS) > test_run.log
+  displayName: 'Run the script /run_tests.magik to run the munit tests of the given aspects'
+  workingDirectory: '$(Pipeline.Workspace)'
+  env:
+    SW_MSF_STARTUP_MAGIK: '$(Build.SourcesDirectory)/scripts/run_tests.magik'
+    CUSTOMER_PRD_BASE_DIR: '$(Build.SourcesDirectory)'
+    SMALLWORLD_REGISTRY: '$(Build.SourcesDirectory)/smallworld_registry'
+
+- task: PublishPipelineArtifact@1
+  condition: and(succeededOrFailed(), eq(${{parameters.AZ_DEBUG}}, true))
+  displayName: 'Publish test log for debugging purposes'
+  inputs:
+    targetPath: '$(Pipeline.Workspace)/test_run.log'
+    artifact: 'test_run_log'
+    publishLocation: 'pipeline'
+
+- task: PythonScript@0
+  displayName: 'Create NUnit test results from Magik test results'
+  name: create_nunit_xml
+  inputs:
+    scriptSource: 'filePath'
+    scriptPath: 'scripts/convert_magik_xml_to_nunit_xml.py'
+    arguments: '$(Common.TestResultsDirectory) $(Pipeline.Workspace)/testresult.xml'
+    failOnStderr: true
+
+- task: PublishPipelineArtifact@1
+  condition: and(succeededOrFailed(), eq(${{parameters.AZ_DEBUG}}, true))
+  displayName: 'Publish nunit.xml for debugging purposes'
+  inputs:
+    targetPath: '$(Pipeline.Workspace)/testresult.xml'
+    artifact: 'testresult.xml'
+    publishLocation: 'pipeline'
+
+- task: PublishTestResults@2
+  displayName: 'Publish MUnit test results'
+  inputs:
+    testResultsFormat: 'NUnit'
+    testResultsFiles: '$(Pipeline.Workspace)/testresult.xml'
+    failTaskOnFailedTests: true
+
+- task: PythonScript@0
+  displayName: 'Zip the artifacts and upload to Artifact storage'
+  inputs:
+    scriptSource: 'filePath'
+    scriptPath: 'scripts/zip_and_upload.py'
+    arguments: '"$(System.CollectionUri)" "$(System.TeamProject)" "$(AZ_FEED)" "$(Pipeline.Workspace)/products_config.json" $(CUSTOMER_APP_VERSION) $(Build.ArtifactStagingDirectory)'
+    failOnStderr: false # because somehow something is written to Stderr even when nothing is failing....
+  env:
+    AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
