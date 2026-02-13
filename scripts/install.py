@@ -159,4 +159,6 @@ def main():
         installer.install(base_dir, args.organization, args.project, args.feed, artifacts)
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e: print(e)

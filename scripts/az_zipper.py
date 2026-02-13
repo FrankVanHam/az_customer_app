@@ -11,3 +11,4 @@ class azZipper:
             azRunner().run_bare(['7z', 'x', '-y', '-o'+target, the_file])
         else:
             azRunner().run_bare(['unzip', the_file,'-d', target])
+        print(f"Unzipped {the_file} to {target}")
