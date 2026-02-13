@@ -18,6 +18,8 @@ parameters:
 # set variables. Get the volatile one from the library group.
 variables:
   - group: customer-app-vars
+  - name: CORE_DIR
+    value: $(Pipeline.Workspace)/$(SW_CORE_DIR)
 
 # trigger the pipeline on a push on the main branch
 trigger:
