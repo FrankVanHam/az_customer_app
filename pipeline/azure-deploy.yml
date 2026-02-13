@@ -31,7 +31,7 @@ jobs:
         steps:
         - checkout: self
           displayName: Checkout just the artifacts
-          sparseCheckoutPatterns: artifacts.json base-artifacts.json scripts/*
+          sparseCheckoutPatterns: artifacts.json base_artifacts.json scripts/*
           fetchDepth: 0
 
         - script: |
