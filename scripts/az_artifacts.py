@@ -7,6 +7,7 @@ class azArtifacts:
         self.organization = organization
         self.project = project
         self.feed = feed
+        
     def download(self, base_dir, artifact_name, source_file):
         if (not self.reuse_artifacts) or (not os.path.isfile(source_file)):
             print(f"Downloading {artifact_name} to {source_file}")

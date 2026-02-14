@@ -1,55 +1,20 @@
 import os, argparse, json
 import subprocess, shutil
 import zipfile
-from az_runner import azRunner
-
-class ArtifactDownloader:
-    def __init__(self, reuse_artifacts):
-        self.reuse_artifacts = reuse_artifacts
-    def download(self, feed, artifact_name, path, project, source_file):
-        if not os.path.isfile(source_file):
-            print(f"Downloading {artifact_name} to {source_file}")
-            azRunner().run(['artifacts', 'universal', 'download', '--feed', feed, '--name', artifact_name, '--path', path, '--version', '*', '--project', project, '--scope', 'project']) 
-        else:
-            print(f"reusing existing download {source_file}")
-
-
-class Destroyer():
-    def empty_directory(self, dir):
-        print(f"empting directories (no files) in directory {dir}")
-        for filename in os.listdir(dir):
-            file_path = os.path.join(dir, filename)
-            try:
-                if os.path.isdir(file_path):
-                    self.remove_directory(file_path, silent=True)
-                # if os.path.isfile(file_path) or os.path.islink(file_path):
-                #     self.remove_file(file_path, silent=True)
-                # elif os.path.isdir(file_path):
-                #     self.remove_directory(file_path, silent=True)
-            except Exception as e:
-                print('Failed to delete %s. Reason: %s' % (file_path, e))
-        print(f"emptied directory {dir}")
-    def remove_directory(self, dir, silent=False):
-        if not silent: print(f"Deleting the directory tree: {dir}")
-        shutil.rmtree(dir)
-        if not silent: print(f"Deleted the directory tree: {dir}")
-    def remove_file(self, file, silent=False):
-        if not silent: print(f"Deleting the file: {file}")
-        os.unlink(file)
-        if not silent: print(f"Deleted the file: {file}")
-
-class Unzipper:
-    def unzip(self, source, target):
-        with zipfile.ZipFile(source, 'r') as zip_ref:
-            zip_ref.extractall(target)
+from az_artifacts import azArtifacts
+from az_installer import azInstaller
+from az_zipper import azZipper
+from az_destroyer import azDestroyer
 
 class Deployer:
     def __init__(self, debug):
         self.reuse_artifacts = '1' in debug
         self.keep_artifacts = '2' in debug
 
-    def deploy(self, artifacts, version, base_dir, deploy_dir):
+    def deploy(self, organization, project, feed, artifacts, version, base_dir, deploy_dir):
         print(f"deploy {version} on {base_dir} in {deploy_dir}")
+        destroyer = azDestroyer()
+        artifacts = azArtifacts(self.reuse_artifacts, organization, project, feed)
         for key, props in artifacts.items():
             product_name = props['product_name']
             product_zip = f"{product_name}.zip"
@@ -57,26 +22,28 @@ class Deployer:
             source_file = os.path.join(base_dir, product_zip)
             if not os.path.isfile(source_file):
                 print(f"Downloading {artifact_name} to {base_dir}")
-                ArtifactDownloader(self.reuse_artifacts).download('kermit', artifact_name, base_dir, 'SW', source_file)
+                artifacts.download(base_dir, artifact_name, source_file)
             else:
                 print(f"reusing existing download {source_file}")
             unzip_dir = os.path.join(base_dir, deploy_dir)
             self.unzip(source_file, unzip_dir)
             if not self.keep_artifacts:
-                Destroyer().remove_file(source_file)
+                destroyer.remove_file(source_file)
 
-    def deploy_base(self, base_dir, base_artifacts):
+    def deploy_base(self, organization, project, feed, base_dir, base_artifacts):
+        destroyer = azDestroyer()
+        artifacts = azArtifacts(self.reuse_artifacts, organization, project, feed)
         self.delete_base_dirs(base_dir, base_artifacts)
         for key, props in base_artifacts.items():
             artifact_name = props['artifact_name']
             file_name = props['file_name']
             type = props['product_type']
             source_file = os.path.join(base_dir, file_name)
-            ArtifactDownloader(self.reuse_artifacts).download('kermit', artifact_name, base_dir, 'SW', source_file)
+            artifacts.download( base_dir, artifact_name, source_file)
             product_path = os.path.join(base_dir, props['product_path'])
             self.deploy_base_product(type, source_file, product_path)
             if not self.keep_artifacts:
-                Destroyer().remove_file(source_file)
+                destroyer.remove_file(source_file)
 
     def deploy_base_product(self, type, source_file, target_dir):
         match type:
@@ -85,20 +52,24 @@ class Deployer:
             case _: raise Exception(f"unknown base artifact type {type}")
 
     def extract_sw_jar(self, source_file, target_dir):
-        subprocess.run(['java', '-Daccept_licences=YES', '-Dinstall_language_packs=YES', '-jar', source_file, target_dir])
+        azInstaller().install(source_file, target_dir)
     
     def unzip(self, source_zip, unzip_dir):
-        Unzipper().unzip(source_zip, unzip_dir)
+        azZipper(self.reuse_artifacts).unzip(source_zip, unzip_dir)
 
     def delete_base_dirs(self, base_dir, base_artifacts):
+        destroyer = azDestroyer()
         target_dirs = set([v["product_path"] for k,v in base_artifacts.items()])
         for dir in target_dirs:
             dir_to_del = os.path.join(base_dir, dir)
             if os.path.isdir(dir_to_del):
-                Destroyer().remove_directory(dir_to_del)
+                destroyer.remove_directory(dir_to_del)
 
 def main():
     parser = argparse.ArgumentParser('Deploy the artifacts in the target folder')
+    parser.add_argument('organization', help='The name of the organisation, like https://dev.azure.com/fabrikamfiber/', type=str)
+    parser.add_argument('project', help='The name of the devops project.', type=str)
+    parser.add_argument('feed', help='The name of the artifact feed.', type=str)
     parser.add_argument('artifacts', help='The name of the json file artifacts', type=str)
     parser.add_argument('version', help='The version of the build that is used to store the artifacts', type=str)
     parser.add_argument('base_dir', help='The base directory of the deployment.', type=str)
@@ -120,9 +91,10 @@ def main():
     
     deployer = Deployer(debug)
     if args.base_deploy:
-        Destroyer().empty_directory(base_dir)
-        deployer.deploy_base(base_dir, base_artifacts)
-    deployer.deploy(artifacts, args.version, base_dir, args.deploy_dir)
+        print(f"base deploy enabled, first deleting the entire base then installing the base and the products")
+        azDestroyer().empty_directory(base_dir)
+        deployer.deploy_base(organization, project, feed, base_dir, base_artifacts)
+    deployer.deploy(organization, project, feed, artifacts, args.version, base_dir, args.deploy_dir)
 
 if __name__ == '__main__':
     main()
