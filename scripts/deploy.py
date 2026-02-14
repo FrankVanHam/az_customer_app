@@ -93,8 +93,8 @@ def main():
     if args.base_deploy:
         print(f"base deploy enabled, first deleting the entire base then installing the base and the products")
         azDestroyer().empty_directory(base_dir)
-        deployer.deploy_base(organization, project, feed, base_dir, base_artifacts)
-    deployer.deploy(organization, project, feed, artifacts, args.version, base_dir, args.deploy_dir)
+        deployer.deploy_base(args.organization, args.project, args.feed, base_dir, base_artifacts)
+    deployer.deploy(args.organization, args.project, args.feed, artifacts, args.version, base_dir, args.deploy_dir)
 
 if __name__ == '__main__':
     main()

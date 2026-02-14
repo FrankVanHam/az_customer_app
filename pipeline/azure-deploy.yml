@@ -48,5 +48,5 @@ jobs:
           inputs:
             scriptSource: 'filePath'
             scriptPath: 'scripts\deploy.py'
-            arguments: '"$(Build.SourcesDirectory)\artifacts.json" "$(System.CollectionUri)" "$(System.TeamProject)" "$(AZ_FEED)" $(CUSTOMER_APP_VERSION) "$(DEPLOY_DIR)" "$(APP_DEPLOY_DIR)" "$(Build.SourcesDirectory)\base_artifacts.json" ${{parameters.AZ_FULL_DEPLOY}}'
+            arguments: '"$(System.CollectionUri)" "$(System.TeamProject)" "$(AZ_FEED)" "$(Build.SourcesDirectory)\artifacts.json" $(CUSTOMER_APP_VERSION) "$(DEPLOY_DIR)" "$(APP_DEPLOY_DIR)" "$(Build.SourcesDirectory)\base_artifacts.json" ${{parameters.AZ_FULL_DEPLOY}}'
             failOnStderr: true
