@@ -13,9 +13,9 @@ class ZipAndUpload:
         for key, props in artifacts.items():
             product_path = props["product_path"]
             product_name = props["product_name"]
-            source = os.path.abspath(product_path)
+            # Note: use relative path so we can unzip it like that later during deployment
             target = os.path.join(artifact_dir, product_name + ".zip")
-            zipper.zip(source, target)
+            zipper.zip(product_path, target)
             artifact_name = f"{product_name}-{version}.zip"
             uploader.upload(target, artifact_name)
 
