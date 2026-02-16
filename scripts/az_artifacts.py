@@ -9,12 +9,12 @@ class azArtifacts:
         self.feed = feed
         
     def download(self, base_dir, artifact_name, source_file):
-        if (not self.reuse_artifacts) or (not os.path.isfile(source_file)):
+        if self.reuse_artifacts and os.path.isfile(source_file):
+            print(f"reusing existing download {source_file}")
+        else:
             print(f"Downloading {artifact_name} to {source_file}")
             print(f"parameters: {[self.organization, self.project, self.feed, base_dir, artifact_name]}")
             azRunner().run(['artifacts', 'universal', 'download', '--feed', self.feed, '--name', artifact_name, '--path', base_dir, '--version', '*', '--project', self.project, '--scope', 'project', '--organization', self.organization]) 
-        else:
-            print(f"reusing existing download {source_file}")
 
     def upload(self, source, artifact_name):
         print(f"Getting the new version for {artifact_name}")

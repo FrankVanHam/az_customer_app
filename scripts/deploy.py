@@ -20,11 +20,12 @@ class Deployer:
             product_zip = f"{product_name}.zip"
             artifact_name = f"{product_name}-{version}.zip"
             source_file = os.path.join(base_dir, product_zip)
-            if not os.path.isfile(source_file):
+            if self.reuse_artifacts and os.path.isfile(source_file):
+                print(f"reusing existing download {source_file}")
+            else:
                 print(f"Downloading {artifact_name} to {base_dir}")
                 artifacts.download(base_dir, artifact_name, source_file)
-            else:
-                print(f"reusing existing download {source_file}")
+                
             unzip_dir = os.path.join(base_dir, deploy_dir)
             self.unzip(source_file, unzip_dir)
             if not self.keep_artifacts:

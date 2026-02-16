@@ -38,7 +38,7 @@ jobs:
             copy scripts\copy_to_base\* "$(DEPLOY_DIR)"
             
         - script: |
-            echo SET CUSTOMER_PRD_BASE_DIR="$(FULL_DEPLOY_DIR)" > "$(DEPLOY_DIR)\set_base_dir.bat"
+            echo SET CUSTOMER_PRD_BASE_DIR=$(FULL_DEPLOY_DIR) > "$(DEPLOY_DIR)\set_base_dir.bat"
           displayName: 'Redirect the application to the new checkout'
 
 
