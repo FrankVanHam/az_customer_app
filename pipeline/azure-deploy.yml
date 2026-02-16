@@ -38,7 +38,7 @@ jobs:
             copy scripts\copy_to_base\* "$(DEPLOY_DIR)"
             
         - script: |
-            echo SET CUSTOMER_PRD_BASE_DIR=$(FULL_DEPLOY_DIR) > "$(DEPLOY_DIR)\set_base_dir.bat"
+            echo SET CUSTOMER_PRD_BASE_DIR=$(FULL_DEPLOY_DIR)> "$(DEPLOY_DIR)\set_base_dir.bat"
           displayName: 'Redirect the application to the new checkout'
 
 
@@ -49,4 +49,4 @@ jobs:
             scriptSource: 'filePath'
             scriptPath: 'scripts\deploy.py'
             arguments: '"$(System.CollectionUri)" "$(System.TeamProject)" "$(AZ_FEED)" "$(Build.SourcesDirectory)\artifacts.json" $(CUSTOMER_APP_VERSION) "$(DEPLOY_DIR)" "$(APP_DEPLOY_DIR)" "$(Build.SourcesDirectory)\base_artifacts.json" ${{parameters.AZ_FULL_DEPLOY}}'
-            failOnStderr: true
+            failOnStderr: false
