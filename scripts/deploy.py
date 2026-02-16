@@ -11,11 +11,11 @@ class Deployer:
         self.reuse_artifacts = '1' in debug
         self.keep_artifacts = '2' in debug
 
-    def deploy(self, organization, project, feed, artifacts, version, base_dir, deploy_dir):
+    def deploy(self, organization, project, feed, artifacts_config, version, base_dir, deploy_dir):
         print(f"deploy {version} on {base_dir} in {deploy_dir}")
         destroyer = azDestroyer()
         artifacts = azArtifacts(self.reuse_artifacts, organization, project, feed)
-        for key, props in artifacts.items():
+        for key, props in artifacts_config.items():
             product_name = props['product_name']
             product_zip = f"{product_name}.zip"
             artifact_name = f"{product_name}-{version}.zip"
