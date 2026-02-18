@@ -5,6 +5,7 @@ def_slotted_exemplar(:blaak_engine,
 	{})
 $
 
+
 _pragma(classify_level=restricted)
 _method blaak_engine.activate()
 	##
