@@ -163,7 +163,7 @@ steps:
 
 - ${{ if eq(parameters.AZ_BUILD_ALL, true) }}:
 - ${{ elseif ne(parameters.AZ_BUILD_THIS, '{}') }}:
-- $ {{else}}:
+- ${{ else }}:
   - ${{ if ne(variables['MAGIK_LINT_ARTIFACT_NAME'], '') }}:
     - task: DownloadPipelineArtifact@2
       inputs:
