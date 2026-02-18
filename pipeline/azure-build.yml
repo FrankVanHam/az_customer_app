@@ -182,6 +182,6 @@ steps:
         scriptSource: 'filePath'
         scriptPath: 'scripts/magik_lint.py'
         arguments: '$(Pipeline.Workspace)/changed_files.txt $(Pipeline.Workspace)/$(MAGIK_LINT_JAR) $(MAGIK_LINT_EXIT_CODE_FAILS)'
-  -${{ else }}:
+  - ${{ else }}:
     - script: echo 'no MAGIK_LINT_ARTIFACT_NAME, skip magik-lint $(MAGIK_LINT_ARTIFACT_NAME)'
       displayName: skip magik-lint because no MAGIK_LINT_ARTIFACT_NAME was set.
