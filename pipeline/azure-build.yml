@@ -163,8 +163,10 @@ steps:
 
 - ${{ if eq(parameters.AZ_BUILD_ALL, true) }}:
   - script: echo 'Build all, so skip magik-lint'
+    displayName: skip magik-lint
 - ${{ elseif ne(parameters.AZ_BUILD_THIS, '{}') }}:
   - script: echo 'Build specific product, so skip magik-lint'
+    displayName: skip magik-lint
 - ${{ else }}:
   - ${{ if ne(variables['MAGIK_LINT_ARTIFACT_NAME'], '') }}:
     - task: DownloadPipelineArtifact@2
