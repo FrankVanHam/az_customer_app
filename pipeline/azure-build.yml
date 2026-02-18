@@ -160,3 +160,21 @@ steps:
     failOnStderr: false # because somehow something is written to Stderr even when nothing is failing....
   env:
     AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+
+- ${{ if eq(parameters.AZ_BUILD_ALL, true) }}:
+- ${{ elseif ne(parameters.AZ_BUILD_THIS, '{}') }}:
+- $ {{else}}:
+  - ${{ if ne(variables['MAGIK_LINT_ARTIFACT_NAME'], '') }}:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifact: $(MAGIK_LINT_ARTIFACT_NAME)
+        version: $(MAGIK_LINT_ARTIFACT_VERSION)
+        targetPath: '$(Pipeline.Workspace)'
+        displayName: 'Download the magik-lint'
+
+    - task: PythonScript@0
+      displayName: 'Run the magik-linter'
+      inputs:
+        scriptSource: 'filePath'
+        scriptPath: 'scripts/magik_lint.py'
+        arguments: '$(Pipeline.Workspace)/changed_files.txt $(Pipeline.Workspace)/$(MAGIK_LINT_JAR) $(MAGIK_LINT_EXIT_CODE_FAILS)'

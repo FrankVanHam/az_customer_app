@@ -16,4 +16,4 @@ class azRunner:
         subprocess.run(args)
 
     def run_bare(self, args):
-        subprocess.run(args)
+        return subprocess.run(args)
