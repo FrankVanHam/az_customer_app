@@ -165,12 +165,14 @@ steps:
   - script: echo 'Build specific product, so skip magik-lint'
     displayName: skip magik-lint
 - ${{ else }}:
-  - task: DownloadPipelineArtifact@2
+  - task: UniversalPackages@0
+    displayName: 'Download magik-lint'
     inputs:
-      artifact: $(MAGIK_LINT_ARTIFACT_NAME)
-      version: $(MAGIK_LINT_ARTIFACT_VERSION)
-      targetPath: '$(Pipeline.Workspace)'
-      displayName: 'Download the magik-lint'
+      command: download
+      vstsFeed: '$(System.TeamProject)/$(AZ_FEED)'
+      vstsFeedPackage: $(MAGIK_LINT_ARTIFACT_NAME)
+      vstsPackageVersion: $(MAGIK_LINT_ARTIFACT_VERSION)
+      downloadDirectory: '$(Pipeline.Workspace)'
 
   - task: PythonScript@0
     displayName: 'Run the magik-linter'
