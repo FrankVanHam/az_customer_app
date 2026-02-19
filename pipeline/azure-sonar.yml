@@ -9,7 +9,7 @@ steps:
   fetchDepth: 0
 - task: SonarQubePrepare@8
   inputs:
-    SonarQube: https://sonarcloud.io  # string. Required. SonarQube Server Endpoint. 
+    SonarQube: 'SonarQube as a Server'  # string. Required. SonarQube Server Endpoint. 
     scannerMode: 'cli' # 'dotnet' | 'cli' | 'other'. Required. Choose the way to run the analysis. Default: dotnet.
     #msBuildVersion: # string. Alias: dotnetScannerVersion. Optional. Use when scannerMode = dotnet. .NET Scanner Version. 
     #cliVersion: # string. Alias: cliScannerVersion. Optional. Use when scannerMode = cli. Scanner CLI Version. 
