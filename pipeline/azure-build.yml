@@ -148,16 +148,6 @@ steps:
     testResultsFiles: '$(Pipeline.Workspace)/testresult.xml'
     failTaskOnFailedTests: true
 
-- task: PythonScript@0
-  displayName: 'Zip the artifacts and upload to Artifact storage'
-  inputs:
-    scriptSource: 'filePath'
-    scriptPath: 'scripts/zip_and_upload.py'
-    arguments: '"$(System.CollectionUri)" "$(System.TeamProject)" "$(AZ_FEED)" "$(Pipeline.Workspace)/products_config.json" $(CUSTOMER_APP_VERSION) $(Build.ArtifactStagingDirectory)'
-    failOnStderr: false # because somehow something is written to Stderr even when nothing is failing....
-  env:
-    AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
-
 - ${{ if eq(parameters.AZ_BUILD_ALL, true) }}:
   - script: echo 'Build all, so skip magik-lint'
     displayName: skip magik-lint
@@ -179,4 +169,23 @@ steps:
     inputs:
       scriptSource: 'filePath'
       scriptPath: 'scripts/magik_lint.py'
-      arguments: '$(Pipeline.Workspace)/changed_files.txt $(Pipeline.Workspace)/$(MAGIK_LINT_JAR) $(MAGIK_LINT_EXIT_CODE_FAILS)'
+      arguments: '$(Pipeline.Workspace)/changed_files.txt $(Pipeline.Workspace)/$(MAGIK_LINT_JAR) $(MAGIK_LINT_EXIT_CODE_FAILS) > $(Pipeline.Workspace)/lint_results.log'
+
+  - task: PublishPipelineArtifact@1
+    condition: and(succeededOrFailed(), eq(${{parameters.AZ_DEBUG}}, true))
+    displayName: 'Publish lint-results log for debugging purposes'
+    inputs:
+      targetPath: '$(Pipeline.Workspace)/lint_results.log'
+      artifact: 'lint_results.log'
+      publishLocation: 'pipeline'
+
+- task: PythonScript@0
+  displayName: 'Zip the artifacts and upload to Artifact storage'
+  inputs:
+    scriptSource: 'filePath'
+    scriptPath: 'scripts/zip_and_upload.py'
+    arguments: '"$(System.CollectionUri)" "$(System.TeamProject)" "$(AZ_FEED)" "$(Pipeline.Workspace)/products_config.json" $(CUSTOMER_APP_VERSION) $(Build.ArtifactStagingDirectory)'
+    failOnStderr: false # because somehow something is written to Stderr even when nothing is failing....
+  env:
+    AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+

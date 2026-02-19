@@ -1,0 +1,41 @@
+trigger:
+- no_main
+
+pool:
+  vmImage: ubuntu-latest          # use an ubuntu image with java 17 installed
+
+steps:
+- checkout: self
+  fetchDepth: 0
+- task: SonarQubePrepare@8
+  inputs:
+    SonarQube: https://sonarcloud.io/projects  # string. Required. SonarQube Server Endpoint. 
+    scannerMode: 'cli' # 'dotnet' | 'cli' | 'other'. Required. Choose the way to run the analysis. Default: dotnet.
+    #msBuildVersion: # string. Alias: dotnetScannerVersion. Optional. Use when scannerMode = dotnet. .NET Scanner Version. 
+    #cliVersion: # string. Alias: cliScannerVersion. Optional. Use when scannerMode = cli. Scanner CLI Version. 
+    configMode: 'manual' # 'file' | 'manual'. Required when scannerMode = cli. Mode. Default: file.
+    #configFile: 'sonar-project.properties' # string. Optional. Use when scannerMode = cli && configMode = file. Settings File. Default: sonar-project.properties.
+    cliProjectKey: 'frnkvnhm_SW' # string. Required when scannerMode = cli && configMode = manual. Project Key. 
+    #projectKey: # string. Required when scannerMode = dotnet. Project Key. 
+    cliProjectName: 'SW'  # string. Optional. Use when scannerMode = cli && configMode = manual. Project Name. 
+    #projectName: # string. Optional. Use when scannerMode = dotnet. Project Name. 
+    #cliProjectVersion: '1.0' # string. Optional. Use when scannerMode = cli && configMode = manual. Project Version. Default: 1.0.
+    #projectVersion: '1.0' # string. Optional. Use when scannerMode = dotnet. Project Version. Default: 1.0.
+    #cliSources: '.' # string. Required when scannerMode = cli && configMode = manual. Sources directory root. Default: ..
+  # Advanced
+    #extraProperties: # string. Additional Properties.
+# Run Code Analysis v8
+# Run scanner and upload the results to the SonarQube Server.
+
+- script: |
+    ls -al .
+    ls -al ..
+
+- task: SonarQubeAnalyze@8
+  inputs:
+    jdkversion: 'JAVA_HOME_17_X64' # 'JAVA_HOME' | 'JAVA_HOME_17_X64' | 'JAVA_HOME_21_X64'. Required. JDK version source for analysis. Default: JAVA_HOME_17_X64.
+# Publish Quality Gate Result v8
+# Publish SonarQube Server's Quality Gate result on the Azure DevOps build result, to be used after the actual analysis.
+- task: SonarQubePublish@8
+  inputs:
+    pollingTimeoutSec: '300' # string. Required. Timeout (s). Default: 300.
