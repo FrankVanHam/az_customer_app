@@ -33,7 +33,8 @@ steps:
     ls -al .
     ls -al ..
     ls -al /home/vsts/work/_tasks
-    echo $SONARQUBE_HOME
+    ls -al /home/vsts/work/_tasks/SonarQubeAnalyze_6d01813a-9589-4b15-8491-8164aeb38055/extensions/plugins
+    printenv
 
 - task: SonarQubeAnalyze@8
   env:
