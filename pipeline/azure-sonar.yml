@@ -30,6 +30,9 @@ steps:
 - script: |
     ls -al .
     ls -al ..
+    ls -al ../a
+    ls -al ../b
+    ls -al ../s
 
 - task: SonarQubeAnalyze@8
   inputs:
