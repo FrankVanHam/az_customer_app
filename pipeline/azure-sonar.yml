@@ -8,8 +8,6 @@ steps:
 - checkout: self
   fetchDepth: 0
 - task: SonarQubePrepare@8
-  env:
-    BROWSERSLIST_IGNORE_OLD_DATA: 1
   inputs:
     SonarQube: 'SonarQube as a Server'  # string. Required. SonarQube Server Endpoint. 
     scannerMode: 'cli' # 'dotnet' | 'cli' | 'other'. Required. Choose the way to run the analysis. Default: dotnet.
@@ -26,6 +24,8 @@ steps:
     #cliSources: '.' # string. Required when scannerMode = cli && configMode = manual. Sources directory root. Default: ..
   # Advanced
     #extraProperties: # string. Additional Properties.
+  env:
+    BROWSERSLIST_IGNORE_OLD_DATA: 1
 # Run Code Analysis v8
 # Run scanner and upload the results to the SonarQube Server.
 
@@ -39,6 +39,8 @@ steps:
 - task: SonarQubeAnalyze@8
   inputs:
     jdkversion: 'JAVA_HOME_17_X64' # 'JAVA_HOME' | 'JAVA_HOME_17_X64' | 'JAVA_HOME_21_X64'. Required. JDK version source for analysis. Default: JAVA_HOME_17_X64.
+  env:
+    BROWSERSLIST_IGNORE_OLD_DATA: 1
 # Publish Quality Gate Result v8
 # Publish SonarQube Server's Quality Gate result on the Azure DevOps build result, to be used after the actual analysis.
 - task: SonarQubePublish@8
