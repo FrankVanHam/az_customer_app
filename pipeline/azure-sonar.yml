@@ -32,9 +32,7 @@ steps:
 - script: |
     ls -al .
     ls -al ..
-    ls -al ../a
-    ls -al ../b
-    ls -al ../s
+    ls -al /home/vsts/work/_tasks
 
 - task: SonarQubeAnalyze@8
   env:
