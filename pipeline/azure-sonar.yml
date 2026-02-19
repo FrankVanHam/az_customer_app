@@ -33,7 +33,7 @@ steps:
     ls -al .
     ls -al ..
     ls -al /home/vsts/work/_tasks
-    ls -al -R /home/vsts/work/_tasks
+    ls -al -R /home/vsts/work/_tasks/SonarQubeAnalyze_6d01813a-9589-4b15-8491-8164aeb38055/8.1.0/sonar-scanner/bin
     printenv
 
 - task: SonarQubeAnalyze@8
