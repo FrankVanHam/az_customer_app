@@ -8,18 +8,19 @@ steps:
 - checkout: self
   fetchDepth: 0
 
-- bash: |
-    VERSION="6.1.0.4477"
-    URL="https://binaries.sonarsource.com/?prefix=Distribution/sonar-scanner-cli"
-    wget $URL -O sonar-scanner-cli-8.0.1.6346.zip
-    ls -al
-    unzip -o sonar-scanner-cli-8.0.1.6346.zip
-    echo "##vso[task.prependpath]$(pwd)/sonar-scanner-$VERSION-linux/bin"
-  displayName: 'Download and Unzip SonarScanner'
+# - bash: |
+#     VERSION="6.1.0.4477"
+#     URL="https://binaries.sonarsource.com/?prefix=Distribution/sonar-scanner-cli"
+#     wget $URL -O sonar-scanner-cli-8.0.1.6346.zip
+#     ls -al
+#     unzip -o sonar-scanner-cli-8.0.1.6346.zip
+#     echo "##vso[task.prependpath]$(pwd)/sonar-scanner-$VERSION-linux/bin"
+#   displayName: 'Download and Unzip SonarScanner'
 
-- bash: |
-    sonar-scanner -v
-  displayName: 'Verify Installation'
+# - bash: |
+#     sonar-scanner -v
+#   displayName: 'Verify Installation'
+
 - task: SonarQubePrepare@8
   env:
     BROWSERSLIST_IGNORE_OLD_DATA: 1
@@ -45,8 +46,7 @@ steps:
 - script: |
     ls -al .
     ls -al ..
-    ls -al /home/vsts/work/_tasks
-    ls -al -R /home/vsts/work/_tasks/SonarQubeAnalyze_6d01813a-9589-4b15-8491-8164aeb38055/8.1.0/sonar-scanner/bin
+    ls -al -R /home/vsts/work/_tasks
     printenv
 
 - task: SonarQubeAnalyze@8
