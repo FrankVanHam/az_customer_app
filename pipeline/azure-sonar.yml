@@ -7,6 +7,18 @@ pool:
 steps:
 - checkout: self
   fetchDepth: 0
+
+- bash: |
+    VERSION="6.1.0.4477"
+    URL="https://binaries.sonarsource.com/?prefix=Distribution/sonar-scanner-cli/"
+    wget $URL -O sonar-scanner-cli-8.0.1.6346.zip
+    unzip -o sonar-scanner-cli-8.0.1.6346.zip
+    echo "##vso[task.prependpath]$(pwd)/sonar-scanner-$VERSION-linux/bin"
+  displayName: 'Download and Unzip SonarScanner'
+
+- bash: |
+    sonar-scanner -v
+  displayName: 'Verify Installation'
 - task: SonarQubePrepare@8
   env:
     BROWSERSLIST_IGNORE_OLD_DATA: 1
@@ -16,7 +28,7 @@ steps:
     #msBuildVersion: # string. Alias: dotnetScannerVersion. Optional. Use when scannerMode = dotnet. .NET Scanner Version. 
     #cliVersion: # string. Alias: cliScannerVersion. Optional. Use when scannerMode = cli. Scanner CLI Version. 
     configMode: 'file' # 'file' | 'manual'. Required when scannerMode = cli. Mode. Default: file.
-    #configFile: 'sonar-project.properties' # string. Optional. Use when scannerMode = cli && configMode = file. Settings File. Default: sonar-project.properties.
+    configFile: 'sonar-project.properties' # string. Optional. Use when scannerMode = cli && configMode = file. Settings File. Default: sonar-project.properties.
     cliProjectKey: 'frnkvnhm_SW' # string. Required when scannerMode = cli && configMode = manual. Project Key. 
     #projectKey: # string. Required when scannerMode = dotnet. Project Key. 
     cliProjectName: 'SW'  # string. Optional. Use when scannerMode = cli && configMode = manual. Project Name. 
