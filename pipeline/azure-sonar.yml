@@ -15,7 +15,7 @@ steps:
     scannerMode: 'cli' # 'dotnet' | 'cli' | 'other'. Required. Choose the way to run the analysis. Default: dotnet.
     #msBuildVersion: # string. Alias: dotnetScannerVersion. Optional. Use when scannerMode = dotnet. .NET Scanner Version. 
     #cliVersion: # string. Alias: cliScannerVersion. Optional. Use when scannerMode = cli. Scanner CLI Version. 
-    configMode: 'manual' # 'file' | 'manual'. Required when scannerMode = cli. Mode. Default: file.
+    configMode: 'file' # 'file' | 'manual'. Required when scannerMode = cli. Mode. Default: file.
     #configFile: 'sonar-project.properties' # string. Optional. Use when scannerMode = cli && configMode = file. Settings File. Default: sonar-project.properties.
     cliProjectKey: 'frnkvnhm_SW' # string. Required when scannerMode = cli && configMode = manual. Project Key. 
     #projectKey: # string. Required when scannerMode = dotnet. Project Key. 
