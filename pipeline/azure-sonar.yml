@@ -46,3 +46,5 @@ steps:
 - task: SonarQubePublish@8
   inputs:
     pollingTimeoutSec: '300' # string. Required. Timeout (s). Default: 300.
+  env:
+    BROWSERSLIST_IGNORE_OLD_DATA: 1
