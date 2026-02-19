@@ -10,8 +10,9 @@ steps:
 
 - bash: |
     VERSION="6.1.0.4477"
-    URL="https://binaries.sonarsource.com/?prefix=Distribution/sonar-scanner-cli/"
+    URL="https://binaries.sonarsource.com/?prefix=Distribution/sonar-scanner-cli"
     wget $URL -O sonar-scanner-cli-8.0.1.6346.zip
+    ls -al
     unzip -o sonar-scanner-cli-8.0.1.6346.zip
     echo "##vso[task.prependpath]$(pwd)/sonar-scanner-$VERSION-linux/bin"
   displayName: 'Download and Unzip SonarScanner'
