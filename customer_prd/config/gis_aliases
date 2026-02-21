@@ -20,3 +20,12 @@ customer_prd_open:
 	splash_screen      = %SMALLWORLD_GIS%\sw_core\resources\base\bitmaps\smallworld_gis_splash.png
 	product            = customer_prd
 	args               = -cli
+
+customer_prd_open_jacoco:
+	title              = Start Smallworld customer_prd Application
+	session            = customer_prd:customer_prd_open
+	SW_CONSTRUCTION_PACK_DIR = C:/Temp
+	SW_LAUNCH_JAVA_ARGS= -javaagent:D:\jacoco-0.8.14\lib\jacocoagent.jar=destfile=D:\temp\jacoco.xml
+	splash_screen      = %SMALLWORLD_GIS%\sw_core\resources\base\bitmaps\smallworld_gis_splash.png
+	product            = customer_prd
+	args               = -cli
