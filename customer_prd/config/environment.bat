@@ -30,7 +30,7 @@ set PATH=%SMALLWORLD_GIS%\bin\x86;%PATH%
 
 REM Launcher related default settings for SW5 Java startup 
 set SW_LAUNCH_JAVA_MEMORY=-Xmx1g 
-set SW_LAUNCH_JAVA_ARGS=-Xss3m -XX:ReservedCodeCacheSize=256m -Djdk.lang.Process.allowAmbigousCommands=true -Djava.lang.invoke.MethodHandle.COMPILE_THRESHOLD=3 -Djava.locale.providers=COMPAT -Dnashorn.args="--no-deprecation-warning" -XX:-TieredCompilation -XX:MaxTrivialSize=8 -XX:MinInliningThreshold=1000 -Dorg.osgi.framework.os.name=win32 -Dsun.java2d.uiScale.enabled=false -Dorg.ops4j.pax.logging.DefaultServiceLog.level=ERROR
+set SW_LAUNCH_JAVA_ARGS=%SW_LAUNCH_JAVA_ARGS% -Xss3m -XX:ReservedCodeCacheSize=256m -Djdk.lang.Process.allowAmbigousCommands=true -Djava.lang.invoke.MethodHandle.COMPILE_THRESHOLD=3 -Djava.locale.providers=COMPAT -Dnashorn.args="--no-deprecation-warning" -XX:-TieredCompilation -XX:MaxTrivialSize=8 -XX:MinInliningThreshold=1000 -Dorg.osgi.framework.os.name=win32 -Dsun.java2d.uiScale.enabled=false -Dorg.ops4j.pax.logging.DefaultServiceLog.level=ERROR
 rem Crash reporting options have changed at Java 9. To enable crash dumps, uncomment one of the following lines:
 rem On Java 8:
 rem  set SW_LAUNCH_JAVA_ARGS=%SW_LAUNCH_JAVA_ARGS% -XX:+CreateMinidumpOnCrash
