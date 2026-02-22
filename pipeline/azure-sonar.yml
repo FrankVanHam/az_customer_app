@@ -12,7 +12,7 @@ steps:
 # Publish any of the code coverage results from a build.
 - task: PublishCodeCoverageResults@2
   inputs:
-    summaryFileLocation: jacoco.exec 
+    summaryFileLocation: test_results.xml
     #pathToSources: # string. Path to Source files. 
     #failIfCoverageEmpty: false # boolean. Fail if code coverage results are missing. Default: false.
 
