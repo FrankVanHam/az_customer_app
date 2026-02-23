@@ -116,21 +116,21 @@ steps:
     vstsPackageVersion: $(JACOCO_VERSION)
     downloadDirectory: '$(Pipeline.Workspace)'
 
+- task: ExtractFiles@1
+  displayName: 'Extract jacoco.zip'
+  inputs:
+    archiveFilePatterns: 'jacoco.zip'
+    destinationFolder: '$(Pipeline.Workspace)'
+    cleanDestinationFolder: false
+
 - task: UniversalPackages@0
   displayName: 'Download jacoco reporter'
   inputs:
     command: download
     vstsFeed: '$(System.TeamProject)/$(AZ_FEED)'
-    vstsFeedPackage: 'sw5-jacoco-reporter.zip'
+    vstsFeedPackage: 'sw5-jacoco-reporter.jar'
     vstsPackageVersion: $(JACOCO_REPORTER_VERSION)
-    downloadDirectory: '$(Pipeline.Workspace)'    
-  
-- task: ExtractFiles@1
-  displayName: 'Extract jacoco-report.zip'
-  inputs:
-    archiveFilePatterns: 'sw5-jacoco-reporter.zip'
-    destinationFolder: '$(Pipeline.Workspace)'
-    cleanDestinationFolder: false
+    downloadDirectory: '$(Pipeline.Workspace)'
 
 - script: |
     ls -al .
