@@ -111,7 +111,7 @@ steps:
   displayName: 'Download jacoco'
   inputs:
     command: download
-    vstsFeed: '$(System.CollectionUri)/$(AZ_FEED)'
+    vstsFeed: '$(System.TeamProject)/$(AZ_FEED)'
     vstsFeedPackage: 'jacoco.zip'
     vstsPackageVersion: $(JACOCO_VERSION)
     downloadDirectory: '$(Pipeline.Workspace)'
@@ -120,7 +120,7 @@ steps:
   displayName: 'Download jacoco reporter'
   inputs:
     command: download
-    vstsFeed: '$(System.CollectionUri)/$(AZ_FEED)'
+    vstsFeed: '$(System.TeamProject)/$(AZ_FEED)'
     vstsFeedPackage: 'sw5-jacoco-reporter.zip'
     vstsPackageVersion: $(JACOCO_REPORTER_VERSION)
     downloadDirectory: '$(Pipeline.Workspace)'    
