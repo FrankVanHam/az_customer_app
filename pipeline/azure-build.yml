@@ -133,7 +133,7 @@ steps:
     downloadDirectory: '$(Pipeline.Workspace)'
 
 - script: |
-    ls -al .
+    ls -al $(Pipeline.Workspace)
 
 - script: |
     $(CORE_DIR)/core/bin/share/runalias -j -javaagent:$(Pipeline.Workspace)/jacoco/lib/jacocoagent.jar=destfile=$(Pipeline.Workspace)/jacoco.exec -j -Djava.awt.headless=true base -products_config $(Pipeline.Workspace)/products_config.json -test_output_dir $(Common.TestResultsDirectory) -test_aspects $(MUNIT_TEST_ASPECTS) > test_run.log
