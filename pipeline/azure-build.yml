@@ -119,7 +119,7 @@ steps:
 - task: ExtractFiles@1
   displayName: 'Extract jacoco.zip'
   inputs:
-    archiveFilePatterns: 'jacoco.zip'
+    archiveFilePatterns: '$(Pipeline.Workspace)/jacoco.zip'
     destinationFolder: '$(Pipeline.Workspace)'
     cleanDestinationFolder: false
 
