@@ -170,6 +170,10 @@ steps:
     publishLocation: 'pipeline'
 
 - script: |
+    ls -al /home/vsts/work/1/s
+    ls -al /home/vsts/work/1/s/az_customer_app
+    ls -al /home/vsts/work/1/s/az_customer_app/customer_engine_prd
+    ls -al /home/vsts/work/1/s/az_customer_app/customer_prd
     java -jar $(Pipeline.Workspace)/sw5-jacoco-reporter.jar --product-path /home/vsts/work/1/s/az_customer_app/customer_engine_prd --product-path /home/vsts/work/1/s/az_customer_app/customer_prd --jacoco-file  $(Pipeline.Workspace)/jacoco.exec --jacoco-xml  $(Pipeline.Workspace)/coverage_results.xml
 
 - task: PublishCodeCoverageResults@2
