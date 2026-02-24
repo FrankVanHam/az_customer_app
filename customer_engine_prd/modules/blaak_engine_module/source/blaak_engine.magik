@@ -6,8 +6,37 @@ def_slotted_exemplar(:blaak_engine,
 $
 
 _pragma(classify_level=restricted)
-_method blaak_engine.activate()
+_method blaak_engine.new()
 	##
-	write("Engine activate")
+	_return _clone 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_method blaak_engine.activate(_optional switch)
+	##
+	_if switch _is _unset
+	_then 
+		write("Engine activate with no switch")
+	_elif switch = 1
+	_then
+		_self.run_switch_one()
+	_else
+		_self.run_other_switch()
+	_endif 
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method blaak_engine.run_switch_one()
+	##
+	write("Engine activate with switch 1")
+_endmethod
+$
+
+_pragma(classify_level=restricted)
+_private _method blaak_engine.run_other_switch()
+	##
+	write("Engine activate with other switch")
 _endmethod
 $

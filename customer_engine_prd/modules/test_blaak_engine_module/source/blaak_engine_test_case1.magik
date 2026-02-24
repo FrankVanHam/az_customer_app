@@ -18,12 +18,16 @@ $
 
 _pragma(classify_level=advanced, topic={service, test})
 _method blaak_engine_test_case1.test_first_test()
+	_local engine << blaak_engine.new()
+	engine.activate()
 	_self.assert_true(_true, "This should go well")
 _endmethod
 $
 
 _pragma(classify_level=advanced, topic={service, test})
 _method blaak_engine_test_case1.test_second_test()
+	_local engine << blaak_engine.new()
+	engine.activate(1)
 	_self.assert_false(_false, "This should go well")
 _endmethod
 $

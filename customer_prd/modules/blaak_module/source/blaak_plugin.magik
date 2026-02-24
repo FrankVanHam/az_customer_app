@@ -18,6 +18,6 @@ $
 _pragma(classify_level=restricted)
 _method blaak_plugin.activate()
 	##
-	blaak_engine.activate()
+	blaak_engine.new().activate()
 _endmethod
 $

@@ -18,6 +18,8 @@ $
 
 _pragma(classify_level=advanced, topic={service, test})
 _method blaak_test_case1.test_first_test()
+	_local pl << blaak_plugin.new()
+	pl.activate()
 	_self.assert_true(_true, "This should go well")
 _endmethod
 $
