@@ -169,9 +169,12 @@ steps:
     artifact: 'testresult.xml'
     publishLocation: 'pipeline'
 
+- task: |
+    java -jar $(Pipeline.Workspace)/sw5-jacoco-reporter.jar --product-path /home/vsts/work/1/s/az_customer_app/customer_engine_prd --product-path /home/vsts/work/1/s/az_customer_app/customer_prd --jacoco-file  $(Pipeline.Workspace)/jacoco.exec --jacoco-xml  $(Pipeline.Workspace)/coverage_results.xml
+
 - task: PublishCodeCoverageResults@2
   inputs:
-    summaryFileLocation: $(Pipeline.Workspace)/jacoco.exec
+    summaryFileLocation: $(Pipeline.Workspace)/coverage_results.xml
     #pathToSources: # string. Path to Source files. 
     #failIfCoverageEmpty: false # boolean. Fail if code coverage results are missing. Default: false
 
