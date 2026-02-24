@@ -120,7 +120,7 @@ steps:
   displayName: 'Extract jacoco.zip'
   inputs:
     archiveFilePatterns: '$(Pipeline.Workspace)/jacoco.zip'
-    destinationFolder: '$(Pipeline.Workspace)'
+    destinationFolder: '$(Pipeline.Workspace)/jacoco'
     cleanDestinationFolder: false
 
 - task: UniversalPackages@0
