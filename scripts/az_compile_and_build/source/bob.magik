@@ -22,7 +22,7 @@ _method bob.compile(p_prod)
 	write("Compiling ... ", p_prod.name)
 	_local initial_modules << _unset 
 	_local to_be_ignored << _unset 
-	_local include_tests? << _false
+	_local include_tests? << _true
 	_local skip_conflict_methods_check? << _false 
 	p_prod.compile_all_modules(initial_modules, to_be_ignored, include_tests?, skip_conflict_methods_check?)
 	p_prod.compile_messages()
