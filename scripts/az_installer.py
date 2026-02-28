@@ -2,8 +2,6 @@ import os
 from az_runner import azRunner
 
 class azInstaller:
-    def __init__(self):
-        pass
     def install(self, the_file, target):
         print(f"Installing {the_file}")
         if os.name == 'nt':

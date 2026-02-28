@@ -17,7 +17,7 @@ parameters:
 # 
 # set variables. Get the volatile one from the library group.
 variables:
-  - group: customer-app-vars
+  - group: build-var-group
   - name: CORE_DIR
     value: $(Pipeline.Workspace)/$(SW_CORE_DIR)
 
@@ -85,7 +85,7 @@ steps:
   inputs:
     scriptSource: 'filePath'
     scriptPath: 'scripts/install.py'
-    arguments: '"$(Pipeline.Workspace)" "$(System.CollectionUri)" "$(System.TeamProject)" "$(AZ_FEED)" "$(Build.SourcesDirectory)/base_artifacts.json" "$(Pipeline.Workspace)/products_config.json"'
+    arguments: '"$(Pipeline.Workspace)" "$(System.CollectionUri)" "$(System.TeamProject)" "$(AZ_FEED)" "$(Build.SourcesDirectory)/base_artifacts.json" "$(Pipeline.Workspace)/products_config.json" $(SW_VERSION)'
     failOnStderr: false # because somehow something is written to Stderr even when nothing is failing....
   env:
     AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
@@ -128,8 +128,8 @@ steps:
   inputs:
     command: download
     vstsFeed: '$(System.TeamProject)/$(AZ_FEED)'
-    vstsFeedPackage: 'sw5-jacoco-reporter.jar'
-    vstsPackageVersion: $(JACOCO_REPORTER_VERSION)
+    vstsFeedPackage: $(JACOCO_REPORTER_ARTIFACT_NAME)
+    vstsPackageVersion: $(JACOCO_REPORTER_ARTIFACT_VERSION)
     downloadDirectory: '$(Pipeline.Workspace)'
 
 - script: |
@@ -169,8 +169,14 @@ steps:
     artifact: 'testresult.xml'
     publishLocation: 'pipeline'
 
-- script: |
-    java -jar $(Pipeline.Workspace)/sw5-jacoco-reporter.jar --product-path /home/vsts/work/1/s/customer_engine_prd --product-path /home/vsts/work/1/s/customer_prd --jacoco-file  $(Pipeline.Workspace)/jacoco.exec --jacoco-xml  $(Pipeline.Workspace)/coverage_results.xml
+- task: PythonScript@0
+  displayName: 'Create report xml for code coverage results'
+  name: create_code_coverage_xml
+  inputs:
+    scriptSource: 'filePath'
+    scriptPath: 'scripts/run_jacoco.py'
+    arguments: '$(Pipeline.Workspace)/$(JACOCO_REPORTER_JAR) $(Pipeline.Workspace)/jacoco.exec $(Pipeline.Workspace)/coverage_results.xml $(Pipeline.Workspace)/products_config.json'
+    failOnStderr: true
 
 - task: PublishCodeCoverageResults@2
   inputs:

@@ -5,7 +5,7 @@ parameters:
 
 # set variables. Get the volatile one from the library group. The rest is set to point to directories for easy reading
 variables:
-  - group: customer-app-vars
+  - group: deploy-var-group
   - name: REPO_NAME
     value: ${{split(variables['Build.Repository.Name'], '/')[1]}}
   - name: APP_DEPLOY_DIR
