@@ -6,7 +6,9 @@ class Reporter:
         args = ['java', '-jar', jar, '--jacoco-file', exec, '--jacoco-xml', target]
         for key, props in products_config.items():
             product_path = os.path.abspath(props["product_path"])
-            args.extend(['--product-path', product_path])
+            product_type = props["product_type"]
+            if product_type == 'layered_product':
+                args.extend(['--product-path', product_path])
         azRunner().run_bare(args)
         #    java -jar $(Pipeline.Workspace)/$(JACOCO_REPORTER_JAR) --product-path /home/vsts/work/1/s/customer_engine_prd --product-path /home/vsts/work/1/s/customer_prd --jacoco-file  $(Pipeline.Workspace)/jacoco.exec --jacoco-xml  $(Pipeline.Workspace)/coverage_results.xml
 
