@@ -112,14 +112,14 @@ steps:
   inputs:
     command: download
     vstsFeed: '$(System.TeamProject)/$(AZ_FEED)'
-    vstsFeedPackage: 'jacoco.zip'
-    vstsPackageVersion: $(JACOCO_VERSION)
+    vstsFeedPackage: '$(JACOCO_ARTIFACT_NAME)'
+    vstsPackageVersion: $(JACOCO_ARTIFACT_VERSION)
     downloadDirectory: '$(Pipeline.Workspace)'
 
 - task: ExtractFiles@1
-  displayName: 'Extract jacoco.zip'
+  displayName: 'Extract jacoco zip'
   inputs:
-    archiveFilePatterns: '$(Pipeline.Workspace)/jacoco.zip'
+    archiveFilePatterns: '$(Pipeline.Workspace)/$(JACOCO_ZIP)'
     destinationFolder: '$(Pipeline.Workspace)/jacoco'
     cleanDestinationFolder: false
 
