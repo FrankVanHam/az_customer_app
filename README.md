@@ -1,51 +1,126 @@
-# Example customer app for CI/CD
+# Example customer Smallworld app for CI/CD
+This repository contains an example Smallworld customer application that can be build and deployed with Azure pipelines. The assumption is that the core application is structured like this:  
+![Directory structure](/img/directory-structure.jpg)
 
-# Artifacts
-The artifacts feed stores universal packages that are used to [deploy](#deploy) the application. Universal packages are either jar's or zip's.  
-  
-The packages for the customer smallworld products will be build and uploaded during the [build](#build) phase.  
-  
-The packages for the core product and external products should be uploaded by the administrator and registered in base_artifacts.json in the root directory of the source-code repo.  
-Upload the core and external products with code like this:  
-<code>az artifacts universal publish --organization https://dev.azure.com/{account}/ --feed {feed} --name cst.jar --version 5.3.61 --description "SW Core installer" --path D:\core_installer.jar --project={project} --scope project</code>
+|file/dir|content|
+|--------|-------|
+|az_customer_app|Your customer smallworld application. The git repository |
+|az_customer_app\customer_engine_prd|The smallworld engine application providing support for the GUI|
+|az_customer_app\customer_prd|The smallworld GUI application|
+|az_customer_app\pipeline|The pipeline yaml and scripts|
+|az_customer_app\run|The batch files to run the applications|
+|az_customer_app\smallworld_registry|The smallworld registry that registers the location of the products relative to the Smallworld product|
+|az_customer_app\.gitignore|.gitignore|
+|az_customer_app\artifacts.json|configuration of the customer smallworld products|
+|az_customer_app\base_artifacts.json|configuration of the Smallworld products and external products|
+|az_customer_app\README.md|this file|
+|SW|The Smallworld core products|
+|SW-external|Any external products|
+|Emacs.bat|Emacs|
+|run.bat|The main batch file to start the application|
+|set_base_dir.bat|The redirection batch file that will point to the latest deployment|
 
-Edit the [base artifacts](base_artifacts.json) file to include all the core and external products that need to be installed for a full deploy. The properties in the json are:
+The application is a simple application based on the Cambridge application that adds a menu item that prints a message on the prompt. The application is obviously not the point of this repository, the building and deploying is...
 
-- order: the order in which the product is installed.
-- product_path: the relative path to the target directory
-- artifact_name: the name of the artifact
-- file_name: the file name of the artifact, this need not be the same as the artifact name
-- product_type: either "sw-jar" or "zip"
-  
-Products of type "sw-jar" will be installed with the java installer, products of type "zip" will just be unzipped.  
+# Set it up from scratch
+My assumption is that you know how Azure DevOps works, so this tutorial is about what to do, not how to do it.
 
-## Library
-In this example you should use two Azure variable groups:
-- build-var-group
-- deloy-var-group
+## Create project
+1. In Azure DevOps create a new project SW-APP
+2. Import this Git repository (or a clone) into the project.
 
-The follownvg variables are used:
-### build-var-group
-- AZ_FEED<br>The name of the Azure Artifacts feed you have choosen for your project.
-- CUSTOMER_APP_VERSION<br>The version of the customer application the developers are building. This value determines the name of the artifacts that are uploaded after a succesfull build.
-- JACOCO_REPORTER_ARTIFACT_NAME: name of the jacoco reporter artifact. Download at (https://github.com/StevenLooman/sw5-jacoco-reporter).
-- JACOCO_REPORTER_ARTIFACT_VERSION<br>The version of the artifact in the Artifacts repository.
-- JACOCO_REPORTER_JAR<br>The name of the jar file itself. See [converage analysis](#jacoco-converage).
-- JACOCO_ARTIFACT_NAME<br>the name of the uploaded artifact of the jacoco jar. Download at (https://www.eclemma.org/jacoco).
-- JACOCO_ARTIFACT_VERSION<br>the version of the jacoco artifact in the Artifacts repository.
-- JACOCO_ZIP<br>the name of the jacoco zip file. See [converage analysis](#jacoco-converage).
-- MAGIK_LINT_ARTIFACT_NAME<br>The name of the magik lint artifact name. Download at (https://github.com/StevenLooman/magik-tools/tree/develop/magik-lint).
-- MAGIK_LINT_ARTIFACT_VERSION<br>the version of the magik lint artifact in the Artifacts repository.
-- MAGIK_LINT_EXIT_CODE_FAILS<br>The exit codes that determines if the linter will fail the build. Allowed values are 2,4,8 for Critical,Major,Minor. Use comma's to separate multiple values.
-- MAGIK_LINT_JAR<br>The name of the jar file of the magik linter. See [linter](#linter).
-- MUNIT_TEST_ASPECTS<br>The test aspects to test after building the code. Use comma's to separate multiple values. See [MUnit](#munit).
-- SW_CORE_DIR<br>The name of the Core directory as a relative path name. This name should match the directory name as specified in the [base artifacts](base_artifacts.json) file.
-- SW_VERSION<br>The Smallworld version of the core products that are uploaded to the Artifacts.
+## Create Variable groups
+In the Library tab under the Pipelines tab add 2 Variable groups. The variables will name the names and versions of the artifacts that will uploaded later.
+Name them build-var-group and deploy_var_group. The names must match the names in the [azure-build.yml](./pipeline/azure-build.yml) and [azure-deploy.yml](./pipeline/azure-deploy.yml) files in the "variables:" section.
 
-## deploy-var-group
-- AZ_FEED<br>The name of the Azure Artifacts feed you have choosen for your project.
-- CUSTOMER_APP_VERSION<br>The version of the customer application the developers are building. This value determines the name of the artifacts that are downloaded to deploy the application. Note: it determines the **name**, not the **version**.
-- DEPLOY_DIR<br>The deployment directory on the target machine.
+For build_var-group enter the following values. See [library](/md/library.md) for details.   
+|variable|value|
+|--------|-----|
+|AZ_FEED|sw_feed|
+|CUSTOMER_APP_VERSION|1|
+|JACOCO_ARTIFACT_NAME|jacoco.zip|
+|JACOCO_ARTIFACT_VERSION|0.8.14|
+|JACOCO_REPORTER_ARTIFACT_NAME|sw5-jacoco-reporter.jar|
+|JACOCO_REPORTER_ARTIFACT_VERSION|2.2.1|
+|JACOCO_REPORTER_JAR|sw5-jacoco-reporter.jar|
+|JACOCO_ZIP|jacoco.zip|
+|MAGIK_LINT_ARTIFACT_NAME|magik-lint.jar|
+|MAGIK_LINT_ARTIFACT_VERSION|0.11.0|
+|MAGIK_LINT_EXIT_CODE_FAILS|2|
+|MAGIK_LINT_JAR|magik-lint-0.11.0.jar|
+|MUNIT_TEST_ASPECTS|az_build_pipeline|
+|SW_CORE_DIR|SW|
+|SW_VERSION|5.3.61|
+
+For deploy_var-group enter the following values. See [library](/md/library.md) for details.   
+|variable|value|
+|--------|-----|
+|AZ_FEED|sw_feed|
+|CUSTOMER_APP_VERSION|1|
+|DEPLOY_DIR|C:\SW-App|
+|SW_VERSION|5.3.61|
+
+## Upload artifacts
+In the Artifacts tab create a new Feed. 
+* Name it "sw_feed", just as was specified in the var-groups in the yaml files.
+* No upstream sources
+* Scope is the project
+* Set the retention policy as you require
+
+Now we need to upload the artifacts.
+### upload Smallworld core
+Download the Smallworld core components for CST 5.3.6.1 (CST-5.3.6.1.ISO) and Translator 5.3.6.1 (TRANS-5.3.6.1.ISO). Extract the jar file from the ISOs. Upload the jar files with the names specified in the configuration [base_artifacts.json](./base_artifacts.json) and the version 5.3.61 as specifified in the var-group.   
+```
+az artifacts universal publish --organization https://dev.azure.com/frnkvnhm/ --feed sw_feed --name cst.jar --version 5.3.61 --description "SW Core installer" --path D:\dev\uploads\core_installer.jar --project="SW-APP" --scope project
+{- Publishing ..
+  "Description": "SW Core installer",
+  "ManifestId": "6AA908902101D6766DF21A657C15E8B01153D6124C2F7AA63A44070B5B14B22A01",
+  "SuperRootId": "FC44FD8AA5084C1AC509388DB91B8015198CE753E3574BC3A359A617D02C5D6302",
+  "Version": "5.3.61"
+}
+```
+and
+```
+az artifacts universal publish --organization https://dev.azure.com/frnkvnhm/ --feed sw_feed --name trans.jar --version 5.3.61 --description "SW Translator installer" --path D:\dev\uploads\translators_installer.jar --project="SW-APP" --scope project
+{- Publishing ..
+  "Description": "SW Translator installer",
+  "ManifestId": "497AAF054EE74D479C50FC1CFDBD67E6D8D80A5C5DE1C178E028DCBC6E70F39701",
+  "SuperRootId": "267EF85096F9302BE2F25DCA81339396E59D1DF9FCD2F5B1EA53B77C079032CA02",
+  "Version": "5.3.61"
+}
+```
+
+### MUnit
+Dowload mUnit from https://github.com/OpenSmallworld/munit as munit.zip. Also rename the internal directory in the zip to 'munit' because you really dont want to have the version name in the product.   
+Upload the zip to the Artifact with the artifact name specified in the configuration [base_artifacts.json](./base_artifacts.json) and the version 5.3.61 as specifified in the var-group. 
+```
+az artifacts universal publish --organization https://dev.azure.com/frnkvnhm/ --feed sw_feed --name munit.zip --version 5.3.61 --description "MUnit" --path D:\dev\uploads\munit.zip --project="SW-APP" --scope project
+```
+
+### Jacoco
+Download the code coverage tool at (https://www.eclemma.org/jacoco) as jacoco.zip.   
+Upload the zip to the Artifact with the name and version as specifified in the var-group.   
+```
+az artifacts universal publish --organization https://dev.azure.com/frnkvnhm/ --feed sw_feed --name jacoco.zip --version 0.8.14 --description "Jacoco" --path D:\dev\uploads\jacoco.zip --project="SW-APP" --scope project
+```
+
+### Jacoco reported
+Download the Jacoco reporter tool at [jacoco-reporter](https://github.com/StevenLooman/sw5-jacoco-reporter) as jacoco-reporter.jar.   
+Upload the jar to the Artifact with the name and version as specifified in the var-group.   
+```
+az artifacts universal publish --organization https://dev.azure.com/frnkvnhm/ --feed sw_feed --name "jacoco-reporter.jar" --version 2.2.1 --description "Jacoco reporter" --path "D:\dev\uploads\jacoco-reporter.jar" --project="SW-APP" --scope project
+```
+
+
+### Magik-linter
+Download the linter at [magik-lint](https://github.com/StevenLooman/magik-tools/tree/develop/magik-lint) as magik-lint.jar.
+Upload the jar to the Artifact with the name and version as specifified in the var-group.   
+```
+az artifacts universal publish --organization https://dev.azure.com/frnkvnhm/ --feed sw_feed --name "magik-lint.jar" --version 0.11.0 --description "Magik linter" --path "D:\dev\uploads\magik-lint.jar" --project="SW-APP" --scope project
+```
+
+[Artifacts](md/artifacts.md)  
+[Library](md/library.md)
 
 ## Build
 
